@@ -1,4 +1,3 @@
-
 var data_rect = {"freemium":{"label":"Freemium",
                         "n_users":55,
                         "rev_per_user":1.2,
@@ -206,4 +205,4 @@ function update_rect(data, rect_rendering_options){
 
 
 update_rect(data_rect, rect_rendering_options)
-
+// export {update_rect,data_rect,rect_rendering_options,width,height,margin,svg_rect}
