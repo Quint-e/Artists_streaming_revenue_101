@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<style>
+
+body{
+  max-width: 900px;
+  margin: 0px auto;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+h1{
+  margin: 50px;
+}
+
+h1{
+  text-align: center;
+}
+
+
+#container{
+  position: relative;
+}
+
+#sections{
+  width: 340px;
+}
+
+#sections > div{
+  background: white;
+  opacity: .2;
+  margin-bottom: 200px;
+}
+#sections > div:last-child{
+  margin-bottom: 30px;
+}
+#sections > div.graph-scroll-active{
+  opacity: 1;
+}
+
+#graph{
+  margin-left: 40px;
+  width: 500px;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  float: right;
+}
+
+@media (max-width: 925px)  {
+  #graph{
+    width: 100%;
+    margin-left: 0px;
+    float: none;
+  }
+
+  #sections{
+    width: auto;
+    position: relative;
+    margin: 0px auto;
+  }
+
+  #sections > div{
+    background: rgba(255,255,255,.5);
+    padding: 10px;
+    border-top: 1px solid;
+    border-bottom: 1px solid;
+    margin-bottom: 80vh;
+  }
+
+  pre{
+    overflow: hidden;
+  }
+
+  h1{
+    margin: 10px;
+  }
+}
+
+
+circle{
+  fill: steelblue;
+}
+
+.mono{
+  font-family: monospace;
+}
+
+svg{
+  background-color: #eee;
+}
+
+</style>
+
+<h1><a href='https://github.com/1wheel/graph-scroll'>graph-scroll.js</a></h1>
+<h1>Simple scrolling events for d3 graphics</h1>
+
+Some intro text before the sticky graph. If it is long enough it will go across the page.
+
+<div id='container' class='container-0'>
+  <div id='graph'></div>
+
+  <div id='sections'>
+    <div>
+      <h3>My text here</h3>
+
+      Blah 
+
+    </div>
+
+    <div>
+      <h3>Another div </h3>
+      blah 
+    </div>
+
+  </div>
+
+
+</div>
+
+
+<h1>The Donut section</h1>
+<div id='container' class='container-1'>
+  <div id='graph'></div>
+  <div id='sections'>
+    <div>
+      <h3>Connect text and graphics</h3>
+      <span class='mono'>graph-scroll</span> 
+      takes a selection of explanatory text sections and dispatches <span class='mono'>active</span> events as different sections are scrolled into to view. These active events are used to update a graph's state.
+      <pre>
+d3.graphScroll()
+  .sections(d3.selectAll('#sections > div'))
+  .on('active', function(i){
+    console.log(i + 'th section active') })
+      </pre>
+
+    </div>
+
+    <div>
+      <h3>Highlight active text</h3>
+      The top most text section scrolled into view is classed <span class='mono'>graph-scroll-active</span>. This makes it easy to highlight the active section with css: 
+<pre>
+#sections > div{
+  opacity: .3
+} 
+
+#sections div.graph-scroll-active{
+  opacity: 1;
+}
+</pre>
+    </div>
+
+
+    <div>
+      <h3>Headers and footers</h3>
+      To support headers and intro images/text, the explanatory text and graphic are wrapped with a container element:    
+<pre>
+&lt;h1&gt;Page Title&lt;/div&gt;
+&lt;div id='container'&gt;
+  &lt;div id='graph'&gt;&lt;/div&gt;
+  &lt;div id='sections'&gt;
+    &lt;div&gt;Section 0&lt;/div&gt;
+    &lt;div&gt;Section 1&lt;/div&gt;
+    &lt;div&gt;Section 2&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;h1&gt;Footer&lt;/h1&gt;
+</pre>
+
+    and passed to <span class='mono'>graphScroll</span>
+
+<pre>
+d3.graphScroll()
+  .graph(d3.select('#graph'))
+  .container(d3.select('#container'))
+<pre>
+    </div>
+
+    <div>
+      <h3>Sticky graph</h3>
+      When the graph starts to scroll out of view, <span class='mono'>postiion: sticky</span> keeps the graph element stuck to the top of the page while the text scrolls by.
+<pre>
+#container{
+  position: relative;
+}
+
+#sections{
+  width: 340px;
+}
+
+#graph{
+  margin-left: 40px;
+  width: 500px;
+  position: sticky;
+  top: 0px;
+  float: right;
+}
+</pre>
+    </div>
+
+  </div>
+
+</div>
+
+<h1>
+  Multiple graphs work too!
+</h1>
+
+<div id='container' class='container-2'>
+  <div id='graph'></div>
+
+  <div id='sections'>
+    <div>
+      <h3>Mobile</h3>
+
+      On mobile centering the graph and sections while adding a some padding for the first slide is a good option: 
+<pre>
+@media (max-width: 925px)  {
+  #graph{
+    width: 100%;
+    transform: translate(-50%, 0);
+    margin-left: 50%;
+  }
+
+  #sections{
+    position: relative;
+    margin: 0px auto;
+    padding-top: 400px;
+  }
+}
+</pre>
+    </div>
+    <div>
+      <h3>Another div</h3>
+    </div>
+
+  </div>
+
+</div>
+
+<div>Some more text at the bottom
+</div>
+
+
+<script src="d3v4+jetpack.js"></script>
+<script src="graph-scroll.js"></script>
+<script type="D3_graphs/d3_rectangles_and_axes/rectangles_and_axes.js"></script>
+<script src="donut.js"></script>
+
