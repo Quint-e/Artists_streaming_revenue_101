@@ -14,6 +14,14 @@ function render(){
 
   // return console.log(width, height)
 
+
+  ///////////// Rectangle chart section ////////////////
+
+
+
+
+
+
   //////////// Pie Chart vars ////////////
   var data = {a: 9, b: 20, c:30, d:8, e:12}
   var data2 = {a: 9, b: 20, c:8, d:5, e:20}
@@ -28,7 +36,7 @@ function render(){
       .domain(data)
       .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56"])
 
-  var svg = d3.select("#graph")
+  var svg = d3.select(".container-1 #graph")
       .html('')
       .append("svg")
         .attr("width", width)

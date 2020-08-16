@@ -56,7 +56,7 @@ function render(){
   var legend_y = y(12);
 
   // create svg element, respecting margins
-  var svg_0 = d3.select("#graph")
+  var svg_0 = d3.select(".container-0 #graph")
     .html('')
     .append("svg")
       .attr("width", width + margin.left + margin.right)
