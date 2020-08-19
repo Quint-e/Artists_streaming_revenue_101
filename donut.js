@@ -17,14 +17,14 @@ function render(){
   var data_rect = {"freemium":{"label":"Freemium",
                           "n_users":55,
                           "rev_per_user":1.2,
-                          "rev":"$8%",
+                          "rev":"$10%",
                           "color":"#5c5b5b",
                           "color_highlight":'#919090',
                           "opacity":0.5},
               "premium":{"label":"Premium",
                           "n_users":45,
                           "rev_per_user":1.2,
-                          "rev":"$92%",
+                          "rev":"$90%",
                           "color":"#b8211c",
                           "color_highlight":'#ff0000',
                           "opacity":0.5}
@@ -33,14 +33,14 @@ function render(){
   var data_rect_2 = {"freemium":{"label":"Freemium",
                           "n_users":55,
                           "rev_per_user":1.2,
-                          "rev":"$8%",
+                          "rev":"$10%",
                           "color":"#5c5b5b",
                           "color_highlight":'#919090',
                           "opacity":0.5},
               "premium":{"label":"Premium",
                           "n_users":45,
-                          "rev_per_user":13.8,
-                          "rev":"$92%",
+                          "rev_per_user":14.15,
+                          "rev":"$90%",
                           "color":"#b8211c",
                           "color_highlight":'#ff0000',
                           "opacity":0.5}
@@ -75,11 +75,11 @@ function render(){
     // Set scales
     var x = d3.scaleLinear()
               .domain([0, 100])
-              .range([0, width]);
+              .range([0, width - margin_rect.right - margin_rect.left]);
 
     var y = d3.scaleLinear()
               .domain([0, 16])
-              .range([height, 0]);
+              .range([height - margin_rect.top - margin_rect.bottom, 0]);
 
     // Set dimensions of legend
     var legendRectSize = 18; 
@@ -90,14 +90,14 @@ function render(){
     // Add X axis
     svg_rect
       .append("g")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(0," + (height - margin_rect.top - margin_rect.bottom) + ")")
       .call(d3.axisBottom(x));
 
     // Add X axis label:
     svg_rect.append("text")
-        .attr("text-anchor", "end")
-        .attr("x", width)
-        .attr("y", height + margin_rect.top + 20)
+        .attr("text-anchor", "middle")
+        .attr("x", (width - margin_rect.left - margin_rect.right)/2 )
+        .attr("y", height - margin_rect.top - 0.1*margin_rect.bottom)
         .text("% of users");
 
     // Add Y axis
@@ -173,7 +173,6 @@ function render(){
 
     svg_rect.transition()
 
-    
 
     // Set Legend
     var legend = svg_rect.selectAll('.legend')                     
@@ -208,13 +207,14 @@ function render(){
         return data[key];
         });
     // Set scales
+    // Set scales
     var x = d3.scaleLinear()
               .domain([0, 100])
-              .range([0, width]);
+              .range([0, width - margin_rect.right - margin_rect.left]);
 
     var y = d3.scaleLinear()
               .domain([0, 16])
-              .range([height, 0]);
+              .range([height - margin_rect.top - margin_rect.bottom, 0]);
 
     // Modify size of premium rectangle
     var premium_rect = svg_rect.selectAll("#premium")
@@ -250,7 +250,8 @@ function render(){
     // Add/Remove Y axis
     if (rect_rendering_options.y_axis==true){
       // Remove if already exist in order to avoid stacking many
-      svg_rect.selectAll("#y_axis").remove()
+      svg_rect.selectAll("#y-axis").remove()
+      svg_rect.selectAll("#Y_axis_label").remove()
       // Add axis
       svg_rect
         .append("g")
@@ -267,28 +268,24 @@ function render(){
 
     }
     if (rect_rendering_options.y_axis==false){
-      svg_rect.selectAll("#y_axis").remove()
-      console.log
+      svg_rect.selectAll("#y-axis").remove()
+      // Remove Y axis label:
+      svg_rect.selectAll("#Y_axis_label").remove()
+
 
     }
 
     // Add text to the rectangles 
     if (rect_rendering_options.rev_text==true){
+      //Remove the text if it already exists (so that it does not get added twice)
+      svg_rect.selectAll(".rev_text").remove()
+      //Add text
       var rev_text = svg_rect.selectAll('.rev_text')
           .data(data_rect_values)
           .enter()
           .append('g')
           .attr('class','rev_text')
           .attr('transform', function(d){
-            // var horz
-            // switch (d){
-            //   case d.label=="Premium":
-            //     horz = x((100-(100-d.n_users))/2);
-            //     break;
-            //   case d.label=="Freemium":
-            //     horz = x((100-(100-d.n_users))/2)+ d.premium.n_users;
-            //     break;
-            // }
             if (d.label=="Freemium"){
               horz = x((100-(100-d.n_users))/2+ data.premium.n_users)
             }
@@ -307,6 +304,10 @@ function render(){
               .attr('dominant-baseline','central')
               // .attr('x',)
     }   
+
+    if (rect_rendering_options.rev_text==false){
+      svg_rect.selectAll(".rev_text").remove()
+    }
   }
 
 
