@@ -97,7 +97,7 @@ var generate_data_dict = function(){
 
 var data = generate_data_dict()
 
-console.log("data",data)
+console.log("sunburst data",data)
 
 var width = 500;
 var height = 500;
@@ -106,7 +106,6 @@ var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
 var color = d3.scaleOrdinal(["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854","#ffd92f","#e5c494","#b3b3b3"]);
 
 // var color = d3.scaleOrdinal(d3.schemeCategory20b);
-
 
 var drawChart = function(data) {
     // Create primary <g> element
@@ -139,7 +138,31 @@ var drawChart = function(data) {
         .attr("display", function (d) { return d.depth ? null : "none"; })
         .attr("d", arc)
         .style('stroke', '#fff')
-        .style("fill", function (d) { return color((d.children ? d : d.parent).data.name); });
+        .style("fill",  function (d) { 
+            if (d.children){
+              return color(d.data.name)
+            }
+            else {
+              console.log("ELSE",d)
+              var parent_color = d3.hsl(color(d.parent.data.name))
+              if (d.data.name=="Artist") {
+                console.log("Artist parent color", parent_color)
+                var artist_colour = parent_color
+                // artist_colour['h'] = artist_colour['h'] + 10;
+                // artist_colour['s'] += 0.2
+                // artist_colour['l'] += 0.1
+                return artist_colour;
+              }
+              else { 
+                console.log("Not Artist")
+                var distrib_colour = parent_color
+                // dsp_colour['h'] = dsp_colour['h'] + 5;
+                // dsp_colour['s'] += 0.3
+                distrib_colour['l'] += 0.15
+                return distrib_colour;
+              }
+            }
+          });
 
     console.log("DRAW")
 }
@@ -170,7 +193,31 @@ var updateChart = function(data) {
     path.attr("display", function (d) { return d.depth ? null : "none"; })
         .attr("d", arc)
         .style('stroke', '#fff')
-        .style("fill", function (d) { return color((d.children ? d : d.parent).data.name); });
+        .style("fill", function (d) { 
+          if (d.children){
+            return color(d.data.name)
+          }
+          else {
+            console.log("ELSE",d)
+            var parent_color = d3.hsl(color(d.parent.data.name))
+            if (d.data.name=="Artist") {
+              console.log("Artist parent color", parent_color)
+              var artist_colour = parent_color
+              // artist_colour['h'] = artist_colour['h'] + 10;
+              // artist_colour['s'] += 0.2
+              // artist_colour['l'] += 0.1
+              return artist_colour;
+            }
+            else { 
+              console.log("Not Artist")
+              var distrib_colour = parent_color
+              // dsp_colour['h'] = dsp_colour['h'] + 5;
+              // dsp_colour['s'] += 0.3
+              distrib_colour['l'] += 0.15
+              return distrib_colour;
+            }
+          }
+        });
 
     console.log('DRAW UPDATE')
     // console.log('Pie Widht',pieWidth)
