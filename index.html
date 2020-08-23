@@ -262,9 +262,71 @@ d3.graphScroll()
 <div>Some more text at the bottom
 </div>
 
+<div>
+  <h1>Summary</h1>
+  This was a lot of information to take in, wasn’t it? 
+
+Let’s sum-up what we have gotten to: 
+<ul>
+<li> Artists do not deal directly with DSPs - they have to go through a distributor or label. </li>
+<li> DSPs make money with Subscriptions and selling Ads </li>
+<li> Subscriptions generate a LOT more revenue than ads. </li>
+<li> A share of the DSPs total gross revenue is dedicated to payment of royalties </li>
+<li> Royalties are NOT calculated as a fixed rate per stream
+<li> The artist’s royalties for a given track are proportional to:</li>
+    <li style="margin-left:2em"> The DSP gross revenue </li> 
+    <li style="margin-left:2em"> The inverse of the total number of streams on the DSP</li>
+    <li style="margin-left:2em"> Track streams</li>
+    <li style="margin-left:2em"> The share of royalties due to the artist, which depends on the artist’s contract with distributor/label.</li></li>
+</ul>
+
+If anything the idea to remember is that, at a basic level, the amount of money that ends up in the artist’s pocket depends on multiple of variables that themselves vary over time and from one artist to another. 
+
+In order to get a feel for how this all behaves, have a play with our little simulator below. 
+
+</div>
+
+<div>
+  <h2>Interactive Simulator</h2>
+  <div id="interactive_sunburst">Blah
+    <p>
+        <label for="DSPrevenue" 
+             style="display: inline-block; width: 240px; text-align: right">
+             DSP revenue = <span id="DSPrevenue-value">…</span>
+        </label>
+        <input type="range" min="10" max="100" value="80" id="DSPrevenue">
+    </p>
+
+    <p>
+        <label for="TotalOtherStreams" 
+             style="display: inline-block; width: 240px; text-align: right">
+             Total Other Streams = <span id="TotalOtherStreams-value">…</span>
+        </label>
+        <input type="range" min="10" max="100" value="50" id="TotalOtherStreams">
+    </p>
+
+    <p>
+        <label for="Trackstreams" 
+             style="display: inline-block; width: 240px; text-align: right">
+             Track Streams = <span id="Trackstreams-value">…</span>
+        </label>
+        <input type="range" min="0" max="100" value="30" id="Trackstreams">
+    </p>
+
+    <p>
+        <label for="Artistshare" 
+             style="display: inline-block; width: 240px; text-align: right">
+             Artist share = <span id="Artistshare-value">…</span>
+        </label>
+        <input type="range" min="0" max="100" value="80" id="Artistshare">
+    </p>
+  </div>
+
+</div>
 
 <script src="d3v4+jetpack.js"></script>
 <script src="graph-scroll.js"></script>
 <!-- <script type="D3_graphs/d3_rectangles_and_axes/rectangles_and_axes.js"></script> -->
+<script src="./D3_graphs/d3_v4_sunburst/sunburst.js"></script>
 <script src="donut.js"></script>
 

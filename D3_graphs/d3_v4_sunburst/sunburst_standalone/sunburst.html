@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Visualization</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
+</head>
+
+<body >
+    <p>
+        <label for="DSPrevenue" 
+             style="display: inline-block; width: 240px; text-align: right">
+             DSP revenue = <span id="DSPrevenue-value">…</span>
+        </label>
+        <input type="range" min="10" max="100" value="80" id="DSPrevenue">
+    </p>
+
+    <p>
+        <label for="TotalOtherStreams" 
+             style="display: inline-block; width: 240px; text-align: right">
+             Total Other Streams = <span id="TotalOtherStreams-value">…</span>
+        </label>
+        <input type="range" min="10" max="100" value="50" id="TotalOtherStreams">
+    </p>
+
+    <p>
+        <label for="Trackstreams" 
+             style="display: inline-block; width: 240px; text-align: right">
+             Track Streams = <span id="Trackstreams-value">…</span>
+        </label>
+        <input type="range" min="0" max="100" value="30" id="Trackstreams">
+    </p>
+
+    <p>
+        <label for="Artistshare" 
+             style="display: inline-block; width: 240px; text-align: right">
+             Artist share = <span id="Artistshare-value">…</span>
+        </label>
+        <input type="range" min="0" max="100" value="80" id="Artistshare">
+    </p>
+
+    <!-- <script src="https://d3js.org/d3.v4.min.js"></script> -->
+    <script src="sunburst.js"></script>
+
+    
+</body>
+</html>

@@ -110,7 +110,7 @@ var color = d3.scaleOrdinal(["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854","
 
 var drawChart = function(data) {
     // Create primary <g> element
-    var g = d3.select("#interactive_sunburst")
+    var g = d3.select("body")
         .append('svg')
         .attr('width', width)
         .attr('height', height)
@@ -146,8 +146,7 @@ var drawChart = function(data) {
 
 var updateChart = function(data) {
 
-    var g = d3.selectAll("#interactive_sunburst")
-              .select("g")
+    var g = d3.select("g")
     // Data strucure
     var partition = d3.partition()
         .size([2 * Math.PI, radius]);
