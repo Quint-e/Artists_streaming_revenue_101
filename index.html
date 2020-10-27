@@ -161,17 +161,22 @@ d3.graphScroll()
     </div>
 
     <div>
-      <h3>Revenue Pro-rata of streams</h3>
-      The top most text section scrolled into view is classed <span class='mono'>graph-scroll-active</span>. This makes it easy to highlight the active section with css: 
-<pre>
-#sections > div{
-  opacity: .3
-} 
+      More revenue = Bigger pie. 
+    </div>
 
-#sections div.graph-scroll-active{
-  opacity: 1;
-}
-</pre>
+    <div>
+      Less revenue = Smaller pie. 
+    </div>
+
+    <div>
+      <h3>Revenue Pro-rata of streams</h3>
+    </div>
+
+    <div>
+      More Streams = Bigger share. 
+    </div>
+    <div>
+      Less Streams = Smaller share. 
     </div>
 
     <div>
@@ -179,30 +184,22 @@ d3.graphScroll()
       If other tracks have a lot more stream, revenue share goes down
     </div>
 
+    <div>
+      More other Streams = smaller share. 
+    </div>
+    <div>
+      Less other Streams = Bigger share. 
+    </div>
 
     <div>
       <h3>Middlemen take their cut</h3>
-      To support headers and intro images/text, the explanatory text and graphic are wrapped with a container element:    
-<pre>
-&lt;h1&gt;Page Title&lt;/div&gt;
-&lt;div id='container'&gt;
-  &lt;div id='graph'&gt;&lt;/div&gt;
-  &lt;div id='sections'&gt;
-    &lt;div&gt;Section 0&lt;/div&gt;
-    &lt;div&gt;Section 1&lt;/div&gt;
-    &lt;div&gt;Section 2&lt;/div&gt;
-  &lt;/div&gt;
-&lt;/div&gt;
-&lt;h1&gt;Footer&lt;/h1&gt;
-</pre>
+    </div>
 
-    and passed to <span class='mono'>graphScroll</span>
-
-<pre>
-d3.graphScroll()
-  .graph(d3.select('#graph'))
-  .container(d3.select('#container'))
-<pre>
+    <div>
+      Small Artist Share. 
+    </div>
+    <div>
+      Big Artist Share. 
     </div>
 
     <div>

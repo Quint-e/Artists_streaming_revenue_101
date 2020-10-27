@@ -342,7 +342,7 @@ function render(){
   ///////////////// Sunburst section ////////////////////
 
   ///////////////////// Initial Data ////////////////////////
-  var shares = {"track1":{"artist":0.5,
+  var shares_default = {"track1":{"artist":0.5,
                           "distr_label":0.5},
                   "track2":{"artist":0.6,
                           "distr_label":0.4},
@@ -352,13 +352,19 @@ function render(){
                           "distr_label":0.4}
               };
 
-  var streams = {"track1":600000,
+  var streams_default = {"track1":600000,
                   "track2":300000,
                   "track3":1000000,
                   "track4":60000,
               };
 
-  var dsp_revenue = 80;  
+  var dsp_revenue_default = 80;
+  var hidden_levels_default = [0,2]; //Sunburst levels to hide (0=center, 2= outer ring)
+
+  var shares = shares_default;
+  var streams = streams_default;
+  var dsp_revenue = dsp_revenue_default;  
+  var hidden_levels = hidden_levels_default;
 
   console.log("sunburst data",data_sunburst)
 
@@ -392,13 +398,100 @@ function render(){
   var sunburst_data_modifier = function(i){
     switch(i){
       case 0:
-        dsp_revenue = 80;
+        dsp_revenue = dsp_revenue_default;
+        streams = streams_default;
+        shares = shares_default;
+        hidden_levels = hidden_levels_default;
         break;
       case 1:
         dsp_revenue = 100;
+        streams = streams_default;
+        shares = shares_default;
+        hidden_levels = hidden_levels_default;
         break;
       case 2:
-        dsp_revenue = 80;
+        dsp_revenue = 30;
+        streams = streams_default;
+        shares = shares_default;
+        hidden_levels = hidden_levels_default;
+        break;
+      case 3:
+        dsp_revenue = dsp_revenue_default;
+        streams = streams_default;
+        shares = shares_default;
+        hidden_levels = hidden_levels_default;
+        break;
+      case 4:
+        dsp_revenue = dsp_revenue_default;
+        streams = {"track1":1000000,
+                    "track2":300000,
+                    "track3":1000000,
+                    "track4":60000,
+                };
+        shares = shares_default;
+        hidden_levels = hidden_levels_default;
+        break;
+      case 5:
+        dsp_revenue = dsp_revenue_default;
+        streams = streams_default;
+        shares = shares_default;
+        hidden_levels = hidden_levels_default;
+        break;
+      case 6:
+        dsp_revenue = dsp_revenue_default;
+        streams = streams_default;
+        shares = shares_default;
+        hidden_levels = hidden_levels_default;
+        break;
+      case 7:
+        dsp_revenue = dsp_revenue_default;
+        streams = {"track1":600000,
+                    "track2":900000,
+                    "track3":2000000,
+                    "track4":90000,
+                };
+        shares = shares_default;
+        hidden_levels = hidden_levels_default;
+        break;
+      case 8:
+        dsp_revenue = dsp_revenue_default;
+        streams = streams_default;
+        shares = shares_default;
+        hidden_levels = hidden_levels_default;
+        break;
+      case 9:
+        dsp_revenue = dsp_revenue_default;
+        streams = streams_default;
+        shares = shares_default;
+        hidden_levels = [0];
+        break;
+      case 10:
+        dsp_revenue = dsp_revenue_default;
+        streams = streams_default;
+        shares = {"track1":{"artist":0.15,
+                          "distr_label":0.85},
+                  "track2":{"artist":0.6,
+                          "distr_label":0.4},
+                  "track3":{"artist":0.75,
+                          "distr_label":0.25},
+                  "track4":{"artist":0.6,
+                          "distr_label":0.4}
+              };
+        hidden_levels = [0];
+        break;
+      case 11:
+        dsp_revenue = dsp_revenue_default;
+        streams = streams_default;
+        shares = {"track1":{"artist":0.85,
+                          "distr_label":0.15},
+                  "track2":{"artist":0.6,
+                          "distr_label":0.4},
+                  "track3":{"artist":0.75,
+                          "distr_label":0.25},
+                  "track4":{"artist":0.6,
+                          "distr_label":0.4}
+              };
+        hidden_levels = [0];
         break;
     }
   }
@@ -433,7 +526,8 @@ function render(){
     g.selectAll('path')
         .data(root.descendants())
         .enter().append('path')
-        .attr("display", function (d) { return d.depth ? null : "none"; })
+        // .attr("display", function (d) { return d.depth ? null : "none"; })
+        .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
         .attr("d", arc)
         .style('stroke', '#fff')
         .style("fill",  function (d) { 
@@ -465,10 +559,34 @@ function render(){
     console.log("DRAW")
   }
 
+  
+
   var updateChart = function(data) {
+
+    function arcTweenPath(a, i) {
+
+        var oi = d3.interpolate({ x0: a.x0s, x1: a.x1s }, a);
+
+        function tween(t) {
+            var b = oi(t);
+            a.x0s = b.x0;
+            a.x1s = b.x1;
+            return arc(b);
+        }
+
+        return tween;
+    }
+
+    function arcTween(a) {
+      var i = d3.interpolate(this._current, a);
+      this._current = i(0);
+      return function(t) {
+        return arc(i(t));
+      };
+    }
+
     var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
-    var g = d3.selectAll(".container-1 #graph")
-              .select("g")
+    
     // Data strucure
     var partition = d3.partition()
         .size([2 * Math.PI, radius]);
@@ -480,16 +598,22 @@ function render(){
     // Size arcs
     partition(root);
     var arc = d3.arc()
-        .startAngle(function (d) { return d.x0 })
-        .endAngle(function (d) { return d.x1 })
+        .startAngle(function (d) {d.x0s = d.x0; return d.x0 })
+        .endAngle(function (d) { d.x1s = d.x1; return d.x1 })
         .innerRadius(function (d) { return d.y0 })
         .outerRadius(function (d) { return d.y1 });
 
     // Put it all together
+    // path = g.selectAll('path').data(root.descendants()).transition().duration(500).attrTween("d", arcTween)
+    var g = d3.selectAll(".container-1 #graph")
+              .select("g");
     path = g.selectAll('path').data(root.descendants())
+
+        // path.transition().duration(500).attrTween("d", arcTween)
     // paths.selectAll('path')
-    path.attr("display", function (d) { return d.depth ? null : "none"; })
+    path.attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
         .attr("d", arc)
+        .each(function(d) { this._current = d; }) // store the initial angles
         .style('stroke', '#fff')
         .style("fill", function (d) { 
           if (d.children){
@@ -516,6 +640,8 @@ function render(){
             }
           }
         });
+
+
 
     console.log('DRAW UPDATE')
     // console.log('Pie Widht',pieWidth)
@@ -596,10 +722,11 @@ function render(){
         sunburst_data_modifier(i)
         data_sunburst = generate_data_dict()
         console.log('dsp_revenue',dsp_revenue)
+        console.log('streams',streams)
         if (i==0){
-          console.log("Calling drawChart")
           drawChart(data_sunburst)}
-        else {updateChart(data_sunburst)}
+        else {
+          updateChart(data_sunburst)}
         
 
       })
@@ -609,10 +736,12 @@ function render(){
   var colors = ['orange', 'purple', 'steelblue', 'pink', 'black']
 
   var svg2 = d3.select('.container-2 #graph').html('')
-    .append('svg')
-      .attrs({width: width, height: height})
+               .append('svg')
+               .attrs({width: width, height: height})
+               .append('g')
+                .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
-  var path = svg2.append('path')
+  var path2 = svg2.append('path')
 
   var gs2 = d3.graphScroll()
       .container(d3.select('.container-2'))
@@ -632,7 +761,7 @@ function render(){
         ].map(function(d){ return 'M' + d.join(' L ') })
 
 
-        path.transition().duration(1000)
+        path2.transition().duration(1000)
             .attr('d', dArray[i])
             .style('fill', colors[i])
       })
