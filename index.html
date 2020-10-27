@@ -148,7 +148,7 @@ On legitimate question to ask at this point is: How do these sources of revenu c
   <div id='graph'></div>
   <div id='sections'>
     <div>
-      <h3>Connect text and graphics</h3>
+      <h3>DSP Revenue (pie size)</h3>
       <span class='mono'>graph-scroll</span> 
       takes a selection of explanatory text sections and dispatches <span class='mono'>active</span> events as different sections are scrolled into to view. These active events are used to update a graph's state.
       <pre>
@@ -161,7 +161,7 @@ d3.graphScroll()
     </div>
 
     <div>
-      <h3>Highlight active text</h3>
+      <h3>Revenue Pro-rata of streams</h3>
       The top most text section scrolled into view is classed <span class='mono'>graph-scroll-active</span>. This makes it easy to highlight the active section with css: 
 <pre>
 #sections > div{
@@ -174,9 +174,14 @@ d3.graphScroll()
 </pre>
     </div>
 
+    <div>
+      <h3>Total other streams influence</h3>
+      If other tracks have a lot more stream, revenue share goes down
+    </div>
+
 
     <div>
-      <h3>Headers and footers</h3>
+      <h3>Middlemen take their cut</h3>
       To support headers and intro images/text, the explanatory text and graphic are wrapped with a container element:    
 <pre>
 &lt;h1&gt;Page Title&lt;/div&gt;

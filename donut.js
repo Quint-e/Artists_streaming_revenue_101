@@ -338,94 +338,248 @@ function render(){
 
       })
 
-  //////////// Pie Chart vars ////////////
-  var data = {a: 9, b: 20, c:30, d:8, e:12}
-  var data2 = {a: 9, b: 20, c:8, d:5, e:20}
-   var data3 = {a: 9, b: 5, c:30, d:5, e:30}
-   var data4 = {a: 9, b: 20, c:8, d:25, e:10}
 
-  var margin = 20
-  var radius = Math.min(width, height) / 2 - margin
-  var innerRadius = 0.6*radius
+  ///////////////// Sunburst section ////////////////////
 
-  var color = d3.scaleOrdinal()
-      .domain(data)
-      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56"])
+  ///////////////////// Initial Data ////////////////////////
+  var shares = {"track1":{"artist":0.5,
+                          "distr_label":0.5},
+                  "track2":{"artist":0.6,
+                          "distr_label":0.4},
+                  "track3":{"artist":0.75,
+                          "distr_label":0.25},
+                  "track4":{"artist":0.6,
+                          "distr_label":0.4}
+              };
 
-  var svg = d3.select(".container-1 #graph")
-      .html('')
-      .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-      .append("g")
-        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+  var streams = {"track1":600000,
+                  "track2":300000,
+                  "track3":1000000,
+                  "track4":60000,
+              };
 
-  // var pie = d3.pie()
-  //     .value(function(d) {return d.value; })
+  var dsp_revenue = 80;  
 
-  // var data_ready = pie(d3.entries(data))
+  console.log("sunburst data",data_sunburst)
 
-  // var donut = svg
-  //         .selectAll('whatever')
-  //         .data(data_ready)
-  //         .enter()
-  //         .append('path')
-  //         .attr('d', d3.arc()
-  //           .innerRadius(0)
-  //           .outerRadius(radius)
-  //         )
-  //         .attr('fill', function(d){ return(color(d.data.key)) })
-  //         .attr("stroke", "black")
-  //         .style("stroke-width", "2px")
-  //         .style("opacity", 0.7)
+  var color_sunburst = d3.scaleOrdinal(["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854","#ffd92f","#e5c494","#b3b3b3"]);
 
-
-
-  // Function to update chart
-  function update(data) {
-
-    // Compute the position of each group on the pie:
-    var pie = d3.pie()
-      .value(function(d) {return d.value; })
-      .sort(function(a, b) { console.log(a) ; return d3.ascending(a.key, b.key);} ) // This make sure that group order remains the same in the pie chart
-    var data_ready = pie(d3.entries(data))
-
-    // map to data
-    var u = svg.selectAll("path")
-      .data(data_ready)
-
-    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
-    u
-      .enter()
-      .append('path')
-      .merge(u)
-      .transition()
-      .duration(1000)
-      .attr('d', d3.arc()
-        .innerRadius(innerRadius)
-        .outerRadius(radius)
-      )
-      .attr('fill', function(d){ return(color(d.data.key)) })
-      .attr("stroke", "white")
-      .style("stroke-width", "2px")
-      .style("opacity", 1)
-
-    // remove the group that is not present anymore
-    u
-      .exit()
-      .remove()
-
+  var generate_data_dict = function(){
+    // Generate a hierarchical data dict from user inputs, to be used to plot pie chart.
+    var data = {"name":"Royalties",
+                "children":[]}
+    //Calculate total streams
+    var total_streams = Object.values(streams).reduce((a, b) => a + b, 0)
+    console.log("total streams",total_streams)
+    // Construct data object
+    for (const property in streams){
+        var track_popupation = 100*streams[property]/total_streams
+        var track_data = {"name":property,
+                          "children":[{"name":"Artist",
+                                        "value":shares[property]["artist"]*track_popupation},
+                                        {"name":"Distr/Label",
+                                        "value":shares[property]["distr_label"]*track_popupation}
+                                    ]
+                        }
+        data["children"].push(track_data)
+    }
+    return data
   }
 
+  var data_sunburst = generate_data_dict()
+
+
+  var sunburst_data_modifier = function(i){
+    switch(i){
+      case 0:
+        dsp_revenue = 80;
+        break;
+      case 1:
+        dsp_revenue = 100;
+        break;
+      case 2:
+        dsp_revenue = 80;
+        break;
+    }
+  }
+
+  var drawChart = function(data) {
+    var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
+    // Create primary <g> element
+    var g = d3.select(".container-1 #graph")
+        .html('')
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .append('g')
+        .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+
+    // Data strucure
+    var partition = d3.partition()
+        .size([2 * Math.PI, radius]);
+    // Find data root
+    var root = d3.hierarchy(data)
+        .sum(function (d) { return d.value});
+
+    // Size arcs
+    partition(root);
+    var arc = d3.arc()
+        .startAngle(function (d) { return d.x0 })
+        .endAngle(function (d) { return d.x1 })
+        .innerRadius(function (d) { return d.y0 })
+        .outerRadius(function (d) { return d.y1 });
+
+    // Put it all together
+    g.selectAll('path')
+        .data(root.descendants())
+        .enter().append('path')
+        .attr("display", function (d) { return d.depth ? null : "none"; })
+        .attr("d", arc)
+        .style('stroke', '#fff')
+        .style("fill",  function (d) { 
+            if (d.children){
+              return color(d.data.name)
+            }
+            else {
+              // console.log("ELSE",d)
+              var parent_color = d3.hsl(color(d.parent.data.name))
+              if (d.data.name=="Artist") {
+                // console.log("Artist parent color", parent_color)
+                var artist_colour = parent_color
+                // artist_colour['h'] = artist_colour['h'] + 10;
+                // artist_colour['s'] += 0.2
+                // artist_colour['l'] += 0.1
+                return artist_colour;
+              }
+              else { 
+                // console.log("Not Artist")
+                var distrib_colour = parent_color
+                // dsp_colour['h'] = dsp_colour['h'] + 5;
+                // dsp_colour['s'] += 0.3
+                distrib_colour['l'] += 0.15
+                return distrib_colour;
+              }
+            }
+          });
+
+    console.log("DRAW")
+  }
+
+  var updateChart = function(data) {
+    var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
+    var g = d3.selectAll(".container-1 #graph")
+              .select("g")
+    // Data strucure
+    var partition = d3.partition()
+        .size([2 * Math.PI, radius]);
+
+    // Find data root
+    var root = d3.hierarchy(data)
+        .sum(function (d) { return d.value});
+
+    // Size arcs
+    partition(root);
+    var arc = d3.arc()
+        .startAngle(function (d) { return d.x0 })
+        .endAngle(function (d) { return d.x1 })
+        .innerRadius(function (d) { return d.y0 })
+        .outerRadius(function (d) { return d.y1 });
+
+    // Put it all together
+    path = g.selectAll('path').data(root.descendants())
+    // paths.selectAll('path')
+    path.attr("display", function (d) { return d.depth ? null : "none"; })
+        .attr("d", arc)
+        .style('stroke', '#fff')
+        .style("fill", function (d) { 
+          if (d.children){
+            return color(d.data.name)
+          }
+          else {
+            // console.log("ELSE",d)
+            var parent_color = d3.hsl(color(d.parent.data.name))
+            if (d.data.name=="Artist") {
+              // console.log("Artist parent color", parent_color)
+              var artist_colour = parent_color
+              // artist_colour['h'] = artist_colour['h'] + 10;
+              // artist_colour['s'] += 0.2
+              // artist_colour['l'] += 0.1
+              return artist_colour;
+            }
+            else { 
+              // console.log("Not Artist")
+              var distrib_colour = parent_color
+              // dsp_colour['h'] = dsp_colour['h'] + 5;
+              // dsp_colour['s'] += 0.3
+              distrib_colour['l'] += 0.15
+              return distrib_colour;
+            }
+          }
+        });
+
+    console.log('DRAW UPDATE')
+    // console.log('Pie Widht',pieWidth)
+  }
+
+  //////////// Pie Chart vars ////////////
+  // var data = {a: 9, b: 20, c:30, d:8, e:12}
+  // var data2 = {a: 9, b: 20, c:8, d:5, e:20}
+  //  var data3 = {a: 9, b: 5, c:30, d:5, e:30}
+  //  var data4 = {a: 9, b: 20, c:8, d:25, e:10}
+
+  // var margin = 20
+  // var radius = Math.min(width, height) / 2 - margin
+  // var innerRadius = 0.6*radius
+
+  // var color = d3.scaleOrdinal()
+  //     .domain(data)
+  //     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56"])
+
+  // var svg = d3.select(".container-1 #graph")
+  //     .html('')
+  //     .append("svg")
+  //       .attr("width", width)
+  //       .attr("height", height)
+  //     .append("g")
+  //       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+  // // Function to update chart
+  // function update(data) {
+
+  //   // Compute the position of each group on the pie:
+  //   var pie = d3.pie()
+  //     .value(function(d) {return d.value; })
+  //     .sort(function(a, b) { console.log(a) ; return d3.ascending(a.key, b.key);} ) // This make sure that group order remains the same in the pie chart
+  //   var data_ready = pie(d3.entries(data))
+
+  //   // map to data
+  //   var u = svg.selectAll("path")
+  //     .data(data_ready)
+
+  //   // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+  //   u
+  //     .enter()
+  //     .append('path')
+  //     .merge(u)
+  //     .transition()
+  //     .duration(1000)
+  //     .attr('d', d3.arc()
+  //       .innerRadius(innerRadius)
+  //       .outerRadius(radius)
+  //     )
+  //     .attr('fill', function(d){ return(color(d.data.key)) })
+  //     .attr("stroke", "white")
+  //     .style("stroke-width", "2px")
+  //     .style("opacity", 1)
+
+  //   // remove the group that is not present anymore
+  //   u
+  //     .exit()
+  //     .remove()
+
+  // }
+
   
-
-  // var svg = d3.select('#graph').html('')
-  //   .append('svg')
-  //     .attrs({width: width, height: height})
-
-  // var circle = svg.append('circle')
-  //     .attrs({cx: 0, cy: 0, r: r})
-
   
   var gs = d3.graphScroll()
       .container(d3.select('.container-1'))
@@ -436,8 +590,17 @@ function render(){
       .on('active', function(i){
 
         console.log('graph change')
-        var pos = [ data, data2, data3, data4 ][i]        
-        update(pos)
+        console.log("i",i)
+        // var pos = [ data, data2, data3, data4 ][i]        
+        // update(pos)
+        sunburst_data_modifier(i)
+        data_sunburst = generate_data_dict()
+        console.log('dsp_revenue',dsp_revenue)
+        if (i==0){
+          console.log("Calling drawChart")
+          drawChart(data_sunburst)}
+        else {updateChart(data_sunburst)}
+        
 
       })
 
