@@ -378,6 +378,9 @@ function render(){
   //         .attr("stroke", "black")
   //         .style("stroke-width", "2px")
   //         .style("opacity", 0.7)
+
+
+
   // Function to update chart
   function update(data) {
 
@@ -414,7 +417,7 @@ function render(){
 
   }
 
-  ////////////////////////////////////
+  
 
   // var svg = d3.select('#graph').html('')
   //   .append('svg')
@@ -423,7 +426,7 @@ function render(){
   // var circle = svg.append('circle')
   //     .attrs({cx: 0, cy: 0, r: r})
 
-  var colors = ['orange', 'purple', 'steelblue', 'pink', 'black']
+  
   var gs = d3.graphScroll()
       .container(d3.select('.container-1'))
       .graph(d3.selectAll('container-1 #graph'))
@@ -438,6 +441,9 @@ function render(){
 
       })
 
+  ////////////////////////////////////
+
+  var colors = ['orange', 'purple', 'steelblue', 'pink', 'black']
 
   var svg2 = d3.select('.container-2 #graph').html('')
     .append('svg')
