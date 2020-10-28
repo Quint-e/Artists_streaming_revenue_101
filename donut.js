@@ -368,7 +368,7 @@ function render(){
 
   console.log("sunburst data",data_sunburst)
 
-  var color_sunburst = d3.scaleOrdinal(["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854","#ffd92f","#e5c494","#b3b3b3"]);
+  var color_sunburst = d3.scaleOrdinal(["#66c2a5","#7c95bd","#848484","#848484","#848484","#ffd92f","#e5c494","#b3b3b3"]);
 
   var generate_data_dict = function(){
     // Generate a hierarchical data dict from user inputs, to be used to plot pie chart.
@@ -532,11 +532,11 @@ function render(){
         .style('stroke', '#fff')
         .style("fill",  function (d) { 
             if (d.children){
-              return color(d.data.name)
+              return color_sunburst(d.data.name)
             }
             else {
               // console.log("ELSE",d)
-              var parent_color = d3.hsl(color(d.parent.data.name))
+              var parent_color = d3.hsl(color_sunburst(d.parent.data.name))
               if (d.data.name=="Artist") {
                 // console.log("Artist parent color", parent_color)
                 var artist_colour = parent_color
@@ -578,9 +578,11 @@ function render(){
     }
 
     function arcTween(a) {
+      console.log("a",a)
       var i = d3.interpolate(this._current, a);
       this._current = i(0);
       return function(t) {
+        console.log("t",t)
         return arc(i(t));
       };
     }
@@ -607,21 +609,20 @@ function render(){
     // path = g.selectAll('path').data(root.descendants()).transition().duration(500).attrTween("d", arcTween)
     var g = d3.selectAll(".container-1 #graph")
               .select("g");
-    path = g.selectAll('path').data(root.descendants())
+    path = g.selectAll('path').data(root.descendants()).transition().attrTween("d", arcTween);
 
         // path.transition().duration(500).attrTween("d", arcTween)
     // paths.selectAll('path')
     path.attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
         .attr("d", arc)
-        .each(function(d) { this._current = d; }) // store the initial angles
         .style('stroke', '#fff')
         .style("fill", function (d) { 
           if (d.children){
-            return color(d.data.name)
+            return color_sunburst(d.data.name)
           }
           else {
             // console.log("ELSE",d)
-            var parent_color = d3.hsl(color(d.parent.data.name))
+            var parent_color = d3.hsl(color_sunburst(d.parent.data.name))
             if (d.data.name=="Artist") {
               // console.log("Artist parent color", parent_color)
               var artist_colour = parent_color
