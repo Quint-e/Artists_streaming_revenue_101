@@ -343,19 +343,11 @@ function render(){
 
   ///////////////////// Initial Data ////////////////////////
   var shares_default = {"track1":{"artist":0.5,
-                          "distr_label":0.5},
-                  "track2":{"artist":0.6,
-                          "distr_label":0.4},
-                  "track3":{"artist":0.75,
-                          "distr_label":0.25},
-                  "track4":{"artist":0.6,
-                          "distr_label":0.4}
+                          "distr_label":0.5}
               };
 
   var streams_default = {"track1":600000,
-                  "track2":300000,
-                  "track3":1000000,
-                  "track4":60000,
+                  "other_tracks":2000000,
               };
 
   var dsp_revenue_default = 80;
@@ -368,7 +360,7 @@ function render(){
 
   console.log("sunburst data",data_sunburst)
 
-  var color_sunburst = d3.scaleOrdinal(["#66c2a5","#7c95bd","#848484","#848484","#848484","#ffd92f","#e5c494","#b3b3b3"]);
+  var color_sunburst = d3.scaleOrdinal(["#848484","#7c95bd","#848484","#848484","#848484","#ffd92f","#e5c494","#b3b3b3"]);
 
   var generate_data_dict = function(){
     // Generate a hierarchical data dict from user inputs, to be used to plot pie chart.
@@ -380,13 +372,19 @@ function render(){
     // Construct data object
     for (const property in streams){
         var track_popupation = 100*streams[property]/total_streams
-        var track_data = {"name":property,
-                          "children":[{"name":"Artist",
-                                        "value":shares[property]["artist"]*track_popupation},
-                                        {"name":"Distr/Label",
-                                        "value":shares[property]["distr_label"]*track_popupation}
-                                    ]
-                        }
+        if (property=="track1"){
+          var track_data = {"name":property,
+                            "children":[{"name":"Artist",
+                                          "value":shares[property]["artist"]*track_popupation},
+                                          {"name":"Distr/Label",
+                                          "value":shares[property]["distr_label"]*track_popupation}
+                                      ]
+                          }
+        }
+        else {
+          track_data = {"name":property,
+                        "value":track_popupation}
+        }
         data["children"].push(track_data)
     }
     return data
@@ -424,10 +422,8 @@ function render(){
       case 4:
         dsp_revenue = dsp_revenue_default;
         streams = {"track1":1000000,
-                    "track2":300000,
-                    "track3":1000000,
-                    "track4":60000,
-                };
+                   "other_tracks":2000000,
+                  };
         shares = shares_default;
         hidden_levels = hidden_levels_default;
         break;
@@ -446,10 +442,8 @@ function render(){
       case 7:
         dsp_revenue = dsp_revenue_default;
         streams = {"track1":600000,
-                    "track2":900000,
-                    "track3":2000000,
-                    "track4":90000,
-                };
+                   "other_tracks":4000000,
+                  };
         shares = shares_default;
         hidden_levels = hidden_levels_default;
         break;
@@ -469,14 +463,8 @@ function render(){
         dsp_revenue = dsp_revenue_default;
         streams = streams_default;
         shares = {"track1":{"artist":0.15,
-                          "distr_label":0.85},
-                  "track2":{"artist":0.6,
-                          "distr_label":0.4},
-                  "track3":{"artist":0.75,
-                          "distr_label":0.25},
-                  "track4":{"artist":0.6,
-                          "distr_label":0.4}
-              };
+                          "distr_label":0.85}
+                  };
         hidden_levels = [0];
         break;
       case 11:
@@ -484,13 +472,7 @@ function render(){
         streams = streams_default;
         shares = {"track1":{"artist":0.85,
                           "distr_label":0.15},
-                  "track2":{"artist":0.6,
-                          "distr_label":0.4},
-                  "track3":{"artist":0.75,
-                          "distr_label":0.25},
-                  "track4":{"artist":0.6,
-                          "distr_label":0.4}
-              };
+                  };
         hidden_levels = [0];
         break;
     }
@@ -587,6 +569,16 @@ function render(){
       };
     }
 
+    // function arcTween(a) {
+    //   console.log("a",a)
+    //   // var i = d3.interpolate(this._current, a);
+    //   // this._current = i(0);
+    //   // return function(t) {
+    //   //   console.log("t",t)
+    //   //   return arc(i(t));
+    //   // };
+    // }
+
     var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
     
     // Data strucure
@@ -610,6 +602,7 @@ function render(){
     var g = d3.selectAll(".container-1 #graph")
               .select("g");
     path = g.selectAll('path').data(root.descendants()).transition().attrTween("d", arcTween);
+    console.log("path",path)
 
         // path.transition().duration(500).attrTween("d", arcTween)
     // paths.selectAll('path')
@@ -647,65 +640,6 @@ function render(){
     console.log('DRAW UPDATE')
     // console.log('Pie Widht',pieWidth)
   }
-
-  //////////// Pie Chart vars ////////////
-  // var data = {a: 9, b: 20, c:30, d:8, e:12}
-  // var data2 = {a: 9, b: 20, c:8, d:5, e:20}
-  //  var data3 = {a: 9, b: 5, c:30, d:5, e:30}
-  //  var data4 = {a: 9, b: 20, c:8, d:25, e:10}
-
-  // var margin = 20
-  // var radius = Math.min(width, height) / 2 - margin
-  // var innerRadius = 0.6*radius
-
-  // var color = d3.scaleOrdinal()
-  //     .domain(data)
-  //     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56"])
-
-  // var svg = d3.select(".container-1 #graph")
-  //     .html('')
-  //     .append("svg")
-  //       .attr("width", width)
-  //       .attr("height", height)
-  //     .append("g")
-  //       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-  // // Function to update chart
-  // function update(data) {
-
-  //   // Compute the position of each group on the pie:
-  //   var pie = d3.pie()
-  //     .value(function(d) {return d.value; })
-  //     .sort(function(a, b) { console.log(a) ; return d3.ascending(a.key, b.key);} ) // This make sure that group order remains the same in the pie chart
-  //   var data_ready = pie(d3.entries(data))
-
-  //   // map to data
-  //   var u = svg.selectAll("path")
-  //     .data(data_ready)
-
-  //   // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
-  //   u
-  //     .enter()
-  //     .append('path')
-  //     .merge(u)
-  //     .transition()
-  //     .duration(1000)
-  //     .attr('d', d3.arc()
-  //       .innerRadius(innerRadius)
-  //       .outerRadius(radius)
-  //     )
-  //     .attr('fill', function(d){ return(color(d.data.key)) })
-  //     .attr("stroke", "white")
-  //     .style("stroke-width", "2px")
-  //     .style("opacity", 1)
-
-  //   // remove the group that is not present anymore
-  //   u
-  //     .exit()
-  //     .remove()
-
-  // }
-
   
   
   var gs = d3.graphScroll()
@@ -727,12 +661,15 @@ function render(){
         if (i==0){
           drawChart(data_sunburst)}
         else {
-          updateChart(data_sunburst)}
+          updateChart(data_sunburst)
+        }
         
 
       })
-
   ////////////////////////////////////
+
+
+  ///////////// Squares section ///////////////////////
 
   var colors = ['orange', 'purple', 'steelblue', 'pink', 'black']
 
