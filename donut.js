@@ -57,7 +57,7 @@ function render(){
 
   var margin_rect = {top: 20, right: 20, bottom: 40, left: 60};
 
-  var svg_rect = d3.select(".container-0 #graph")
+  var svg_rect = d3.select(".container-1 #graph")
       .html('')
       .append("svg")
         .attr("width", width)
@@ -311,15 +311,15 @@ function render(){
   }
 
 
-  var gs0 = d3.graphScroll()
-      .container(d3.select('.container-0'))
-      .graph(d3.selectAll('container-0 #graph'))
-      .eventId('uniqueId0')  // namespace for scroll and resize events
-      .sections(d3.selectAll('.container-0 #sections > div'))
+  var gs1 = d3.graphScroll()
+      .container(d3.select('.container-1'))
+      .graph(d3.selectAll('container-1 #graph'))
+      .eventId('uniqueId1')  // namespace for scroll and resize events
+      .sections(d3.selectAll('.container-1 #sections > div'))
       // .offset(innerWidth < 900 ? innerHeight - 30 : 200)
       .on('active', function(i){
 
-        console.log('graph 0 change')
+        console.log('graph 1 change')
         switch (i){
         case 0:
           if (rect_drawn==false){ 
@@ -481,7 +481,7 @@ function render(){
   var drawChart = function(data) {
     var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
     // Create primary <g> element
-    var g = d3.select(".container-1 #graph")
+    var g = d3.select(".container-2 #graph")
         .html('')
         .append('svg')
         .attr('width', width)
@@ -638,7 +638,7 @@ function render(){
         .outerRadius(function (d) { return d.y1 });
 
     // Put it all together
-    var slice = d3.selectAll(".container-1 #graph").selectAll("#slice").data(root.descendants());
+    var slice = d3.selectAll(".container-2 #graph").selectAll("#slice").data(root.descendants());
     console.log("slice",slice)
 
     var path = slice.select('path');
@@ -692,11 +692,11 @@ function render(){
   }
   
   
-  var gs = d3.graphScroll()
-      .container(d3.select('.container-1'))
-      .graph(d3.selectAll('container-1 #graph'))
-      .eventId('uniqueId1')  // namespace for scroll and resize events
-      .sections(d3.selectAll('.container-1 #sections > div'))
+  var gs2 = d3.graphScroll()
+      .container(d3.select('.container-2'))
+      .graph(d3.selectAll('container-2 #graph'))
+      .eventId('uniqueId2')  // namespace for scroll and resize events
+      .sections(d3.selectAll('.container-2 #sections > div'))
       // .offset(innerWidth < 900 ? innerHeight - 30 : 200)
       .on('active', function(i){
 
@@ -723,19 +723,19 @@ function render(){
 
   var colors = ['orange', 'purple', 'steelblue', 'pink', 'black']
 
-  var svg2 = d3.select('.container-2 #graph').html('')
+  var svg3 = d3.select('.container-3 #graph').html('')
                .append('svg')
                .attrs({width: width, height: height})
                .append('g')
                 .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
-  var path2 = svg2.append('path')
+  var path3 = svg3.append('path')
 
-  var gs2 = d3.graphScroll()
-      .container(d3.select('.container-2'))
-      .graph(d3.selectAll('.container-2 #graph'))
-      .eventId('uniqueId2')  // namespace for scroll and resize events
-      .sections(d3.selectAll('.container-2 #sections > div'))
+  var gs3 = d3.graphScroll()
+      .container(d3.select('.container-3'))
+      .graph(d3.selectAll('.container-3 #graph'))
+      .eventId('uniqueId3')  // namespace for scroll and resize events
+      .sections(d3.selectAll('.container-3 #sections > div'))
       .on('active', function(i){
         var h = height
         var w = width
@@ -749,7 +749,7 @@ function render(){
         ].map(function(d){ return 'M' + d.join(' L ') })
 
 
-        path2.transition().duration(1000)
+        path3.transition().duration(1000)
             .attr('d', dArray[i])
             .style('fill', colors[i])
       })
