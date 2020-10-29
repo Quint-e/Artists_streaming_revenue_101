@@ -10,7 +10,148 @@ function render(){
     height = innerHeight*.7
   }
 
-  // return console.log(width, height)
+
+
+///////////////// Middle men section /////////////////////
+
+
+
+
+  var draw_diagram = function(i){
+
+    var margin_diag = {top: 20, right: 20, bottom: 40, left: 60}; // Overall diagram area margins
+
+    var singer_params = {width:100, height:100,x:0,y:250}
+    var distributor_params = {width:100, height:100,x:175,y:250}
+    var spotify_params = {width:50, height:50,x:350,y:125}
+    var apple_params = {width:50, height:50,x:350,y:250}
+    var deezer_params = {width:50, height:50,x:350,y:375}
+
+    var svg_diag = d3.select(".container-0 #graph")
+      // .html('')
+      .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+      .append("g")
+        .attr("transform", "translate(" + margin_diag.left + "," + margin_diag.top + ")");
+
+    var image_singer = svg_diag.append('image')
+      .attr('xlink:href', './images/singer.png')
+      .attr('width', singer_params.width)
+      .attr('height',singer_params.height)
+      .attr('x',singer_params.x)
+      .attr('y',singer_params.y - singer_params.height/2);
+
+    var image_distributor = svg_diag.append('image')
+      .attr('xlink:href', './images/home.png')
+      .attr('width', distributor_params.width)
+      .attr('height',distributor_params.height)
+      .attr('x',distributor_params.x)
+      .attr('y',distributor_params.y - distributor_params.height/2);
+
+    var logo_spotify = svg_diag.append('image')
+      .attr('xlink:href', './images/spotify-logo.png')
+      .attr('width', spotify_params.width)
+      .attr('height',spotify_params.height)
+      .attr('x',spotify_params.x)
+      .attr('y',spotify_params.y - spotify_params.height/2);
+
+    var logo_apple = svg_diag.append('image')
+      .attr('xlink:href', './images/apple-logo.png')
+      .attr('width', apple_params.width)
+      .attr('height',apple_params.height)
+      .attr('x',apple_params.x)
+      .attr('y',apple_params.y - apple_params.height/2);
+
+    var logo_deezer = svg_diag.append('image')
+      .attr('xlink:href', './images/deezer-logo.png')
+      .attr('width', deezer_params.width)
+      .attr('height',deezer_params.height)
+      .attr('x',deezer_params.x)
+      .attr('y',deezer_params.y  - deezer_params.height/2);
+
+    var gap = 25;
+    var duration = 100;
+
+    var line = d3.line()
+      .x(function(d) { return d.x; })
+      .y(function(d) { return d.y; });
+
+    var points = [{x: 0, y: 0}, {x: 100, y: 100}, {x: 200, y: 200}];
+
+    var myPath = svg_diag.append("g")
+      .append("path")
+      .attr("d", line(points))
+      .attr("id", "myPath");
+    
+    var totalLength = 283;
+    
+    var numberOfDots = Math.floor(totalLength / gap);
+    
+    var data = d3.range(numberOfDots).map(function(d, i) {
+        let length =totalLength * (i/numberOfDots);
+        let point = {x:i*gap, y:i*gap};
+        //return point.x; 
+        return {x: point.x, y: point.y}; 
+    });
+    
+    console.log("data",data)
+    
+    var dots = svg_diag.select("g").selectAll(".dot")
+      .data(data)
+      .enter()
+      .append('text')
+      .text('$')
+      .attr("x",function(d, i){ return d.x; })
+      .attr("y", function(d, i){ return d.y; })
+      // .append("circle")
+      // .attr("cx", function(d, i){ return d.x; })
+      // .attr("cy", function(d, i){ return d.y; })
+      // .attr("r", 5);
+
+    var count = 0;
+    
+     var tid = setInterval(updateDots, duration);
+      function updateDots() {
+        dots.transition()
+          .duration(200)
+          .style("fill", function(d,i){
+          
+          var colour = "white"
+          
+          //if at the end or near the end of the path, start from the beginning
+          if (count == numberOfDots ) {
+            if ( i == numberOfDots || i == 0 || i == 1 ) {
+              colour = "blue";
+            } else {
+              colour = "white";
+            };
+          } else if (count == (numberOfDots - 1) ) {
+            if ( i == numberOfDots || i == (numberOfDots - 1) || i == 0 ) {
+              colour = "blue";
+            } else {
+              colour = "white";
+            };
+          //else shade the 3 dots from the count onwards
+          } else {
+            if (i == count || i == (count + 1) || i == (count + 2) ) {
+              colour = "blue";
+            } else {
+              colour = "white";
+            };
+          };   
+          
+          return colour
+          
+        });
+        
+        count = count == numberOfDots ? 0 : count + 1;
+      };
+
+  }
+
+  draw_diagram(0)
+
 
 
   ///////////// Rectangle chart section ////////////////
@@ -545,8 +686,10 @@ function render(){
 
     slice.append("text")
             .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
+            // .attr("transform", function(d) {
+            //     return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
             .attr("transform", function(d) {
-                return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+                return "translate(" + arc.centroid(d) + ")"; })
             .attr("dx", "-20")
             .attr("dy", ".5em")
             .text(function(d) { return d.parent ? d.data.name : "" });
@@ -682,7 +825,7 @@ function render(){
     text = slice.select("text");
     text.attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
         .attr("transform", function(d) {
-            return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+            return "translate(" + arc.centroid(d) + ")"; })
         .attr("dx", "-20")
         .attr("dy", ".5em")
         .text(function(d) { return d.parent ? d.data.name : "" });
