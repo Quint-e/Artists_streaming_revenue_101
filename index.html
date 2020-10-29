@@ -97,6 +97,40 @@ circle{
   background-color: #efefef;
 }*/
 
+.slider {
+  -webkit-appearance: none;
+  width: 15%;
+  height: 10px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #7c95bd;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
 </style>
 
 <h1><a href='https://github.com/1wheel/graph-scroll'>graph-scroll.js</a></h1>
@@ -302,7 +336,7 @@ In order to get a feel for how this all behaves, have a play with our little sim
              style="display: inline-block; width: 240px; text-align: right">
              DSP revenue = <span id="DSPrevenue-value">…</span>
         </label>
-        <input type="range" min="10" max="100" value="80" id="DSPrevenue">
+        <input type="range" min="10" max="100" value="80" id="DSPrevenue" class="slider">
     </p>
 
     <p>
@@ -310,7 +344,7 @@ In order to get a feel for how this all behaves, have a play with our little sim
              style="display: inline-block; width: 240px; text-align: right">
              Total Other Streams = <span id="TotalOtherStreams-value">…</span>
         </label>
-        <input type="range" min="10" max="100" value="50" id="TotalOtherStreams">
+        <input type="range" min="10" max="100" value="50" id="TotalOtherStreams" class="slider">
     </p>
 
     <p>
@@ -318,7 +352,7 @@ In order to get a feel for how this all behaves, have a play with our little sim
              style="display: inline-block; width: 240px; text-align: right">
              Track Streams = <span id="Trackstreams-value">…</span>
         </label>
-        <input type="range" min="0" max="100" value="30" id="Trackstreams">
+        <input type="range" min="0" max="100" value="40" id="Trackstreams" class="slider">
     </p>
 
     <p>
@@ -326,7 +360,7 @@ In order to get a feel for how this all behaves, have a play with our little sim
              style="display: inline-block; width: 240px; text-align: right">
              Artist share = <span id="Artistshare-value">…</span>
         </label>
-        <input type="range" min="0" max="100" value="80" id="Artistshare">
+        <input type="range" min="0" max="100" value="80" id="Artistshare" class="slider">
     </p>
   </div>
 

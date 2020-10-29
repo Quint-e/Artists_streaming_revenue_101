@@ -1,33 +1,25 @@
 ///////////////////// Initial Data ////////////////////////
 var shares = {"track1":{"artist":0.5,
-                        "distr_label":0.5},
-                "track2":{"artist":0.6,
-                        "distr_label":0.4},
-                "track3":{"artist":0.75,
-                        "distr_label":0.25},
-                "track4":{"artist":0.6,
-                        "distr_label":0.4}
+                        "distr_label":0.5}
             };
 
 var streams = {"track1":600000,
-                "track2":300000,
-                "track3":1000000,
-                "track4":60000,
+               "other_tracks":2000000,
             };
 //////////////////////////////////////////////////////////
 
 /////// Helper HTML to data functions ////////////
 
 //Work out distribution of streams across all 3 "other" tracks. 
-var total_streams_to_streams = function(total_other_streams){
-  var total_other_streams_before = streams['track2'] + streams['track3'] + streams['track4']
-  for (const property in streams){
-    if (property!='track1'){
-        var other_streams_ratio = streams[property]/total_other_streams_before;
-        streams[property] = total_other_streams*other_streams_ratio;
-    }
-  }
-}
+// var total_streams_to_streams = function(total_other_streams){
+//   var total_other_streams_before = streams['track2'] + streams['track3'] + streams['track4']
+//   for (const property in streams){
+//     if (property!='track1'){
+//         var other_streams_ratio = streams[property]/total_other_streams_before;
+//         streams[property] = total_other_streams*other_streams_ratio;
+//     }
+//   }
+// }
 ///////////////////// Initialise HTML interaction elements ////////////////////////
 
 var log_slider = function(position,minv=1000,maxv=100000000){
@@ -47,8 +39,8 @@ var log_slider = function(position,minv=1000,maxv=100000000){
 
 // Get Initial values from the HTML slider. 
 var dsp_revenue = d3.select("#DSPrevenue").property("value"); 
-    total_other_streams = log_slider(d3.select("#TotalOtherStreams").property("value"), minv=1000,maxv=100000000);
-    track_streams = log_slider(d3.select("#Trackstreams").property("value"), minv=1000,maxv=100000000);
+    total_other_streams = log_slider(d3.select("#TotalOtherStreams").property("value"), minv=1000,maxv=10000000000);
+    track_streams = log_slider(d3.select("#Trackstreams").property("value"), minv=1000,maxv=10000000000);
     artist_share = d3.select("#Artistshare").property("value")/100;
     // Set pie Width (and therefore diameter) based on DSP revenue
     // pieWidth = dsp_revenue/100 * maxRadius/3;
@@ -65,11 +57,13 @@ init_html_values()
 
 // update default values with default from HTML sliders
 streams['track1'] = track_streams;
+streams['other_tracks'] = total_other_streams;
 shares['track1']['artist'] = artist_share;
 shares['track1']['distr_label'] = 1 - artist_share;
-total_streams_to_streams(total_other_streams)
+// total_streams_to_streams(total_other_streams)
 console.log("initial streams",streams)
 console.log("initial shares", shares)
+console.log("initial other streams",total_other_streams)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -83,17 +77,23 @@ var generate_data_dict = function(){
     // Construct data object
     for (const property in streams){
         var track_popupation = 100*streams[property]/total_streams
-        var track_data = {"name":property,
-                          "children":[{"name":"Artist",
-                                        "value":shares[property]["artist"]*track_popupation},
-                                        {"name":"Distr/Label",
-                                        "value":shares[property]["distr_label"]*track_popupation}
-                                    ]
-                        }
+        if (property=="track1"){
+          var track_data = {"name":property,
+                            "children":[{"name":"Artist",
+                                          "value":shares[property]["artist"]*track_popupation},
+                                          {"name":"Distr/Label",
+                                          "value":shares[property]["distr_label"]*track_popupation}
+                                      ]
+                          }
+        }
+        else {
+          track_data = {"name":property,
+                        "value":track_popupation}
+        }
         data["children"].push(track_data)
     }
     return data
-}
+  }
 
 var data = generate_data_dict()
 
@@ -103,7 +103,7 @@ var width = 500;
 var height = 500;
 var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
 // var color = d3.scaleOrdinal(d3.schemeSet2);
-var color = d3.scaleOrdinal(["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854","#ffd92f","#e5c494","#b3b3b3"]);
+var color = d3.scaleOrdinal(["#848484","#7c95bd","#848484","#848484","#848484","#ffd92f","#e5c494","#b3b3b3"]);
 
 // var color = d3.scaleOrdinal(d3.schemeCategory20b);
 
@@ -198,10 +198,10 @@ var updateChart = function(data) {
             return color(d.data.name)
           }
           else {
-            console.log("ELSE",d)
+            // console.log("ELSE",d)
             var parent_color = d3.hsl(color(d.parent.data.name))
             if (d.data.name=="Artist") {
-              console.log("Artist parent color", parent_color)
+              // console.log("Artist parent color", parent_color)
               var artist_colour = parent_color
               // artist_colour['h'] = artist_colour['h'] + 10;
               // artist_colour['s'] += 0.2
@@ -209,7 +209,7 @@ var updateChart = function(data) {
               return artist_colour;
             }
             else { 
-              console.log("Not Artist")
+              // console.log("Not Artist")
               var distrib_colour = parent_color
               // dsp_colour['h'] = dsp_colour['h'] + 5;
               // dsp_colour['s'] += 0.3
@@ -253,7 +253,8 @@ d3.select("#TotalOtherStreams").on("input", function() {
   d3.select("#TotalOtherStreams-value").text(total_other_streams);
   d3.select("#TotalOtherStreams").property("value", +this.value);
 
-  total_streams_to_streams(total_other_streams)
+  streams['other_tracks'] = total_other_streams
+  // total_streams_to_streams(total_other_streams)
 
   // console.log("total other streams",total_other_streams)
   // console.log("streams",streams)

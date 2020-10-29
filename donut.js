@@ -18,15 +18,15 @@ function render(){
                           "n_users":55,
                           "rev_per_user":0.33,
                           "rev":"$10%",
-                          "color":"#77875e",
-                          "color_highlight":'#80a59c',
+                          "color":"#000000",
+                          "color_highlight":'#363636',
                           "opacity":0.5},
               "premium":{"label":"Premium",
                           "n_users":45,
                           "rev_per_user":0.33,
                           "rev":"$90%",
-                          "color":"#9f1a2b",
-                          "color_highlight":'#7c95bd',
+                          "color":"#1dc500",
+                          "color_highlight":'#6bff53',
                           "opacity":0.5}
               }
 
@@ -34,15 +34,15 @@ function render(){
                           "n_users":55,
                           "rev_per_user":0.33,
                           "rev":"$10%",
-                          "color":"#5c5b5b",
-                          "color_highlight":'#919090',
+                          "color":"#131313",
+                          "color_highlight":'#363636',
                           "opacity":0.5},
               "premium":{"label":"Premium",
                           "n_users":45,
                           "rev_per_user":4.19,
                           "rev":"$90%",
-                          "color":"#9f1a2b",
-                          "color_highlight":'#7c95bd',
+                          "color":"#1dc500",
+                          "color_highlight":'#6bff53',
                           "opacity":0.5}
               }
 
