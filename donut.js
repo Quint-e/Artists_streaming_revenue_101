@@ -14,14 +14,11 @@ function render(){
 
 ///////////////// Middle men section /////////////////////
 
-
-
-
   var draw_diagram = function(i){
 
     var margin_diag = {top: 20, right: 20, bottom: 40, left: 60}; // Overall diagram area margins
 
-    var singer_params = {width:100, height:100,x:0,y:250}
+    var singer_params = {width:80, height:80,x:0,y:250}
     var distributor_params = {width:100, height:100,x:175,y:250}
     var spotify_params = {width:50, height:50,x:350,y:125}
     var apple_params = {width:50, height:50,x:350,y:250}
@@ -70,83 +67,138 @@ function render(){
       .attr('x',deezer_params.x)
       .attr('y',deezer_params.y  - deezer_params.height/2);
 
-    var gap = 25;
-    var duration = 100;
+    var pad = 7;
+    var gap = 20;
+    var duration = 300;
+    var line_ends = [{x: 200, y: 200}, {x: 0, y: 0}];
+    var line_ends_distSinger = [{x: distributor_params.x, y: distributor_params.y}, 
+                                {x: singer_params.x + singer_params.width, y: singer_params.y}];
+    var line_ends_spotifyDist = [{x: spotify_params.x-pad, y: spotify_params.y},
+                                {x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y}];
+    var line_ends_appleDist = [{x: apple_params.x-pad, y: apple_params.y},
+                                {x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y}];
+    var line_ends_deezerDist = [{x: deezer_params.x-pad, y: deezer_params.y},
+                                {x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y}];
 
-    var line = d3.line()
-      .x(function(d) { return d.x; })
-      .y(function(d) { return d.y; });
+    console.log("line_ends_spotifyDist",line_ends_spotifyDist)
 
-    var points = [{x: 0, y: 0}, {x: 100, y: 100}, {x: 200, y: 200}];
+    // animate_dollars(line_ends,gap,duration);
+    animate_dollars(line_ends_distSinger,gap,duration);
+    animate_dollars(line_ends_spotifyDist,gap,duration);
+    animate_dollars(line_ends_appleDist,gap,duration);
+    animate_dollars(line_ends_deezerDist,gap,duration);
 
-    var myPath = svg_diag.append("g")
-      .append("path")
-      .attr("d", line(points))
-      .attr("id", "myPath");
-    
-    var totalLength = 283;
-    
-    var numberOfDots = Math.floor(totalLength / gap);
-    
-    var data = d3.range(numberOfDots).map(function(d, i) {
-        let length =totalLength * (i/numberOfDots);
-        let point = {x:i*gap, y:i*gap};
-        //return point.x; 
-        return {x: point.x, y: point.y}; 
-    });
-    
-    console.log("data",data)
-    
-    var dots = svg_diag.select("g").selectAll(".dot")
-      .data(data)
-      .enter()
-      .append('text')
-      .text('$')
-      .attr("x",function(d, i){ return d.x; })
-      .attr("y", function(d, i){ return d.y; })
-      // .append("circle")
-      // .attr("cx", function(d, i){ return d.x; })
-      // .attr("cy", function(d, i){ return d.y; })
-      // .attr("r", 5);
 
-    var count = 0;
-    
-     var tid = setInterval(updateDots, duration);
+    function animate_dollars(line_ends,gap,duration){
+
+      var line = d3.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; });
+
+      var line_len = Math.sqrt((line_ends[1].x - line_ends[0].x)**2 + (line_ends[1].y - line_ends[0].y)**2 );
+      var line_slope = (line_ends[0].y - line_ends[1].y)/(line_ends[0].x - line_ends[1].x)
+
+      var myPath = svg_diag.append("g")
+        .append("path")
+        .attr("d", line(line_ends))
+        .attr("id", "dotsPath");
+      
+      var numberOfDots = Math.floor(line_len/ gap);
+      var gap_x = Math.sqrt(gap**2/(1+line_slope**2));
+
+      console.log("line_len",line_len)
+      console.log("line_slope",line_slope)
+      console.log("numberOfDots",numberOfDots)
+      console.log("gap_x",gap_x)
+      
+      var data = d3.range(numberOfDots).map(function(d, i) {
+          // let length =line_len * (i/numberOfDots);
+          let point = {x:line_ends[0].x - i*gap_x, y:line_ends[0].y - i*gap_x*line_slope};
+          //return point.x; 
+          return {x: point.x, y: point.y}; 
+      });
+      
+      console.log("data",data)
+      
+      var dots = svg_diag.select("g").selectAll(".dot")
+        .data(data)
+        .enter()
+        .append('text')
+        .text('$')
+        .attr("x",function(d, i){ return d.x; })
+        .attr("y", function(d, i){ return d.y; })
+        // .append("circle")
+        // .attr("cx", function(d, i){ return d.x; })
+        // .attr("cy", function(d, i){ return d.y; })
+        // .attr("r", 5);
+
+      var count = 0;
+      
+      var tid = setInterval(updateDots, duration);
+
       function updateDots() {
         dots.transition()
           .duration(200)
-          .style("fill", function(d,i){
+          .style("fill-opacity", function(d,i){
           
-          var colour = "white"
-          
-          //if at the end or near the end of the path, start from the beginning
-          if (count == numberOfDots ) {
-            if ( i == numberOfDots || i == 0 || i == 1 ) {
-              colour = "blue";
-            } else {
-              colour = "white";
-            };
-          } else if (count == (numberOfDots - 1) ) {
-            if ( i == numberOfDots || i == (numberOfDots - 1) || i == 0 ) {
-              colour = "blue";
-            } else {
-              colour = "white";
-            };
-          //else shade the 3 dots from the count onwards
-          } else {
-            if (i == count || i == (count + 1) || i == (count + 2) ) {
-              colour = "blue";
-            } else {
-              colour = "white";
-            };
-          };   
-          
-          return colour
-          
-        });
+            var opacity = 1
+            
+            ///////////////// Version with 3 dots active at all times /////////
+
+            //if at the end or near the end of the path, start from the beginning
+            // if (count == numberOfDots ) {
+            //   if ( i == numberOfDots || i == 0 || i == 1 ) {
+            //     opacity = 1;
+            //   } else {
+            //     opacity = 0;
+            //   };
+            // } else if (count == (numberOfDots - 1) ) {
+            //   if ( i == numberOfDots || i == (numberOfDots - 1) || i == 0 ) {
+            //     opacity = 1;
+            //   } else {
+            //     opacity = 0;
+            //   };
+            // //else shade the 3 dots from the count onwards
+            // } else {
+            //   if (i == count || i == (count + 1) || i == (count + 2) ) {
+            //     opacity = 1;
+            //   } else {
+            //     opacity = 0;
+            //   };
+            // };   
+            ///////////////////////////////////////////////////////
+
+            ///////////////// Version with 3 dot trains /////////
+              // if (i == count || i == (count + 1) || i == (count + 2)) {
+              //   opacity = 1;
+              // } else {
+              //   opacity = 0;
+              // };
+            ///////////////////////////////////////////////////////
+
+            ///////////////// Version with 2 dot trains /////////
+              if (i == count || i == (count + 1) ) {
+                opacity = 1;
+              } else {
+                opacity = 0;
+              };
+            ///////////////////////////////////////////////////////
+
+            ///////////////// Version with 1 dot trains /////////
+              // if (i == count ) {
+              //   opacity = 1;
+              // } else {
+              //   opacity = 0;
+              // };
+            ///////////////////////////////////////////////////////
+
+            return opacity
+            
+          });
         
         count = count == numberOfDots ? 0 : count + 1;
       };
+    };
 
   }
 
