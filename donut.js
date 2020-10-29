@@ -16,33 +16,33 @@ function render(){
   ///////////// Rectangle chart section ////////////////
   var data_rect = {"freemium":{"label":"Freemium",
                           "n_users":55,
-                          "rev_per_user":1.2,
+                          "rev_per_user":0.33,
                           "rev":"$10%",
-                          "color":"#5c5b5b",
-                          "color_highlight":'#919090',
+                          "color":"#77875e",
+                          "color_highlight":'#80a59c',
                           "opacity":0.5},
               "premium":{"label":"Premium",
                           "n_users":45,
-                          "rev_per_user":1.2,
+                          "rev_per_user":0.33,
                           "rev":"$90%",
-                          "color":"#b8211c",
-                          "color_highlight":'#ff0000',
+                          "color":"#9f1a2b",
+                          "color_highlight":'#7c95bd',
                           "opacity":0.5}
               }
 
   var data_rect_2 = {"freemium":{"label":"Freemium",
                           "n_users":55,
-                          "rev_per_user":1.2,
+                          "rev_per_user":0.33,
                           "rev":"$10%",
                           "color":"#5c5b5b",
                           "color_highlight":'#919090',
                           "opacity":0.5},
               "premium":{"label":"Premium",
                           "n_users":45,
-                          "rev_per_user":14.15,
+                          "rev_per_user":4.19,
                           "rev":"$90%",
-                          "color":"#b8211c",
-                          "color_highlight":'#ff0000',
+                          "color":"#9f1a2b",
+                          "color_highlight":'#7c95bd',
                           "opacity":0.5}
               }
 
@@ -78,14 +78,14 @@ function render(){
               .range([0, width - margin_rect.right - margin_rect.left]);
 
     var y = d3.scaleLinear()
-              .domain([0, 16])
+              .domain([0, 5])
               .range([height - margin_rect.top - margin_rect.bottom, 0]);
 
     // Set dimensions of legend
     var legendRectSize = 18; 
     var legendSpacing = 4;
     var legend_x = x(75);
-    var legend_y = y(12);
+    var legend_y = y(4.5);
 
     // Add X axis
     svg_rect
@@ -120,7 +120,7 @@ function render(){
       .append("rect")
         .attr("x", x(data.premium.n_users) )
         .attr("y",y(data.freemium.rev_per_user))
-        .attr("height", y(16-data.freemium.rev_per_user)) //Needs to be y_axis_range - coordinate because vertical coordinates go from top to bottom
+        .attr("height", y(5-data.freemium.rev_per_user)) //Needs to be y_axis_range - coordinate because vertical coordinates go from top to bottom
         .attr("width", x(data.freemium.n_users) )
         .attr("id",data.freemium.label)
         .style("fill", data.freemium.color)
@@ -148,7 +148,7 @@ function render(){
       .append("rect")
         .attr("x", x(0) )
         .attr("y",y(data.premium.rev_per_user))
-        .attr("height", y(16-data.premium.rev_per_user))
+        .attr("height", y(5-data.premium.rev_per_user))
         .attr("width", x(data.premium.n_users) )
         .attr("id","premium")
         .style("fill", data.premium.color)
@@ -213,7 +213,7 @@ function render(){
               .range([0, width - margin_rect.right - margin_rect.left]);
 
     var y = d3.scaleLinear()
-              .domain([0, 16])
+              .domain([0, 5])
               .range([height - margin_rect.top - margin_rect.bottom, 0]);
 
     // Modify size of premium rectangle
@@ -224,7 +224,7 @@ function render(){
                 .duration(1000)
                 .attr("x", x(0) )
                 .attr("y",y(data.premium.rev_per_user))
-                .attr("height", y(16-data.premium.rev_per_user))
+                .attr("height", y(5-data.premium.rev_per_user))
                 .attr("width", x(data.premium.n_users) )
                 .attr("id","premium")
                 .style("fill", data.premium.color)
@@ -264,7 +264,7 @@ function render(){
           .attr("y", -margin_rect.left+20)
           .attr("x", -margin_rect.top)
           .attr("id","Y_axis_label")
-          .text("Revenue per user")
+          .text("Average Revenue Per User (€/month)")
 
     }
     if (rect_rendering_options.y_axis==false){
@@ -504,11 +504,16 @@ function render(){
         .innerRadius(function (d) { return d.y0 })
         .outerRadius(function (d) { return d.y1 });
 
-    // Put it all together
-    g.selectAll('path')
+    // Add a <g> element for each node; create the slice variable since we'll refer to this selection many times
+    var slice = g.selectAll('g')
         .data(root.descendants())
-        .enter().append('path')
-        // .attr("display", function (d) { return d.depth ? null : "none"; })
+        .enter()
+        .append('g')
+        .attr("class", "node")
+        .attr("id","slice");
+
+    // Put it all together
+    slice.append('path')
         .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
         .attr("d", arc)
         .style('stroke', '#fff')
@@ -538,10 +543,30 @@ function render(){
             }
           });
 
+    slice.append("text")
+            .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
+            .attr("transform", function(d) {
+                return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+            .attr("dx", "-20")
+            .attr("dy", ".5em")
+            .text(function(d) { return d.parent ? d.data.name : "" });
+
+
     console.log("DRAW")
   }
 
-  
+  /**
+   * Calculate the correct distance to rotate each label based on its location in the sunburst.
+   * @param {Node} d
+   * @return {Number}
+   */
+  function computeTextRotation(d) {
+      var angle = (d.x0 + d.x1) / Math.PI * 90;
+
+      // Avoid upside-down labels
+      return (angle < 120 || angle > 270) ? angle : angle + 180;  // labels as rims
+      //return (angle < 180) ? angle - 90 : angle + 90;  // labels as spokes
+  }
 
   var updateChart = function(data) {
 
@@ -564,19 +589,34 @@ function render(){
       var i = d3.interpolate(this._current, a);
       this._current = i(0);
       return function(t) {
-        console.log("t",t)
+        console.log("t",t);
+        console.log("i(t)",i(t));
+        console.log("arc(i(t))",arc(i(t)));
         return arc(i(t));
       };
     }
 
-    // function arcTween(a) {
-    //   console.log("a",a)
-    //   // var i = d3.interpolate(this._current, a);
-    //   // this._current = i(0);
-    //   // return function(t) {
-    //   //   console.log("t",t)
-    //   //   return arc(i(t));
-    //   // };
+    function arcTweenText(a) {
+      console.log("a",a)
+      var i = d3.interpolate(this._current, a);
+      this._current = i(0);
+      return function(t) {
+        console.log("t",t)
+        console.log("arc.centroid(i(t))",arc.centroid(i(t)))
+        return "translate(" + arc.centroid(i(t)) + ")rotate(" + computeTextRotation(i(t)) + ")";
+      };
+    }
+
+    // function arcTweenText(a, i) {
+    //     console.log("a",a)
+    //     var oi = d3.interpolate({ x0: a.x0s, x1: a.x1s }, a);
+    //     function tween(t) {
+    //         var b = oi(t);
+    //         console.log("b",b)
+    //         console.log("arc.centroid(b)",arc.centroid(b))
+    //         return "translate(" + arc.centroid(b) + ")rotate(" + computeTextRotation(b) + ")";
+    //     }
+    //     return tween;
     // }
 
     var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
@@ -591,22 +631,26 @@ function render(){
 
     // Size arcs
     partition(root);
-    var arc = d3.arc()
+    arc = d3.arc()
         .startAngle(function (d) {d.x0s = d.x0; return d.x0 })
         .endAngle(function (d) { d.x1s = d.x1; return d.x1 })
         .innerRadius(function (d) { return d.y0 })
         .outerRadius(function (d) { return d.y1 });
 
     // Put it all together
-    // path = g.selectAll('path').data(root.descendants()).transition().duration(500).attrTween("d", arcTween)
-    var g = d3.selectAll(".container-1 #graph")
-              .select("g");
-    path = g.selectAll('path').data(root.descendants()).transition().attrTween("d", arcTween);
-    console.log("path",path)
+    var slice = d3.selectAll(".container-1 #graph").selectAll("#slice").data(root.descendants());
+    console.log("slice",slice)
 
-        // path.transition().duration(500).attrTween("d", arcTween)
-    // paths.selectAll('path')
-    path.attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
+    var path = slice.select('path');
+    // path.transition().attrTween("d", arcTweenPath);
+    console.log("path",path)
+    // path.transition().duration(500);
+    // console.log("transition",path)
+
+
+    path.transition().duration(500)
+        .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
+        // .attrTween("d", arcTween)
         .attr("d", arc)
         .style('stroke', '#fff')
         .style("fill", function (d) { 
@@ -635,7 +679,13 @@ function render(){
           }
         });
 
-
+    text = slice.select("text");
+    text.attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
+        .attr("transform", function(d) {
+            return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+        .attr("dx", "-20")
+        .attr("dy", ".5em")
+        .text(function(d) { return d.parent ? d.data.name : "" });
 
     console.log('DRAW UPDATE')
     // console.log('Pie Widht',pieWidth)
