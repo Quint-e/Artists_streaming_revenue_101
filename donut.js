@@ -14,15 +14,13 @@ function render(){
 
 ///////////////// Middle men section /////////////////////
 
-  var draw_diagram = function(i){
+  var singer_params = {width:80, height:80,x:0,y:250}
+  var distributor_params = {width:100, height:100,x:175,y:250}
+  var spotify_params = {width:50, height:50,x:350,y:125}
+  var apple_params = {width:50, height:50,x:350,y:250}
+  var deezer_params = {width:50, height:50,x:350,y:375}
 
-    var margin_diag = {top: 20, right: 20, bottom: 40, left: 60}; // Overall diagram area margins
-
-    var singer_params = {width:80, height:80,x:0,y:250}
-    var distributor_params = {width:100, height:100,x:175,y:250}
-    var spotify_params = {width:50, height:50,x:350,y:125}
-    var apple_params = {width:50, height:50,x:350,y:250}
-    var deezer_params = {width:50, height:50,x:350,y:375}
+  var margin_diag = {top: 20, right: 20, bottom: 40, left: 60}; // Overall diagram area margins
 
     var svg_diag = d3.select(".container-0 #graph")
       // .html('')
@@ -31,6 +29,8 @@ function render(){
         .attr("height", height)
       .append("g")
         .attr("transform", "translate(" + margin_diag.left + "," + margin_diag.top + ")");
+
+  var draw_diagram = function(){
 
     var image_singer = svg_diag.append('image')
       .attr('xlink:href', './images/singer.png')
@@ -66,11 +66,14 @@ function render(){
       .attr('height',deezer_params.height)
       .attr('x',deezer_params.x)
       .attr('y',deezer_params.y  - deezer_params.height/2);
+  }
 
+  draw_diagram();
+
+  var toggle_diag_animations = function(i){
     var pad = 7;
     var gap = 20;
     var duration = 300;
-    var line_ends = [{x: 200, y: 200}, {x: 0, y: 0}];
     var line_ends_distSinger = [{x: distributor_params.x, y: distributor_params.y}, 
                                 {x: singer_params.x + singer_params.width, y: singer_params.y}];
     var line_ends_spotifyDist = [{x: spotify_params.x-pad, y: spotify_params.y},
@@ -80,14 +83,31 @@ function render(){
     var line_ends_deezerDist = [{x: deezer_params.x-pad, y: deezer_params.y},
                                 {x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y}];
 
-    console.log("line_ends_spotifyDist",line_ends_spotifyDist)
+
+    var line_ends_singerDist = [{x: singer_params.x + singer_params.width + pad, y: singer_params.y},
+                                      {x: distributor_params.x, y: distributor_params.y}];
+    var line_ends_distSpotify = [{x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y},
+                                 {x: spotify_params.x-pad, y: spotify_params.y}];
+    var line_ends_distApple = [{x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y},
+                                {x: apple_params.x-pad, y: apple_params.y}];
+    var line_ends_distDeezer = [{x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y},
+                                {x: deezer_params.x-pad, y: deezer_params.y}];
 
     // animate_dollars(line_ends,gap,duration);
-    animate_dollars(line_ends_distSinger,gap,duration);
-    animate_dollars(line_ends_spotifyDist,gap,duration);
-    animate_dollars(line_ends_appleDist,gap,duration);
-    animate_dollars(line_ends_deezerDist,gap,duration);
-
+    switch(i){
+      case 1:
+        animate_music(line_ends_singerDist,gap,duration);
+        animate_music(line_ends_distSpotify,gap,duration);
+        animate_music(line_ends_distApple,gap,duration);
+        animate_music(line_ends_distDeezer,gap,duration);
+        break;
+      case 2:
+        animate_dollars(line_ends_distSinger,gap,duration);
+        animate_dollars(line_ends_spotifyDist,gap,duration);
+        animate_dollars(line_ends_appleDist,gap,duration);
+        animate_dollars(line_ends_deezerDist,gap,duration);
+        break;
+    }
 
     function animate_dollars(line_ends,gap,duration){
 
@@ -101,15 +121,10 @@ function render(){
       var myPath = svg_diag.append("g")
         .append("path")
         .attr("d", line(line_ends))
-        .attr("id", "dotsPath");
+        .attr("id", "dots");
       
       var numberOfDots = Math.floor(line_len/ gap);
       var gap_x = Math.sqrt(gap**2/(1+line_slope**2));
-
-      console.log("line_len",line_len)
-      console.log("line_slope",line_slope)
-      console.log("numberOfDots",numberOfDots)
-      console.log("gap_x",gap_x)
       
       var data = d3.range(numberOfDots).map(function(d, i) {
           // let length =line_len * (i/numberOfDots);
@@ -118,8 +133,6 @@ function render(){
           return {x: point.x, y: point.y}; 
       });
       
-      console.log("data",data)
-      
       var dots = svg_diag.select("g").selectAll(".dot")
         .data(data)
         .enter()
@@ -127,10 +140,8 @@ function render(){
         .text('$')
         .attr("x",function(d, i){ return d.x; })
         .attr("y", function(d, i){ return d.y; })
-        // .append("circle")
-        // .attr("cx", function(d, i){ return d.x; })
-        // .attr("cy", function(d, i){ return d.y; })
-        // .attr("r", 5);
+        .attr("id","dots")
+        .attr("opacity",0);
 
       var count = 0;
       
@@ -139,7 +150,7 @@ function render(){
       function updateDots() {
         dots.transition()
           .duration(200)
-          .style("fill-opacity", function(d,i){
+          .style("opacity", function(d,i){
           
             var opacity = 1
             
@@ -200,9 +211,99 @@ function render(){
       };
     };
 
+    function animate_music(line_ends,gap,duration){
+
+      var line = d3.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; });
+
+      var line_len = Math.sqrt((line_ends[1].x - line_ends[0].x)**2 + (line_ends[1].y - line_ends[0].y)**2 );
+      var line_slope = (line_ends[0].y - line_ends[1].y)/(line_ends[0].x - line_ends[1].x)
+
+      var myPath = svg_diag.append("g")
+        .append("path")
+        .attr("d", line(line_ends))
+        .attr("id", "dots");
+      
+      var numberOfDots = Math.floor(line_len/ gap);
+      var gap_x = Math.sqrt(gap**2/(1+line_slope**2));
+      
+      var data = d3.range(numberOfDots).map(function(d, i) {
+          // let length =line_len * (i/numberOfDots);
+          let point = {x:line_ends[0].x + i*gap_x, y:line_ends[0].y + i*gap_x*line_slope};
+          //return point.x; 
+          return {x: point.x, y: point.y}; 
+      });
+      
+      var dots = svg_diag.select("g").selectAll(".dot")
+        .data(data)
+        .enter()
+        .append('image')
+        .attr('xlink:href', './images/music.png')
+        .attr('width', 15)
+        .attr('height',15)
+        .attr("x",function(d, i){ return d.x; })
+        .attr("y", function(d, i){ return d.y; })
+        .attr("id", "dots")
+        .attr("opacity",0);
+
+      var count = 0;
+      var tid = setInterval(updateDots, duration);
+
+      function updateDots() {
+        dots.transition()
+          .duration(200)
+          .style("opacity", function(d,i){
+          
+            var opacity = 1
+
+            ///////////////// Version with 3 dot trains /////////
+              // if (i == count || i == (count + 1) || i == (count + 2)) {
+              //   opacity = 1;
+              // } else {
+              //   opacity = 0;
+              // };
+            ///////////////////////////////////////////////////////
+
+            ///////////////// Version with 2 dot trains /////////
+              if (i == count || i == (count + 1) ) {
+                opacity = 1;
+              } else {
+                opacity = 0;
+              };
+            ///////////////////////////////////////////////////////
+
+            ///////////////// Version with 1 dot trains /////////
+              // if (i == count ) {
+              //   opacity = 1;
+              // } else {
+              //   opacity = 0;
+              // };
+            ///////////////////////////////////////////////////////
+
+            return opacity
+          });
+        
+        count = count == numberOfDots ? 0 : count + 1;
+      };
+    };
   }
 
-  draw_diagram(0)
+  var diag_delete_dots = function(){
+    svg_diag.selectAll("#dots").remove()
+  };
+
+  var gs1 = d3.graphScroll()
+      .container(d3.select('.container-0'))
+      .graph(d3.selectAll('container-0 #graph'))
+      .eventId('uniqueId0')  // namespace for scroll and resize events
+      .sections(d3.selectAll('.container-0 #sections > div'))
+      // .offset(innerWidth < 900 ? innerHeight - 30 : 200)
+      .on('active', function(i){
+        console.log('graph 0 change', i)
+        diag_delete_dots();
+        toggle_diag_animations(i);
+      });
 
 
 
