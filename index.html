@@ -7,7 +7,8 @@
 body{
   max-width: 900px;
   margin: 0px auto;
-  font-family: 'Lora', 'Times New Roman', serif;
+  /*font-family: 'Lora', 'Times New Roman', serif;*/
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif
   /*color: #404040;
   background-color:#F4EEE8*/
   color: #434148;
@@ -24,6 +25,9 @@ h1{
   text-align: center;
 }
 
+.legend{
+	font-family: "Courier New", Courier, monospace;
+}
 
 #container{
   position: relative;
@@ -188,7 +192,7 @@ On legitimate question to ask at this point is: How do these sources of revenu c
   <div id='graph'></div>
 
   <div id='sections'>
-    <div>
+    <div style="padding-top:200px">
       <h3>User base</h3>
         First, let's look at the user base for Spotify. There are 113 million premium subscribers and 141 million freemium (ad-supported) monthly active users, which makes a total of 254 million users that potentially generate revenue (inactive freemium users do not generate revenue because they are of no interest to advertisers, but inactive premium users still pay their subscription).
         In other words, premium and freemium users represent about 45% and 55% of total users, respectively. 
@@ -217,7 +221,7 @@ On legitimate question to ask at this point is: How do these sources of revenu c
 <div id='container' class='container-2'>
   <div id='graph'></div>
   <div id='sections'>
-    <div>
+    <div style="padding-top:200px">
       <h3>DSP Revenue (pie size)</h3>
       <span class='mono'>graph-scroll</span> 
       takes a selection of explanatory text sections and dispatches <span class='mono'>active</span> events as different sections are scrolled into to view. These active events are used to update a graph's state.
@@ -299,42 +303,11 @@ d3.graphScroll()
 </div>
 
 <h1>
-  Multiple graphs work too!
+  Penultimate section
 </h1>
 
-<div id='container' class='container-3'>
-  <div id='graph'></div>
-
-  <div id='sections'>
-    <div>
-      <h3>Mobile</h3>
-
-      On mobile centering the graph and sections while adding a some padding for the first slide is a good option: 
-<pre>
-@media (max-width: 925px)  {
-  #graph{
-    width: 100%;
-    transform: translate(-50%, 0);
-    margin-left: 50%;
-  }
-
-  #sections{
-    position: relative;
-    margin: 0px auto;
-    padding-top: 400px;
-  }
-}
-</pre>
-    </div>
-    <div>
-      <h3>Another div</h3>
-    </div>
-
-  </div>
-
-</div>
-
-<div>Some more text at the bottom
+<div>
+	Some more text at the bottom
 </div>
 
 <div>
@@ -402,8 +375,9 @@ In order to get a feel for how this all behaves, have a play with our little sim
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <!-- <script src="d3v4+jetpack.js"></script> -->
 <script src="graph-scroll.js"></script>
-<!-- <script type="D3_graphs/d3_rectangles_and_axes/rectangles_and_axes.js"></script> -->
-<script src="./D3_graphs/d3_v4_sunburst/sunburst.js"></script>
+<!-- <script src="./D3_graphs/d3_v4_sunburst/sunburst.js"></script> -->
+<script src="interactive_simulator.js"></script>
 <script src="donut.js"></script>
-<!-- <script src="donut_section.js"></script> -->
+
+
 

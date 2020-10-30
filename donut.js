@@ -240,8 +240,8 @@ function render(){
         .enter()
         .append('image')
         .attr('xlink:href', './images/music.png')
-        .attr('width', 15)
-        .attr('height',15)
+        .attr('width', 20)
+        .attr('height',20)
         .attr("x",function(d, i){ return d.x; })
         .attr("y", function(d, i){ return d.y; })
         .attr("id", "dots")
@@ -365,7 +365,8 @@ function render(){
     var data_rect_values = Object.keys(data).map(function(key){  
         return data[key];
         });
-
+    console.log("data",data);
+    console.log("data_rect_values",data_rect_values)
     // Set scales
     var x = d3.scaleLinear()
               .domain([0, 100])
