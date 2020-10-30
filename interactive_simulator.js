@@ -1,8 +1,11 @@
 ///////////////////// Initial Data ////////////////////////
-var width = 500;
+var width = 700;
 var height = 500;
-var margin_rect = {top: 20, right: 20, bottom: 40, left: 60};
+var margin_rect = {top: 20, right: 200, bottom: 40, left: 60};
 var rect_scale_ends = {x_min:0, x_max:100, y_min:0, y_max:100};
+
+var margin_pile = {top: 20, right: 20, bottom: 40, left: 600};
+
 
 var shares = {"track1":{"artist":0.5,
                         "distr_label":0.5}
@@ -41,6 +44,13 @@ var data_rect = {"other_tracks":{"label":"other_tracks",
                           "opacity":0.7,
                           "opacity_highlight":0.4}
               }
+
+var data_pile = {"label":"cash_pile",
+                "annotation":"Artist $$",
+                "color":"#39792f",
+                "color_highlight":'#363636',
+                "opacity":0.5,
+                "opacity_highlight":0.3}
 
 var rect_rendering_options = {"y_axis":true,
                               "y_axis_ticks":false,
@@ -106,6 +116,11 @@ function get_rect_centroid(rect_id){
   var rect_height = parseFloat(rect.attr("height"));
   return [rect_x+rect_width/2, rect_y+rect_height/2]
 }
+
+function get_artist_cash(){
+  return dsp_revenue*data_rect.artist_share.share_of_streams*data_rect.artist_share.share/100
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -115,7 +130,16 @@ var svg_rect = d3.select("#interactive_sunburst")
         .attr("width", width)
         .attr("height", height)
       .append("g")
+        .attr("id", "rev_share")
         .attr("transform", "translate(" + margin_rect.left + "," + margin_rect.top + ")");
+
+
+var svg_pile = d3.select("#interactive_sunburst").select("svg")
+      .append("g")
+        .attr("id", "cash_pile")
+        .attr("transform", "translate(" + margin_pile.left + "," + margin_pile.top + ")");
+
+draw_rect(data_rect,rect_rendering_options)
 
 function draw_rect(data, rect_rendering_options){
     // List of dictionaries version of data dict, used for iterating through data in plotting routines.
@@ -277,37 +301,8 @@ function draw_rect(data, rect_rendering_options){
     if (rect_rendering_options.annotations==false){
       svg_rect.selectAll(".annotations").remove()
     }
-
-    // // Set Legend
-    // var legend = svg_rect.selectAll('.legend')                     
-    //           .data(data_rect_values)                                   
-    //           .enter()                                                
-    //           .append('g')                                            
-    //           .attr('class', 'legend')                                
-    //           .attr('transform', function(d, i) {                   
-    //             var height = legendRectSize + legendSpacing;       
-    //             var offset =  height * data_rect_values.length / 2;   
-    //             var horz = -2 * legendRectSize + legend_x;                       
-    //             var vert = i * height - offset + legend_y;                       
-    //             return 'translate(' + horz + ',' + vert + ')';       
-    //           });                                                    
-
-    //         legend.append('rect')                                  
-    //           .attr('width', legendRectSize)                        
-    //           .attr('height', legendRectSize)                         
-    //           .style('fill', function(d){return d.color;})
-    //           .style('opacity',function(d){return d.opacity;})                
-    //           // .style('stroke', color);                              
-              
-    //         legend.append('text')                                     
-    //           .attr('x', legendRectSize + legendSpacing)            
-    //           .attr('y', legendRectSize - legendSpacing)             
-    //           .text(function(d) { return d.label; });
   }
 
-
-
-draw_rect(data_rect,rect_rendering_options)
 
 function update_rect(data){
     // List of dictionaries version of data dict, used for iterating through data in plotting routines.
@@ -423,172 +418,138 @@ function update_rect(data){
     }
 
   }
-
-
 //////////////////////////////////////////////////////////////////////////////////////////
 
-// var generate_data_dict = function(){
-//     // Generate a hierarchical data dict from user inputs, to be used to plot pie chart.
-//     var data = {"name":"Royalties",
-//                 "children":[]}
-//     //Calculate total streams
-//     var total_streams = Object.values(streams).reduce((a, b) => a + b, 0)
-//     console.log("total streams",total_streams)
-//     // Construct data object
-//     for (const property in streams){
-//         var track_popupation = 100*streams[property]/total_streams
-//         if (property=="track1"){
-//           var track_data = {"name":property,
-//                             "children":[{"name":"Artist",
-//                                           "value":shares[property]["artist"]*track_popupation},
-//                                           {"name":"Distr/Label",
-//                                           "value":shares[property]["distr_label"]*track_popupation}
-//                                       ]
-//                           }
-//         }
-//         else {
-//           track_data = {"name":property,
-//                         "value":track_popupation}
-//         }
-//         data["children"].push(track_data)
-//     }
-//     return data
-//   }
-
-// var data = generate_data_dict()
-
-// console.log("sunburst data",data)
-
-// var width = 500;
-// var height = 500;
-// var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
-// // var color = d3.scaleOrdinal(d3.schemeSet2);
-// var color = d3.scaleOrdinal(["#848484","#7c95bd","#848484","#848484","#848484","#ffd92f","#e5c494","#b3b3b3"]);
-
-// // var color = d3.scaleOrdinal(d3.schemeCategory20b);
-
-// var drawChart = function(data) {
-//     // Create primary <g> element
-//     var g = d3.select("#interactive_sunburst")
-//         .append('svg')
-//         .attr('width', width)
-//         .attr('height', height)
-//         .append('g')
-//         .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
-
-//     // Data strucure
-//     var partition = d3.partition()
-//         .size([2 * Math.PI, radius]);
-//     // Find data root
-//     var root = d3.hierarchy(data)
-//         .sum(function (d) { return d.value});
-
-//     // Size arcs
-//     partition(root);
-//     var arc = d3.arc()
-//         .startAngle(function (d) { return d.x0 })
-//         .endAngle(function (d) { return d.x1 })
-//         .innerRadius(function (d) { return d.y0 })
-//         .outerRadius(function (d) { return d.y1 });
-
-//     // Put it all together
-//     g.selectAll('path')
-//         .data(root.descendants())
-//         .enter().append('path')
-//         .attr("display", function (d) { return d.depth ? null : "none"; })
-//         .attr("d", arc)
-//         .style('stroke', '#fff')
-//         .style("fill",  function (d) { 
-//             if (d.children){
-//               return color(d.data.name)
-//             }
-//             else {
-//               console.log("ELSE",d)
-//               var parent_color = d3.hsl(color(d.parent.data.name))
-//               if (d.data.name=="Artist") {
-//                 console.log("Artist parent color", parent_color)
-//                 var artist_colour = parent_color
-//                 // artist_colour['h'] = artist_colour['h'] + 10;
-//                 // artist_colour['s'] += 0.2
-//                 // artist_colour['l'] += 0.1
-//                 return artist_colour;
-//               }
-//               else { 
-//                 console.log("Not Artist")
-//                 var distrib_colour = parent_color
-//                 // dsp_colour['h'] = dsp_colour['h'] + 5;
-//                 // dsp_colour['s'] += 0.3
-//                 distrib_colour['l'] += 0.15
-//                 return distrib_colour;
-//               }
-//             }
-//           });
-
-//     console.log("DRAW")
-// }
-
-// var updateChart = function(data) {
-
-//     var g = d3.selectAll("#interactive_sunburst")
-//               .select("g")
-//     // Data strucure
-//     var partition = d3.partition()
-//         .size([2 * Math.PI, radius]);
-
-//     // Find data root
-//     var root = d3.hierarchy(data)
-//         .sum(function (d) { return d.value});
-
-//     // Size arcs
-//     partition(root);
-//     var arc = d3.arc()
-//         .startAngle(function (d) { return d.x0 })
-//         .endAngle(function (d) { return d.x1 })
-//         .innerRadius(function (d) { return d.y0 })
-//         .outerRadius(function (d) { return d.y1 });
-
-//     // Put it all together
-//     path = g.selectAll('path').data(root.descendants())
-//     // paths.selectAll('path')
-//     path.attr("display", function (d) { return d.depth ? null : "none"; })
-//         .attr("d", arc)
-//         .style('stroke', '#fff')
-//         .style("fill", function (d) { 
-//           if (d.children){
-//             return color(d.data.name)
-//           }
-//           else {
-//             // console.log("ELSE",d)
-//             var parent_color = d3.hsl(color(d.parent.data.name))
-//             if (d.data.name=="Artist") {
-//               // console.log("Artist parent color", parent_color)
-//               var artist_colour = parent_color
-//               // artist_colour['h'] = artist_colour['h'] + 10;
-//               // artist_colour['s'] += 0.2
-//               // artist_colour['l'] += 0.1
-//               return artist_colour;
-//             }
-//             else { 
-//               // console.log("Not Artist")
-//               var distrib_colour = parent_color
-//               // dsp_colour['h'] = dsp_colour['h'] + 5;
-//               // dsp_colour['s'] += 0.3
-//               distrib_colour['l'] += 0.15
-//               return distrib_colour;
-//             }
-//           }
-//         });
-
-//     console.log('DRAW UPDATE')
-//     // console.log('Pie Widht',pieWidth)
-// }
 
 
-// /////////////////////// Initialise Chart /////////////////////////////
+//////////////////////////////////// Make Artist Cash Pile //////////////////////////////
 
-// // drawChart(data);
+function draw_pile(data){
+    // List of dictionaries version of data dict, used for iterating through data in plotting routines.
+    var data_rect_values = Object.keys(data).map(function(key){  
+        return data[key];
+        });
 
-// /////////////////////////////////////////////////////////////////////
+    // Set scales
+    var x = d3.scaleLinear()
+              .domain([rect_scale_ends.x_min, rect_scale_ends.x_max])
+              .range([0, width - margin_pile.right - margin_pile.left]);
+
+    var y = d3.scaleLinear()
+              .domain([rect_scale_ends.y_min, rect_scale_ends.y_max])
+              .range([height - margin_pile.top - margin_pile.bottom, 0]);
+
+    var artist_cash = get_artist_cash();
+
+
+    // Add X axis
+    svg_pile
+      .append("g")
+      .attr("transform", "translate(0," + (height - margin_pile.top - margin_pile.bottom) + ")")
+      .call(d3.axisBottom(x).tickValues([]));
+
+    // Add X axis label:
+    svg_pile.append("text")
+        .attr("text-anchor", "middle")
+        .attr("x", (width - margin_pile.left - margin_pile.right)/2 )
+        .attr("y", height - margin_pile.top - 0.1*margin_pile.bottom)
+        .text("Artist $$");
+
+    // Add Y axis left
+      svg_pile
+        .append("g")
+        .call(d3.axisRight(y).tickValues([])); // Putting an axisRight here for aestethics: the top tick faces inwards, for a gauge effect.
+
+    // Add Y axis right
+      svg_pile
+        .append("g")
+        .attr("transform", "translate(" + x(rect_scale_ends.x_max) + ",0)")
+        .call(d3.axisLeft(y).tickValues([]));
+      
+      // Y axis label:
+      svg_pile.append("text")
+          .attr("text-anchor", "end")
+          .attr("transform", "rotate(-90)")
+          .attr("y", -20)
+          .attr("x", -margin_pile.top - 150)
+          // .text("Artist $$")
+
+    // Draw artist cash pile
+    svg_pile
+      .append("rect")
+        .attr("x", x(rect_scale_ends.x_min) )
+        .attr("y",y(artist_cash))
+        .attr("width", x(rect_scale_ends.x_max) )
+        .attr("height", y(rect_scale_ends.y_max - artist_cash)) //Needs to be y_axis_range - coordinate because vertical coordinates go from top to bottom
+        .attr("id","cash_pile")
+        .style("fill", data.color)
+        .style("fill-opacity", data.opacity)
+        // .style("stroke", "#5c5b5b")
+        .on('mouseover', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.opacity_highlight);
+        })
+        .on('mouseout', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.opacity);
+        })
+  }
+
+function update_pile(data){
+    // List of dictionaries version of data dict, used for iterating through data in plotting routines.
+    var data_rect_values = Object.keys(data).map(function(key){  
+        return data[key];
+        });
+
+    // Set scales
+    var x = d3.scaleLinear()
+              .domain([rect_scale_ends.x_min, rect_scale_ends.x_max])
+              .range([0, width - margin_pile.right - margin_pile.left]);
+
+    var y = d3.scaleLinear()
+              .domain([rect_scale_ends.y_min, rect_scale_ends.y_max])
+              .range([height - margin_pile.top - margin_pile.bottom, 0]);
+
+    var artist_cash = get_artist_cash();
+
+    // Draw artist cash pile
+    svg_pile.select("#cash_pile")
+        .attr("x", x(rect_scale_ends.x_min) )
+        .attr("y",y(artist_cash))
+        .attr("width", x(rect_scale_ends.x_max) )
+        .attr("height", y(rect_scale_ends.y_max - artist_cash)) //Needs to be y_axis_range - coordinate because vertical coordinates go from top to bottom
+        .style("fill", data.color)
+        .style("fill-opacity", data.opacity)
+        // .style("stroke", "#5c5b5b")
+        .on('mouseover', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.opacity_highlight);
+        })
+        .on('mouseout', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.opacity);
+        })
+  }
+
+draw_pile(data_pile);
+
+///////////////////////////////////////////////////////////////////////////////////////////
 
 
 ///////////////////// Update Page based on user input //////////////
@@ -604,7 +565,7 @@ d3.select("#DSPrevenue").on("input", function() {
   data_rect.dist_share.dsp_revenue = dsp_revenue;
   data_rect.artist_share.dsp_revenue = dsp_revenue;
   update_rect(data_rect);
-  
+  update_pile(data_pile);
 });
 
 
@@ -624,6 +585,7 @@ d3.select("#TotalOtherStreams").on("input", function() {
   data_rect.artist_share.share_of_streams = track_share_of_streams;
   
   update_rect(data_rect);
+  update_pile(data_pile);
 });
 
 
@@ -643,6 +605,7 @@ d3.select("#Trackstreams").on("input", function() {
   data_rect.artist_share.share_of_streams = track_share_of_streams;
 
   update_rect(data_rect);
+  update_pile(data_pile);
 });
 
 // Artist share update
@@ -656,6 +619,7 @@ d3.select("#Artistshare").on("input", function() {
   data_rect.dist_share.share = 1 - artist_share;
   
   update_rect(data_rect);
+  update_pile(data_pile);
 });
 
 
