@@ -1,19 +1,10 @@
 ///////////////////// Initial Data ////////////////////////
-var width = 700;
-var height = 500;
-var margin_rect = {top: 20, right: 200, bottom: 40, left: 60};
+var width_sim = 700;
+var height_sim = 600;
+var margin_rect = {top: 120, right: 200, bottom: 40, left: 60};
 var rect_scale_ends = {x_min:0, x_max:100, y_min:0, y_max:100};
 
-var margin_pile = {top: 20, right: 20, bottom: 40, left: 600};
-
-
-var shares = {"track1":{"artist":0.5,
-                        "distr_label":0.5}
-            };
-
-var streams = {"track1":600000,
-               "other_tracks":2000000,
-            };
+var margin_pile = {top: 120, right: 20, bottom: 40, left: 600};
 
 var dsp_revenue = 70;
 
@@ -23,25 +14,25 @@ var data_rect = {"other_tracks":{"label":"other_tracks",
                           "annotation":"Other Tracks",
                           "color":"#000000",
                           "color_highlight":'#363636',
-                          "opacity":0.5,
+                          "opacity":0.6,
                           "opacity_highlight":0.3},
                 "artist_share":{"label":"artist_share",
                           "share_of_streams":45,
                           "share":0.8,
                           "dsp_revenue":dsp_revenue,
                           "annotation":"Artist",
-                          "color":"#38588c",
+                          "color":"#00ba0e",
                           "color_highlight":'#6bff53',
-                          "opacity":0.7,
+                          "opacity":1.0,
                           "opacity_highlight":0.4},
                 "dist_share":{"label":"distributor_share",
                           "share_of_streams":45,
                           "share":0.2,
                           "dsp_revenue":dsp_revenue,
                           "annotation":"Dist/Label",
-                          "color":"#7c95bd",
+                          "color":"#3683ff",
                           "color_highlight":'#6bff53',
-                          "opacity":0.7,
+                          "opacity":1.0,
                           "opacity_highlight":0.4}
               }
 
@@ -54,7 +45,7 @@ var data_pile = {"label":"cash_pile",
 
 var rect_rendering_options = {"y_axis":true,
                               "y_axis_ticks":false,
-                              "annotations":true}
+                              "annotations":false}
 //////////////////////////////////////////////////////////
 
 
@@ -93,14 +84,8 @@ var init_html_values = function() {
 
 init_html_values()
 
-// update default values with default from HTML sliders
-streams['track1'] = track_streams;
-streams['other_tracks'] = total_other_streams;
-shares['track1']['artist'] = artist_share;
-shares['track1']['distr_label'] = 1 - artist_share;
+
 // total_streams_to_streams(total_other_streams)
-console.log("initial streams",streams)
-console.log("initial shares", shares)
 console.log("initial other streams",total_other_streams)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -127,8 +112,8 @@ function get_artist_cash(){
 //////////////////////////////////// Make Rect chart //////////////////////////////////////////////
 var svg_rect = d3.select("#interactive_sunburst")
       .append("svg")
-        .attr("width", width)
-        .attr("height", height)
+        .attr("width", width_sim)
+        .attr("height", height_sim)
       .append("g")
         .attr("id", "rev_share")
         .attr("transform", "translate(" + margin_rect.left + "," + margin_rect.top + ")");
@@ -139,41 +124,36 @@ var svg_pile = d3.select("#interactive_sunburst").select("svg")
         .attr("id", "cash_pile")
         .attr("transform", "translate(" + margin_pile.left + "," + margin_pile.top + ")");
 
-draw_rect(data_rect,rect_rendering_options)
+draw_rect(data_rect,rect_rendering_options);
+draw_dollars(N=20);
+draw_legend(data_rect, N=20);
+draw_annotations(data_rect,rect_rendering_options);
 
 function draw_rect(data, rect_rendering_options){
     // List of dictionaries version of data dict, used for iterating through data in plotting routines.
     var data_rect_values = Object.keys(data).map(function(key){  
         return data[key];
         });
-    console.log("data",data);
-    console.log("data_rect_values",data_rect_values)
     // Set scales
     var x = d3.scaleLinear()
               .domain([rect_scale_ends.x_min, rect_scale_ends.x_max])
-              .range([0, width - margin_rect.right - margin_rect.left]);
+              .range([0, width_sim - margin_rect.right - margin_rect.left]);
 
     var y = d3.scaleLinear()
               .domain([rect_scale_ends.y_min, rect_scale_ends.y_max])
-              .range([height - margin_rect.top - margin_rect.bottom, 0]);
-
-    // Set dimensions of legend
-    var legendRectSize = 18; 
-    var legendSpacing = 4;
-    var legend_x = x(75);
-    var legend_y = y(85);
+              .range([height_sim - margin_rect.top - margin_rect.bottom, 0]);
 
     // Add X axis
     svg_rect
       .append("g")
-      .attr("transform", "translate(0," + (height - margin_rect.top - margin_rect.bottom) + ")")
+      .attr("transform", "translate(0," + (height_sim - margin_rect.top - margin_rect.bottom) + ")")
       .call(d3.axisBottom(x));
 
     // Add X axis label:
     svg_rect.append("text")
         .attr("text-anchor", "middle")
-        .attr("x", (width - margin_rect.left - margin_rect.right)/2 )
-        .attr("y", height - margin_rect.top - 0.1*margin_rect.bottom)
+        .attr("x", (width_sim - margin_rect.left - margin_rect.right)/2 )
+        .attr("y", height_sim - margin_rect.top - 0.1*margin_rect.bottom)
         .text("Share of streams (%)");
 
     // Add Y axis
@@ -190,6 +170,7 @@ function draw_rect(data, rect_rendering_options){
           .attr("x", -margin_rect.top - 150)
           .text("DSP Revenue")
     }
+
 
     // Draw other tracks rectangle
     svg_rect
@@ -274,35 +255,106 @@ function draw_rect(data, rect_rendering_options){
             .transition()
             .style('fill-opacity', data.artist_share.opacity);
         })
+  }
 
-    // Add text to the rectangles 
-    if (rect_rendering_options.annotations==true){
-      //Remove the text if it already exists (so that it does not get added twice)
-      svg_rect.selectAll(".annotations").remove()
-      //Add text
-      var annotations = svg_rect.selectAll('.annotations')
-          .data(data_rect_values)
-          .enter()
-          .append('g')
-          .attr('class','annotations')
-          .attr('transform', function(d){
-            var centroid = get_rect_centroid("#"+d.label);
-            return 'translate(' + centroid[0] + ',' + centroid[1] + ')';
-          });
 
-      annotations.append('text')
-              .text(function(d){return d.annotation})
-              .style('fill',"#ffffff")
-              .attr('text-anchor','middle')
-              .attr('dominant-baseline','central')
-              .attr('x',)
+function getTextBox(selection) {
+    selection.each(function(d) { d.bbox = this.getBBox(); })
+}
+
+function draw_annotations(data, rect_rendering_options){
+  var bbox_pad = 10;
+  var data_rect_values = Object.keys(data).map(function(key){  
+    return data[key];
+    });
+  // Add text to the rectangles 
+  if (rect_rendering_options.annotations==true){
+    //Remove the text if it already exists (so that it does not get added twice)
+    svg_rect.selectAll(".annotations").remove()
+    //Add text
+    var annotations = svg_rect.selectAll('.annotations')
+        .data(data_rect_values)
+        .enter()
+        .append('g')
+        .attr('class','annotations')
+        .attr('transform', function(d){
+          var centroid = get_rect_centroid("#"+d.label);
+          return 'translate(' + centroid[0] + ',' + centroid[1] + ')';
+        })
+
+
+    annotations.append('text')
+            .text(function(d){return d.annotation})
+            .style('fill',"#000000")
+            .attr('text-anchor','middle')
+            .attr('dominant-baseline','central')
+            // .attr('x',)
+            .call(getTextBox);
+
+    annotations.insert("rect","text")
+      .attr("x", function(d){return d.bbox.x - bbox_pad/2})
+      .attr("y", function(d){return d.bbox.y - bbox_pad/2})
+      .attr("width", function(d){return d.bbox.width + bbox_pad})
+      .attr("height", function(d){return d.bbox.height + bbox_pad})
+      .style("fill", "#ffffff");
     }   
 
     if (rect_rendering_options.annotations==false){
       svg_rect.selectAll(".annotations").remove()
     }
-  }
+}
 
+
+function draw_legend(data, N){
+  var data_rect_values = Object.keys(data).map(function(key){  
+        return data[key];
+        });
+  // Set scales
+  var x = d3.scaleLinear()
+            .domain([rect_scale_ends.x_min, rect_scale_ends.x_max])
+            .range([0, width_sim - margin_rect.right - margin_rect.left]);
+  var y = d3.scaleLinear()
+            .domain([rect_scale_ends.y_min, rect_scale_ends.y_max])
+            .range([height_sim - margin_rect.top - margin_rect.bottom, 0]);
+  // Set dimensions of legend
+  var legendRectSize = Math.floor(x(rect_scale_ends.x_max/N)); 
+  var legendSpacing = 4;
+  var legendPadLeft = 20;
+  var legend_x = x(50);
+  var legend_y = margin_rect.top - 35;
+  var width_legend = x(rect_scale_ends.x_max) - x(rect_scale_ends.x_min);
+  // Set Legend
+    var legend = d3.select("#interactive_sunburst").select('svg')
+              .selectAll('.legend')                     
+              .data(data_rect_values)                                   
+              .enter()                                                
+              .append('g')                                            
+              .attr('class', 'legend')                                
+              .attr('transform', function(d, i) {  
+                var horz = i*width_legend/data_rect_values.length + margin_rect.left + legendPadLeft;                       
+                var vert = legend_y;                       
+                return 'translate(' + horz + ',' + vert + ')';       
+              });                                                    
+
+            legend.append('rect')                                  
+              .attr('width', legendRectSize)                        
+              .attr('height', legendRectSize)                         
+              .style('fill', function(d){return d.color;})
+              .style('opacity',function(d){return d.opacity;});                
+              // .style('stroke', color);   
+
+            legend.append("image")  
+                  .attr('xlink:href', './images/round_dollar_negative_with_edges_white.png')
+                  .attr("width", legendRectSize )
+                  .attr("height", legendRectSize );                       
+              
+            legend.append('text')                                     
+              .attr('x', legendRectSize + legendSpacing)            
+              .attr('y', legendRectSize - legendSpacing)
+              .style('fill', function(d) {return d.color})
+              .style('opacity', function(d) {return d.opacity})             
+              .text(function(d) { return d.annotation; });
+}
 
 function update_rect(data){
     // List of dictionaries version of data dict, used for iterating through data in plotting routines.
@@ -312,11 +364,11 @@ function update_rect(data){
     // Set scales
     var x = d3.scaleLinear()
               .domain([rect_scale_ends.x_min, rect_scale_ends.x_max])
-              .range([0, width - margin_rect.right - margin_rect.left]);
+              .range([0, width_sim - margin_rect.right - margin_rect.left]);
 
     var y = d3.scaleLinear()
               .domain([rect_scale_ends.y_min, rect_scale_ends.y_max])
-              .range([height - margin_rect.top - margin_rect.bottom, 0]);
+              .range([height_sim - margin_rect.top - margin_rect.bottom, 0]);
 
     // Update other tracks rectangle
     var other_rect = svg_rect.selectAll("#other_tracks");
@@ -325,7 +377,6 @@ function update_rect(data){
         .attr("y",y(data.other_tracks.dsp_revenue))
         .attr("width", x(data.other_tracks.share_of_streams) )
         .attr("height", y(rect_scale_ends.y_max-data.other_tracks.dsp_revenue)) //Needs to be y_axis_range - coordinate because vertical coordinates go from top to bottom
-        .attr("id",data.other_tracks.label)
         .style("fill", data.other_tracks.color)
         .style("fill-opacity", data.other_tracks.opacity)
         // .style("stroke", "#5c5b5b")
@@ -353,7 +404,6 @@ function update_rect(data){
         .attr("y",y(data.dist_share.dsp_revenue * (1 - data.artist_share.share)))
         .attr("width", x(data.dist_share.share_of_streams) )
         .attr("height", y(rect_scale_ends.y_max-data.dist_share.dsp_revenue*data.dist_share.share))
-        .attr("id","distributor_share")
         .style("fill", data.dist_share.color)
         .style("fill-opacity", data.dist_share.opacity)
         // .style("stroke", "#b8211c")
@@ -418,6 +468,43 @@ function update_rect(data){
     }
 
   }
+
+
+function draw_dollars(N=20){
+  // N specifies how many dollar icons to put per dimension (so N**2 in total)
+
+  // Set scales
+  var x = d3.scaleLinear()
+            .domain([rect_scale_ends.x_min, rect_scale_ends.x_max])
+            .range([0, width_sim - margin_rect.right - margin_rect.left]);
+
+  var y = d3.scaleLinear()
+            .domain([rect_scale_ends.y_min, rect_scale_ends.y_max])
+            .range([height_sim - margin_rect.top - margin_rect.bottom, 0]);
+
+  var g_dollars = svg_rect
+      .append("g")
+      .attr("class","dollars");
+
+  var i;
+  var j;
+  for (i=0; i<N;  i++){
+    for (j=N; j>0;  j--){
+      var idx = i+j*N;
+      g_dollars
+        .append("image")
+        .attr('xlink:href', './images/round_dollar_negative_with_edges_white.png')
+        .attr("x", x(i*rect_scale_ends.x_max/N)+1 )
+        .attr("y",y(j*rect_scale_ends.x_max/N))
+        .attr("width", x(rect_scale_ends.x_max/N) )
+        .attr("height", x(rect_scale_ends.x_max/N)) 
+        .attr("id","dollar_"+idx)
+    }
+  }
+  
+
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -433,11 +520,11 @@ function draw_pile(data){
     // Set scales
     var x = d3.scaleLinear()
               .domain([rect_scale_ends.x_min, rect_scale_ends.x_max])
-              .range([0, width - margin_pile.right - margin_pile.left]);
+              .range([0, width_sim - margin_pile.right - margin_pile.left]);
 
     var y = d3.scaleLinear()
               .domain([rect_scale_ends.y_min, rect_scale_ends.y_max])
-              .range([height - margin_pile.top - margin_pile.bottom, 0]);
+              .range([height_sim - margin_pile.top - margin_pile.bottom, 0]);
 
     var artist_cash = get_artist_cash();
 
@@ -445,14 +532,14 @@ function draw_pile(data){
     // Add X axis
     svg_pile
       .append("g")
-      .attr("transform", "translate(0," + (height - margin_pile.top - margin_pile.bottom) + ")")
+      .attr("transform", "translate(0," + (height_sim - margin_pile.top - margin_pile.bottom) + ")")
       .call(d3.axisBottom(x).tickValues([]));
 
     // Add X axis label:
     svg_pile.append("text")
         .attr("text-anchor", "middle")
-        .attr("x", (width - margin_pile.left - margin_pile.right)/2 )
-        .attr("y", height - margin_pile.top - 0.1*margin_pile.bottom)
+        .attr("x", (width_sim - margin_pile.left - margin_pile.right)/2 )
+        .attr("y", height_sim - margin_pile.top - 0.1*margin_pile.bottom)
         .text("Artist $$");
 
     // Add Y axis left
@@ -512,11 +599,11 @@ function update_pile(data){
     // Set scales
     var x = d3.scaleLinear()
               .domain([rect_scale_ends.x_min, rect_scale_ends.x_max])
-              .range([0, width - margin_pile.right - margin_pile.left]);
+              .range([0, width_sim - margin_pile.right - margin_pile.left]);
 
     var y = d3.scaleLinear()
               .domain([rect_scale_ends.y_min, rect_scale_ends.y_max])
-              .range([height - margin_pile.top - margin_pile.bottom, 0]);
+              .range([height_sim - margin_pile.top - margin_pile.bottom, 0]);
 
     var artist_cash = get_artist_cash();
 
