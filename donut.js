@@ -660,7 +660,7 @@ function render(){
                           "annotation":"Other Tracks",
                           "color":"#000000",
                           "color_highlight":'#363636',
-                          "opacity":0.6,
+                          "opacity":0.4,
                           "opacity_highlight":0.3},
                 "artist_share":{"label":"artist_share",
                           "share_of_streams":45,
@@ -669,7 +669,7 @@ function render(){
                           "annotation":"Artist",
                           "color":"#00ba0e",
                           "color_highlight":'#6bff53',
-                          "opacity":1.0,
+                          "opacity":0.8,
                           "opacity_highlight":0.4},
                 "dist_share":{"label":"distributor_share",
                           "share_of_streams":45,
@@ -678,7 +678,7 @@ function render(){
                           "annotation":"Dist/Label",
                           "color":"#3683ff",
                           "color_highlight":'#6bff53',
-                          "opacity":1.0,
+                          "opacity":0.8,
                           "opacity_highlight":0.4}
               }
 
@@ -957,7 +957,7 @@ function render(){
         var idx = i+j*N;
         g_dollars
           .append("image")
-          .attr('xlink:href', './images/round_dollar_negative_with_edges_white.png')
+          .attr('xlink:href', './images/round_dollar_fill_negative_with_edges.png')
           .attr("x", x(i*revshare_scale_ends.x_max/N))
           .attr("y",y(j*revshare_scale_ends.x_max/N))
           .attr("width", x(revshare_scale_ends.x_max/N) )

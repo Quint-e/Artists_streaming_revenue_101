@@ -493,7 +493,7 @@ function draw_dollars(N=20){
       var idx = i+j*N;
       g_dollars
         .append("image")
-        .attr('xlink:href', './images/round_dollar_negative_with_edges_white.png')
+        .attr('xlink:href', './images/round_dollar_fill_negative_with_edges.png')
         .attr("x", x(i*rect_scale_ends.x_max/N)+1 )
         .attr("y",y(j*rect_scale_ends.x_max/N))
         .attr("width", x(rect_scale_ends.x_max/N) )
