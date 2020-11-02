@@ -682,15 +682,18 @@ function render(){
                           "opacity_highlight":0.4}
               }
 
-  var revshare_rendering_options = {"y_axis":true,
+  var revshare_rendering_options = {"y_axis":false,
                               "y_axis_ticks":false,
                               "x_axis_ticks":false,
+                              "x_axis_label":false,
                               "annotations":false}
 
   var shares = shares_default;
   var streams = streams_default;
   var dsp_revenue = dsp_revenue_default;  
   var revshare_drawn = false;
+  var revshare_x_ticks_drawn = false;
+  var revshare_x_label_drawn = false;
 
   var svg_revshare = d3.select(".container-2 #graph")
                       .append("svg")
@@ -707,26 +710,36 @@ function render(){
         dsp_revenue = 30;
         artist_shareOfStreams = 0;
         artist_share = 1;
+        revshare_rendering_options.x_axis_ticks = false;
+        revshare_rendering_options.x_axis_label = false;
         break;
       case 1:
         dsp_revenue = 100;
         artist_shareOfStreams = 0;
         artist_share = 1;
+        revshare_rendering_options.x_axis_ticks = false;
+        revshare_rendering_options.x_axis_label = false;
         break;
       case 2:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = 0;
         artist_share = 1;
+        revshare_rendering_options.x_axis_ticks = false;
+        revshare_rendering_options.x_axis_label = false;
         break;
       case 3:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = artist_shareOfStreams_default;
         artist_share = 1;
+        revshare_rendering_options.x_axis_ticks = false;
+        revshare_rendering_options.x_axis_label = false;
         break;
       case 4:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = 50;
         artist_share = 1;
+        revshare_rendering_options.x_axis_ticks = false;
+        revshare_rendering_options.x_axis_label = false;
         break;
       case 5:
         dsp_revenue = dsp_revenue_default;
@@ -795,20 +808,33 @@ function render(){
 
 
     // Add X axis
-    svg_revshare
-      .append("g")
-      .attr("transform", "translate(0," + (height_revshare - margin_revshare.top - margin_revshare.bottom) + ")")
-      .call(d3.axisBottom(x));
+    if (revshare_rendering_options.x_axis_ticks==true){
+      if (revshare_x_ticks_drawn==false){
+        svg_revshare
+          .append("g")
+          .attr("transform", "translate(0," + (height_revshare - margin_revshare.top - margin_revshare.bottom) + ")")
+          .call(d3.axisBottom(x));
+      }
+    }
+    else {
+      svg_revshare
+        .append("g")
+        .attr("transform", "translate(0," + (height_revshare - margin_revshare.top - margin_revshare.bottom) + ")")
+        .attr("id","xticks")
+        .call(d3.axisBottom(x).tickValues([]));
+    }
 
     // Add X axis label:
-    svg_revshare.append("text")
-        .attr("text-anchor", "middle")
-        .attr("x", (width_revshare - margin_revshare.left - margin_revshare.right)/2 )
-        .attr("y", height_revshare - margin_revshare.top - 0.1*margin_revshare.bottom)
-        .text("Share of streams (%)");
+    if (revshare_rendering_options.x_axis_label==true){
+      svg_revshare.append("text")
+          .attr("text-anchor", "middle")
+          .attr("x", (width_revshare - margin_revshare.left - margin_revshare.right)/2 )
+          .attr("y", height_revshare - margin_revshare.top - 0.1*margin_revshare.bottom)
+          .text("Share of streams (%)");
+    }
 
     // Add Y axis
-    if (rect_rendering_options.y_axis==true){
+    if (revshare_rendering_options.y_axis==true){
       svg_revshare
         .append("g")
         .call(d3.axisLeft(y).tickValues([]));
@@ -932,7 +958,7 @@ function render(){
         g_dollars
           .append("image")
           .attr('xlink:href', './images/round_dollar_negative_with_edges_white.png')
-          .attr("x", x(i*revshare_scale_ends.x_max/N)+1 )
+          .attr("x", x(i*revshare_scale_ends.x_max/N))
           .attr("y",y(j*revshare_scale_ends.x_max/N))
           .attr("width", x(revshare_scale_ends.x_max/N) )
           .attr("height", x(revshare_scale_ends.x_max/N)) 
@@ -1099,6 +1125,40 @@ function render(){
             .transition()
             .style('fill-opacity', data.artist_share.opacity);
         })
+
+
+    // Add X axis
+    if (revshare_rendering_options.x_axis_ticks==true){
+      if (revshare_x_ticks_drawn==false){
+        svg_revshare
+          .append("g")
+          .attr("transform", "translate(0," + (height_revshare - margin_revshare.top - margin_revshare.bottom) + ")")
+          .attr("id","xticks")
+          .call(d3.axisBottom(x));
+        revshare_x_ticks_drawn = true;
+      }
+    }
+    else {
+      svg_revshare.selectAll("#xticks").remove();
+      revshare_x_ticks_drawn = false;
+    }
+
+    // Add X axis label:
+    if (revshare_rendering_options.x_axis_label==true){
+      if (revshare_x_label_drawn==false){
+        svg_revshare.append("text")
+            .attr("text-anchor", "middle")
+            .attr("x", (width_revshare - margin_revshare.left - margin_revshare.right)/2 )
+            .attr("y", height_revshare - margin_revshare.top - 0.1*margin_revshare.bottom)
+            .attr("id","xlabel")
+            .text("Share of streams (%)");
+        revshare_x_label_drawn = true;
+      }
+    }
+    else {
+      svg_revshare.selectAll("#xlabel").remove();
+      revshare_x_label_drawn = false;
+    }
 
     // Update annotations
     if (rect_rendering_options.annotations==true){
