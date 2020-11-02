@@ -365,8 +365,8 @@ function render(){
     var data_rect_values = Object.keys(data).map(function(key){  
         return data[key];
         });
-    console.log("data",data);
-    console.log("data_rect_values",data_rect_values)
+    // console.log("data",data);
+    // console.log("data_rect_values",data_rect_values)
     // Set scales
     var x = d3.scaleLinear()
               .domain([0, 100])
@@ -634,7 +634,7 @@ function render(){
       })
 
 
-  ///////////////// Sunburst section ////////////////////
+  ///////////////// Revenue Share section ////////////////////
 
   ///////////////////// Initial Data ////////////////////////
   var shares_default = {"track1":{"artist":0.5,
@@ -645,350 +645,479 @@ function render(){
                   "other_tracks":2000000,
               };
 
-  var dsp_revenue_default = 80;
-  var hidden_levels_default = [0,2]; //Sunburst levels to hide (0=center, 2= outer ring)
+  var dsp_revenue_default = 70;
+  var artist_shareOfStreams_default = 30;
+  var artist_share_default = 0.7;
+
+  var margin_revshare = {top: 80, right: 20, bottom: 40, left: 60};
+  var revshare_scale_ends = {x_min:0, x_max:100, y_min:0, y_max:100};
+  var width_revshare = width;
+  var height_revshare = height + margin_revshare.top - 50;
+
+  var data_revshare = {"other_tracks":{"label":"other_tracks",
+                          "share_of_streams":55,
+                          "dsp_revenue":dsp_revenue_default,
+                          "annotation":"Other Tracks",
+                          "color":"#000000",
+                          "color_highlight":'#363636',
+                          "opacity":0.6,
+                          "opacity_highlight":0.3},
+                "artist_share":{"label":"artist_share",
+                          "share_of_streams":45,
+                          "share":0.8,
+                          "dsp_revenue":dsp_revenue_default,
+                          "annotation":"Artist",
+                          "color":"#00ba0e",
+                          "color_highlight":'#6bff53',
+                          "opacity":1.0,
+                          "opacity_highlight":0.4},
+                "dist_share":{"label":"distributor_share",
+                          "share_of_streams":45,
+                          "share":0.2,
+                          "dsp_revenue":dsp_revenue_default,
+                          "annotation":"Dist/Label",
+                          "color":"#3683ff",
+                          "color_highlight":'#6bff53',
+                          "opacity":1.0,
+                          "opacity_highlight":0.4}
+              }
+
+  var revshare_rendering_options = {"y_axis":true,
+                              "y_axis_ticks":false,
+                              "x_axis_ticks":false,
+                              "annotations":false}
 
   var shares = shares_default;
   var streams = streams_default;
   var dsp_revenue = dsp_revenue_default;  
-  var hidden_levels = hidden_levels_default;
+  var revshare_drawn = false;
 
-  console.log("sunburst data",data_sunburst)
+  var svg_revshare = d3.select(".container-2 #graph")
+                      .append("svg")
+                     .html('')
+                     .attr("width", width_revshare)
+                     .attr("height", height_revshare)
+                     .append("g")
+                     .attr("id", "rev_share")
+                     .attr("transform", "translate(" + margin_revshare.left + "," + margin_revshare.top + ")");
 
-  var color_sunburst = d3.scaleOrdinal(["#848484","#7c95bd","#848484","#848484","#848484","#ffd92f","#e5c494","#b3b3b3"]);
-
-  var generate_data_dict = function(){
-    // Generate a hierarchical data dict from user inputs, to be used to plot pie chart.
-    var data = {"name":"Royalties",
-                "children":[]}
-    //Calculate total streams
-    var total_streams = Object.values(streams).reduce((a, b) => a + b, 0)
-    console.log("total streams",total_streams)
-    // Construct data object
-    for (const property in streams){
-        var track_popupation = 100*streams[property]/total_streams
-        if (property=="track1"){
-          var track_data = {"name":property,
-                            "children":[{"name":"Artist",
-                                          "value":shares[property]["artist"]*track_popupation},
-                                          {"name":"Distr/Label",
-                                          "value":shares[property]["distr_label"]*track_popupation}
-                                      ]
-                          }
-        }
-        else {
-          track_data = {"name":property,
-                        "value":track_popupation}
-        }
-        data["children"].push(track_data)
-    }
-    return data
-  }
-
-  var data_sunburst = generate_data_dict()
-
-
-  var sunburst_data_modifier = function(i){
+  var revshare_data_modifier = function(i){
     switch(i){
       case 0:
-        dsp_revenue = dsp_revenue_default;
-        streams = streams_default;
-        shares = shares_default;
-        hidden_levels = hidden_levels_default;
+        dsp_revenue = 30;
+        artist_shareOfStreams = 0;
+        artist_share = 1;
         break;
       case 1:
         dsp_revenue = 100;
-        streams = streams_default;
-        shares = shares_default;
-        hidden_levels = hidden_levels_default;
+        artist_shareOfStreams = 0;
+        artist_share = 1;
         break;
       case 2:
-        dsp_revenue = 30;
-        streams = streams_default;
-        shares = shares_default;
-        hidden_levels = hidden_levels_default;
+        dsp_revenue = dsp_revenue_default;
+        artist_shareOfStreams = 0;
+        artist_share = 1;
         break;
       case 3:
         dsp_revenue = dsp_revenue_default;
-        streams = streams_default;
-        shares = shares_default;
-        hidden_levels = hidden_levels_default;
+        artist_shareOfStreams = artist_shareOfStreams_default;
+        artist_share = 1;
         break;
       case 4:
         dsp_revenue = dsp_revenue_default;
-        streams = {"track1":1000000,
-                   "other_tracks":2000000,
-                  };
-        shares = shares_default;
-        hidden_levels = hidden_levels_default;
+        artist_shareOfStreams = 50;
+        artist_share = 1;
         break;
       case 5:
         dsp_revenue = dsp_revenue_default;
-        streams = streams_default;
-        shares = shares_default;
-        hidden_levels = hidden_levels_default;
+        artist_shareOfStreams = artist_shareOfStreams_default;
+        artist_share = 1;
         break;
       case 6:
         dsp_revenue = dsp_revenue_default;
-        streams = streams_default;
-        shares = shares_default;
-        hidden_levels = hidden_levels_default;
+        artist_shareOfStreams = artist_shareOfStreams_default;
+        artist_share = 1;
         break;
       case 7:
         dsp_revenue = dsp_revenue_default;
-        streams = {"track1":600000,
-                   "other_tracks":4000000,
-                  };
-        shares = shares_default;
-        hidden_levels = hidden_levels_default;
+        artist_shareOfStreams = 5;
+        artist_share = 1;
         break;
       case 8:
         dsp_revenue = dsp_revenue_default;
-        streams = streams_default;
-        shares = shares_default;
-        hidden_levels = hidden_levels_default;
+        artist_shareOfStreams = artist_shareOfStreams_default;
+        artist_share = 1;
         break;
       case 9:
         dsp_revenue = dsp_revenue_default;
-        streams = streams_default;
-        shares = shares_default;
-        hidden_levels = [0];
+        artist_shareOfStreams = artist_shareOfStreams_default;
+        artist_share = artist_share_default;
         break;
       case 10:
         dsp_revenue = dsp_revenue_default;
-        streams = streams_default;
-        shares = {"track1":{"artist":0.15,
-                          "distr_label":0.85}
-                  };
-        hidden_levels = [0];
+        artist_shareOfStreams = artist_shareOfStreams_default;
+        artist_share = 0.15;
         break;
       case 11:
         dsp_revenue = dsp_revenue_default;
-        streams = streams_default;
-        shares = {"track1":{"artist":0.85,
-                          "distr_label":0.15},
-                  };
-        hidden_levels = [0];
+        artist_shareOfStreams = artist_shareOfStreams_default;
+        artist_share = 0.85;
         break;
     }
   }
 
-  var drawChart = function(data) {
-    var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
-    // Create primary <g> element
-    var g = d3.select(".container-2 #graph")
-        .html('')
-        .append('svg')
-        .attr('width', width)
-        .attr('height', height)
-        .append('g')
-        .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+  function revshare_data_update(){
+    data_revshare.other_tracks.dsp_revenue = dsp_revenue;
+    data_revshare.other_tracks.share_of_streams = 100 - artist_shareOfStreams;
 
-    // Data strucure
-    var partition = d3.partition()
-        .size([2 * Math.PI, radius]);
-    // Find data root
-    var root = d3.hierarchy(data)
-        .sum(function (d) { return d.value});
+    data_revshare.artist_share.dsp_revenue = dsp_revenue;
+    data_revshare.artist_share.share_of_streams = artist_shareOfStreams;
+    data_revshare.artist_share.share = artist_share;
 
-    // Size arcs
-    partition(root);
-    var arc = d3.arc()
-        .startAngle(function (d) { return d.x0 })
-        .endAngle(function (d) { return d.x1 })
-        .innerRadius(function (d) { return d.y0 })
-        .outerRadius(function (d) { return d.y1 });
-
-    // Add a <g> element for each node; create the slice variable since we'll refer to this selection many times
-    var slice = g.selectAll('g')
-        .data(root.descendants())
-        .enter()
-        .append('g')
-        .attr("class", "node")
-        .attr("id","slice");
-
-    // Put it all together
-    slice.append('path')
-        .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
-        .attr("d", arc)
-        .style('stroke', '#fff')
-        .style("fill",  function (d) { 
-            if (d.children){
-              return color_sunburst(d.data.name)
-            }
-            else {
-              // console.log("ELSE",d)
-              var parent_color = d3.hsl(color_sunburst(d.parent.data.name))
-              if (d.data.name=="Artist") {
-                // console.log("Artist parent color", parent_color)
-                var artist_colour = parent_color
-                // artist_colour['h'] = artist_colour['h'] + 10;
-                // artist_colour['s'] += 0.2
-                // artist_colour['l'] += 0.1
-                return artist_colour;
-              }
-              else { 
-                // console.log("Not Artist")
-                var distrib_colour = parent_color
-                // dsp_colour['h'] = dsp_colour['h'] + 5;
-                // dsp_colour['s'] += 0.3
-                distrib_colour['l'] += 0.15
-                return distrib_colour;
-              }
-            }
-          });
-
-    slice.append("text")
-            .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
-            // .attr("transform", function(d) {
-            //     return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
-            .attr("transform", function(d) {
-                return "translate(" + arc.centroid(d) + ")"; })
-            .attr("dx", "-20")
-            .attr("dy", ".5em")
-            .text(function(d) { return d.parent ? d.data.name : "" });
-
-
-    console.log("DRAW")
+    data_revshare.dist_share.dsp_revenue = dsp_revenue;
+    data_revshare.dist_share.share_of_streams = artist_shareOfStreams;
+    data_revshare.dist_share.share = 1 - artist_share;
   }
 
-  /**
-   * Calculate the correct distance to rotate each label based on its location in the sunburst.
-   * @param {Node} d
-   * @return {Number}
-   */
-  function computeTextRotation(d) {
-      var angle = (d.x0 + d.x1) / Math.PI * 90;
-
-      // Avoid upside-down labels
-      return (angle < 120 || angle > 270) ? angle : angle + 180;  // labels as rims
-      //return (angle < 180) ? angle - 90 : angle + 90;  // labels as spokes
-  }
-
-  var updateChart = function(data) {
-
-    function arcTweenPath(a, i) {
-
-        var oi = d3.interpolate({ x0: a.x0s, x1: a.x1s }, a);
-
-        function tween(t) {
-            var b = oi(t);
-            a.x0s = b.x0;
-            a.x1s = b.x1;
-            return arc(b);
-        }
-
-        return tween;
-    }
-
-    function arcTween(a) {
-      console.log("a",a)
-      var i = d3.interpolate(this._current, a);
-      this._current = i(0);
-      return function(t) {
-        console.log("t",t);
-        console.log("i(t)",i(t));
-        console.log("arc(i(t))",arc(i(t)));
-        return arc(i(t));
-      };
-    }
-
-    function arcTweenText(a) {
-      console.log("a",a)
-      var i = d3.interpolate(this._current, a);
-      this._current = i(0);
-      return function(t) {
-        console.log("t",t)
-        console.log("arc.centroid(i(t))",arc.centroid(i(t)))
-        return "translate(" + arc.centroid(i(t)) + ")rotate(" + computeTextRotation(i(t)) + ")";
-      };
-    }
-
-    // function arcTweenText(a, i) {
-    //     console.log("a",a)
-    //     var oi = d3.interpolate({ x0: a.x0s, x1: a.x1s }, a);
-    //     function tween(t) {
-    //         var b = oi(t);
-    //         console.log("b",b)
-    //         console.log("arc.centroid(b)",arc.centroid(b))
-    //         return "translate(" + arc.centroid(b) + ")rotate(" + computeTextRotation(b) + ")";
-    //     }
-    //     return tween;
-    // }
-
-    var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
-    
-    // Data strucure
-    var partition = d3.partition()
-        .size([2 * Math.PI, radius]);
-
-    // Find data root
-    var root = d3.hierarchy(data)
-        .sum(function (d) { return d.value});
-
-    // Size arcs
-    partition(root);
-    arc = d3.arc()
-        .startAngle(function (d) {d.x0s = d.x0; return d.x0 })
-        .endAngle(function (d) { d.x1s = d.x1; return d.x1 })
-        .innerRadius(function (d) { return d.y0 })
-        .outerRadius(function (d) { return d.y1 });
-
-    // Put it all together
-    var slice = d3.selectAll(".container-2 #graph").selectAll("#slice").data(root.descendants());
-    console.log("slice",slice)
-
-    var path = slice.select('path');
-    // path.transition().attrTween("d", arcTweenPath);
-    console.log("path",path)
-    // path.transition().duration(500);
-    // console.log("transition",path)
-
-
-    path.transition().duration(500)
-        .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
-        // .attrTween("d", arcTween)
-        .attr("d", arc)
-        .style('stroke', '#fff')
-        .style("fill", function (d) { 
-          if (d.children){
-            return color_sunburst(d.data.name)
-          }
-          else {
-            // console.log("ELSE",d)
-            var parent_color = d3.hsl(color_sunburst(d.parent.data.name))
-            if (d.data.name=="Artist") {
-              // console.log("Artist parent color", parent_color)
-              var artist_colour = parent_color
-              // artist_colour['h'] = artist_colour['h'] + 10;
-              // artist_colour['s'] += 0.2
-              // artist_colour['l'] += 0.1
-              return artist_colour;
-            }
-            else { 
-              // console.log("Not Artist")
-              var distrib_colour = parent_color
-              // dsp_colour['h'] = dsp_colour['h'] + 5;
-              // dsp_colour['s'] += 0.3
-              distrib_colour['l'] += 0.15
-              return distrib_colour;
-            }
-          }
+  function drawChart(data, rect_rendering_options){
+    // List of dictionaries version of data dict, used for iterating through data in plotting routines.
+    var data_rect_values = Object.keys(data).map(function(key){  
+        return data[key];
         });
+    // Set scales
+    var x = d3.scaleLinear()
+              .domain([revshare_scale_ends.x_min, revshare_scale_ends.x_max])
+              .range([0, width_revshare - margin_revshare.right - margin_revshare.left]);
 
-    text = slice.select("text");
-    text.attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
-        .attr("transform", function(d) {
-            return "translate(" + arc.centroid(d) + ")"; })
-        .attr("dx", "-20")
-        .attr("dy", ".5em")
-        .text(function(d) { return d.parent ? d.data.name : "" });
+    var y = d3.scaleLinear()
+              .domain([revshare_scale_ends.y_min, revshare_scale_ends.y_max])
+              .range([height_revshare - margin_revshare.top - margin_revshare.bottom, 0]);
 
-    console.log('DRAW UPDATE')
-    // console.log('Pie Widht',pieWidth)
+
+    // Add X axis
+    svg_revshare
+      .append("g")
+      .attr("transform", "translate(0," + (height_revshare - margin_revshare.top - margin_revshare.bottom) + ")")
+      .call(d3.axisBottom(x));
+
+    // Add X axis label:
+    svg_revshare.append("text")
+        .attr("text-anchor", "middle")
+        .attr("x", (width_revshare - margin_revshare.left - margin_revshare.right)/2 )
+        .attr("y", height_revshare - margin_revshare.top - 0.1*margin_revshare.bottom)
+        .text("Share of streams (%)");
+
+    // Add Y axis
+    if (rect_rendering_options.y_axis==true){
+      svg_revshare
+        .append("g")
+        .call(d3.axisLeft(y).tickValues([]));
+      
+      // Y axis label:
+      svg_revshare.append("text")
+          .attr("text-anchor", "end")
+          .attr("transform", "rotate(-90)")
+          .attr("y", -margin_revshare.left + 40)
+          .attr("x", -margin_revshare.top )
+          .text("DSP Revenue")
+    }
+
+
+    // Draw other tracks rectangle
+    svg_revshare
+      .append("rect")
+        .attr("x", x(revshare_scale_ends.x_min) )
+        .attr("y",y(data.other_tracks.dsp_revenue))
+        .attr("width", x(data.other_tracks.share_of_streams) )
+        .attr("height", y(revshare_scale_ends.y_max-data.other_tracks.dsp_revenue)) //Needs to be y_axis_range - coordinate because vertical coordinates go from top to bottom
+        .attr("id",data.other_tracks.label)
+        .style("fill", data.other_tracks.color)
+        .style("fill-opacity", data.other_tracks.opacity)
+        // .style("stroke", "#5c5b5b")
+        .on('mouseover', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.other_tracks.opacity_highlight);
+        })
+        .on('mouseout', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.other_tracks.opacity);
+        })
+
+    // Draw Distributor share rectangle
+    svg_revshare
+      .append("rect")
+        .attr("x", x(data.other_tracks.share_of_streams) )
+        .attr("y",y(data.dist_share.dsp_revenue * (1 - data.artist_share.share)))
+        .attr("width", x(data.dist_share.share_of_streams) )
+        .attr("height", y(revshare_scale_ends.y_max-data.dist_share.dsp_revenue*data.dist_share.share))
+        .attr("id","distributor_share")
+        .style("fill", data.dist_share.color)
+        .style("fill-opacity", data.dist_share.opacity)
+        // .style("stroke", "#b8211c")
+        .on('mouseover', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity',data.dist_share.opacity_highlight);
+        })
+        .on('mouseout', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.dist_share.opacity);
+        })
+
+    // Draw Artist share rectangle
+    svg_revshare
+      .append("rect")
+        .attr("x", x(data.other_tracks.share_of_streams) )
+        .attr("y",y(data.artist_share.dsp_revenue))
+        .attr("width", x(data.artist_share.share_of_streams) )
+        .attr("height", y(revshare_scale_ends.y_max-data.artist_share.dsp_revenue*data.artist_share.share))
+        .attr("id","artist_share")
+        .style("fill", data.artist_share.color)
+        .style("fill-opacity", data.artist_share.opacity)
+        // .style("stroke", "#b8211c")
+        .on('mouseover', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity',data.artist_share.opacity_highlight);
+        })
+        .on('mouseout', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.artist_share.opacity);
+        })
   }
-  
-  
+
+  function revshare_draw_dollars(N=20){
+    // N specifies how many dollar icons to put per dimension (so N**2 in total)
+
+    // Set scales
+    var x = d3.scaleLinear()
+              .domain([revshare_scale_ends.x_min, revshare_scale_ends.x_max])
+              .range([0, width_revshare - margin_revshare.right - margin_revshare.left]);
+
+    var y = d3.scaleLinear()
+              .domain([revshare_scale_ends.y_min, revshare_scale_ends.y_max])
+              .range([height_revshare - margin_revshare.top - margin_revshare.bottom, 0]);
+
+    var g_dollars = svg_revshare
+        .append("g")
+        .attr("class","dollars");
+
+    var i;
+    var j;
+    for (i=0; i<N;  i++){
+      for (j=N; j>0;  j--){
+        var idx = i+j*N;
+        g_dollars
+          .append("image")
+          .attr('xlink:href', './images/round_dollar_negative_with_edges_white.png')
+          .attr("x", x(i*revshare_scale_ends.x_max/N)+1 )
+          .attr("y",y(j*revshare_scale_ends.x_max/N))
+          .attr("width", x(revshare_scale_ends.x_max/N) )
+          .attr("height", x(revshare_scale_ends.x_max/N)) 
+          .attr("id","dollar_"+idx)
+      }
+    }
+  }
+
+  function revshare_draw_legend(data, N){
+    var data_rect_values = Object.keys(data).map(function(key){  
+          return data[key];
+          });
+    // Set scales
+    var x = d3.scaleLinear()
+              .domain([revshare_scale_ends.x_min, revshare_scale_ends.x_max])
+              .range([0, width_revshare - margin_revshare.right - margin_revshare.left]);
+    var y = d3.scaleLinear()
+              .domain([revshare_scale_ends.y_min, revshare_scale_ends.y_max])
+              .range([height_revshare - margin_revshare.top - margin_revshare.bottom, 0]);
+    // Set dimensions of legend
+    var legendRectSize = Math.floor(x(revshare_scale_ends.x_max/N)); 
+    var legendSpacing = 4;
+    var legendPadLeft = 20;
+    var legend_x = x(50);
+    var legend_y = margin_revshare.top - 35;
+    var width_legend = x(revshare_scale_ends.x_max) - x(revshare_scale_ends.x_min);
+    // Set Legend
+    var legend = d3.select(".container-2 #graph").select('svg')
+              .selectAll('.legend')                     
+              .data(data_rect_values)                                   
+              .enter()                                                
+              .append('g')                                            
+              .attr('class', 'legend')                                
+              .attr('transform', function(d, i) {  
+                var horz = i*width_legend/data_rect_values.length + margin_revshare.left + legendPadLeft;                       
+                var vert = legend_y;                       
+                return 'translate(' + horz + ',' + vert + ')';       
+              });                                                    
+
+            legend.append('rect')                                  
+              .attr('width', legendRectSize)                        
+              .attr('height', legendRectSize)                         
+              .style('fill', function(d){return d.color;})
+              .style('opacity',function(d){return d.opacity;});                
+              // .style('stroke', color);   
+
+            legend.append("image")  
+                  .attr('xlink:href', './images/round_dollar_negative_with_edges_white.png')
+                  .attr("width", legendRectSize )
+                  .attr("height", legendRectSize );                       
+              
+            legend.append('text')                                     
+              .attr('x', legendRectSize + legendSpacing)            
+              .attr('y', legendRectSize - legendSpacing)
+              .style('fill', function(d) {return d.color})
+              .style('opacity', function(d) {return d.opacity})             
+              .text(function(d) { return d.annotation; });
+  }
+
+  function updateChart(data, revshare_rendering_options, transition_duration=500){
+    // List of dictionaries version of data dict, used for iterating through data in plotting routines.
+    var data_rect_values = Object.keys(data).map(function(key){  
+        return data[key];
+        });
+    // Set scales
+    var x = d3.scaleLinear()
+              .domain([revshare_scale_ends.x_min, revshare_scale_ends.x_max])
+              .range([0, width_revshare - margin_revshare.right - margin_revshare.left]);
+
+    var y = d3.scaleLinear()
+              .domain([revshare_scale_ends.y_min, revshare_scale_ends.y_max])
+              .range([height_revshare - margin_revshare.top - margin_revshare.bottom, 0]);
+
+    // Update other tracks rectangle
+    var other_rect = svg_revshare.selectAll("#other_tracks");
+    other_rect
+        .transition()
+        .duration(transition_duration)
+        .attr("x", x(revshare_scale_ends.x_min) )
+        .attr("y",y(data.other_tracks.dsp_revenue))
+        .attr("width", x(data.other_tracks.share_of_streams) )
+        .attr("height", y(revshare_scale_ends.y_max-data.other_tracks.dsp_revenue)) //Needs to be y_axis_range - coordinate because vertical coordinates go from top to bottom
+        .style("fill", data.other_tracks.color)
+        .style("fill-opacity", data.other_tracks.opacity)
+        // .style("stroke", "#5c5b5b")
+
+    other_rect
+        .on('mouseover', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.other_tracks.opacity_highlight);
+        })
+        .on('mouseout', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.other_tracks.opacity);
+        })
+
+    // Update Distributor share rectangle
+    var dist_rect = svg_revshare.selectAll("#distributor_share");
+    dist_rect
+        .transition()
+        .duration(transition_duration)
+        .attr("x", x(data.other_tracks.share_of_streams) )
+        .attr("y",y(data.dist_share.dsp_revenue * (1 - data.artist_share.share)))
+        .attr("width", x(data.dist_share.share_of_streams) )
+        .attr("height", y(revshare_scale_ends.y_max-data.dist_share.dsp_revenue*data.dist_share.share))
+        .style("fill", data.dist_share.color)
+        .style("fill-opacity", data.dist_share.opacity)
+        // .style("stroke", "#b8211c")
+
+    dist_rect
+        .on('mouseover', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity',data.dist_share.opacity_highlight);
+        })
+        .on('mouseout', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.dist_share.opacity);
+        })
+
+    // Update Artist share rectangle
+    var artist_rect = svg_revshare.selectAll("#artist_share");
+    artist_rect
+        .transition()
+        .duration(transition_duration)
+        .attr("x", x(data.other_tracks.share_of_streams) )
+        .attr("y",y(data.artist_share.dsp_revenue))
+        .attr("width", x(data.artist_share.share_of_streams) )
+        .attr("height", y(revshare_scale_ends.y_max-data.artist_share.dsp_revenue*data.artist_share.share))
+        .attr("id","artist_share")
+        .style("fill", data.artist_share.color)
+        .style("fill-opacity", data.artist_share.opacity)
+        // .style("stroke", "#b8211c")
+
+    artist_rect
+        .on('mouseover', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity',data.artist_share.opacity_highlight);
+        })
+        .on('mouseout', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.artist_share.opacity);
+        })
+
+    // Update annotations
+    if (rect_rendering_options.annotations==true){
+      //Add text
+      var annotations = svg_revshare.selectAll('.annotations')
+          .data(data_rect_values)
+          .attr('transform', function(d){
+            var centroid = get_rect_centroid("#"+d.label);
+            return 'translate(' + centroid[0] + ',' + centroid[1] + ')';
+          });
+    }   
+
+    if (rect_rendering_options.annotations==false){
+      svg_revshare.selectAll(".annotations").remove()
+    }
+
+  }
+
+
   var gs2 = d3.graphScroll()
       .container(d3.select('.container-2'))
       .graph(d3.selectAll('container-2 #graph'))
@@ -1001,55 +1130,213 @@ function render(){
         console.log("i",i)
         // var pos = [ data, data2, data3, data4 ][i]        
         // update(pos)
-        sunburst_data_modifier(i)
-        data_sunburst = generate_data_dict()
-        console.log('dsp_revenue',dsp_revenue)
-        console.log('streams',streams)
+        revshare_data_modifier(i)
+        // data_sunburst = generate_data_dict()
+        console.log('data_revshare',data_revshare)
         if (i==0){
-          drawChart(data_sunburst)}
-        else {
-          updateChart(data_sunburst)
+          if (revshare_drawn==false){
+            revshare_data_update();
+            drawChart(data_revshare,revshare_rendering_options);
+            revshare_draw_dollars(N=20);
+            revshare_draw_legend(data_revshare, N=20);
+            revshare_drawn = true;
+          }
+          else {
+            revshare_data_update();
+            updateChart(data_revshare,revshare_rendering_options);
+          }
         }
-        
-
+        else {
+          revshare_data_update();
+          updateChart(data_revshare,revshare_rendering_options);
+        }
       })
+
+
+  // var color_sunburst = d3.scaleOrdinal(["#848484","#7c95bd","#848484","#848484","#848484","#ffd92f","#e5c494","#b3b3b3"]);
+
+  // var generate_data_dict = function(){
+  //   // Generate a hierarchical data dict from user inputs, to be used to plot pie chart.
+  //   var data = {"name":"Royalties",
+  //               "children":[]}
+  //   //Calculate total streams
+  //   var total_streams = Object.values(streams).reduce((a, b) => a + b, 0)
+  //   // Construct data object
+  //   for (const property in streams){
+  //       var track_popupation = 100*streams[property]/total_streams
+  //       if (property=="track1"){
+  //         var track_data = {"name":property,
+  //                           "children":[{"name":"Artist",
+  //                                         "value":shares[property]["artist"]*track_popupation},
+  //                                         {"name":"Distr/Label",
+  //                                         "value":shares[property]["distr_label"]*track_popupation}
+  //                                     ]
+  //                         }
+  //       }
+  //       else {
+  //         track_data = {"name":property,
+  //                       "value":track_popupation}
+  //       }
+  //       data["children"].push(track_data)
+  //   }
+  //   return data
+  // }
+
+  // var data_sunburst = generate_data_dict()
+
+  // var drawChart = function(data) {
+  //   var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
+  //   // Create primary <g> element
+  //   var g = d3.select(".container-2 #graph")
+  //       .html('')
+  //       .append('svg')
+  //       .attr('width', width)
+  //       .attr('height', height)
+  //       .append('g')
+  //       .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+
+  //   // Data strucure
+  //   var partition = d3.partition()
+  //       .size([2 * Math.PI, radius]);
+  //   // Find data root
+  //   var root = d3.hierarchy(data)
+  //       .sum(function (d) { return d.value});
+
+  //   // Size arcs
+  //   partition(root);
+  //   var arc = d3.arc()
+  //       .startAngle(function (d) { return d.x0 })
+  //       .endAngle(function (d) { return d.x1 })
+  //       .innerRadius(function (d) { return d.y0 })
+  //       .outerRadius(function (d) { return d.y1 });
+
+  //   // Add a <g> element for each node; create the slice variable since we'll refer to this selection many times
+  //   var slice = g.selectAll('g')
+  //       .data(root.descendants())
+  //       .enter()
+  //       .append('g')
+  //       .attr("class", "node")
+  //       .attr("id","slice");
+
+  //   // Put it all together
+  //   slice.append('path')
+  //       .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
+  //       .attr("d", arc)
+  //       .style('stroke', '#fff')
+  //       .style("fill",  function (d) { 
+  //           if (d.children){
+  //             return color_sunburst(d.data.name)
+  //           }
+  //           else {
+  //             // console.log("ELSE",d)
+  //             var parent_color = d3.hsl(color_sunburst(d.parent.data.name))
+  //             if (d.data.name=="Artist") {
+  //               // console.log("Artist parent color", parent_color)
+  //               var artist_colour = parent_color
+  //               // artist_colour['h'] = artist_colour['h'] + 10;
+  //               // artist_colour['s'] += 0.2
+  //               // artist_colour['l'] += 0.1
+  //               return artist_colour;
+  //             }
+  //             else { 
+  //               // console.log("Not Artist")
+  //               var distrib_colour = parent_color
+  //               // dsp_colour['h'] = dsp_colour['h'] + 5;
+  //               // dsp_colour['s'] += 0.3
+  //               distrib_colour['l'] += 0.15
+  //               return distrib_colour;
+  //             }
+  //           }
+  //         });
+
+  //   slice.append("text")
+  //           .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
+  //           // .attr("transform", function(d) {
+  //           //     return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+  //           .attr("transform", function(d) {
+  //               return "translate(" + arc.centroid(d) + ")"; })
+  //           .attr("dx", "-20")
+  //           .attr("dy", ".5em")
+  //           .text(function(d) { return d.parent ? d.data.name : "" });
+
+
+  //   console.log("DRAW")
+  // }
+
+  // var updateChart = function(data) {
+
+  //   var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
+    
+  //   // Data strucure
+  //   var partition = d3.partition()
+  //       .size([2 * Math.PI, radius]);
+
+  //   // Find data root
+  //   var root = d3.hierarchy(data)
+  //       .sum(function (d) { return d.value});
+
+  //   // Size arcs
+  //   partition(root);
+  //   arc = d3.arc()
+  //       .startAngle(function (d) {d.x0s = d.x0; return d.x0 })
+  //       .endAngle(function (d) { d.x1s = d.x1; return d.x1 })
+  //       .innerRadius(function (d) { return d.y0 })
+  //       .outerRadius(function (d) { return d.y1 });
+
+  //   // Put it all together
+  //   var slice = d3.selectAll(".container-2 #graph").selectAll("#slice").data(root.descendants());
+
+  //   var path = slice.select('path');
+  //   // path.transition().attrTween("d", arcTweenPath);
+  //   // path.transition().duration(500);
+  //   // console.log("transition",path)
+
+
+  //   path.transition().duration(500)
+  //       .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
+  //       // .attrTween("d", arcTween)
+  //       .attr("d", arc)
+  //       .style('stroke', '#fff')
+  //       .style("fill", function (d) { 
+  //         if (d.children){
+  //           return color_sunburst(d.data.name)
+  //         }
+  //         else {
+  //           // console.log("ELSE",d)
+  //           var parent_color = d3.hsl(color_sunburst(d.parent.data.name))
+  //           if (d.data.name=="Artist") {
+  //             // console.log("Artist parent color", parent_color)
+  //             var artist_colour = parent_color
+  //             // artist_colour['h'] = artist_colour['h'] + 10;
+  //             // artist_colour['s'] += 0.2
+  //             // artist_colour['l'] += 0.1
+  //             return artist_colour;
+  //           }
+  //           else { 
+  //             // console.log("Not Artist")
+  //             var distrib_colour = parent_color
+  //             // dsp_colour['h'] = dsp_colour['h'] + 5;
+  //             // dsp_colour['s'] += 0.3
+  //             distrib_colour['l'] += 0.15
+  //             return distrib_colour;
+  //           }
+  //         }
+  //       });
+
+  //   text = slice.select("text");
+  //   text.attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
+  //       .attr("transform", function(d) {
+  //           return "translate(" + arc.centroid(d) + ")"; })
+  //       .attr("dx", "-20")
+  //       .attr("dy", ".5em")
+  //       .text(function(d) { return d.parent ? d.data.name : "" });
+
+  //   // console.log('Pie Widht',pieWidth)
+  // }
+  
+  
+  
   ////////////////////////////////////
-
-
-  ///////////// Squares section ///////////////////////
-
-  var colors = ['orange', 'purple', 'steelblue', 'pink', 'black']
-
-  var svg3 = d3.select('.container-3 #graph').html('')
-               .append('svg')
-               .attrs({width: width, height: height})
-               .append('g')
-                .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
-
-  var path3 = svg3.append('path')
-
-  var gs3 = d3.graphScroll()
-      .container(d3.select('.container-3'))
-      .graph(d3.selectAll('.container-3 #graph'))
-      .eventId('uniqueId3')  // namespace for scroll and resize events
-      .sections(d3.selectAll('.container-3 #sections > div'))
-      .on('active', function(i){
-        var h = height
-        var w = width
-        var dArray = [
-          [[w/4, h/4], [w*3/4, h/4],  [w*3/4, h*3/4], [w/4, h*3/4]],
-          [[0, 0],     [w*3/4, h/4],  [w*3/4, h*3/4], [w/4, h*3/4]],
-          [[w/2, h/2], [w, h/4],      [w, h],         [w/4, h]],
-          [[w/2, h/2], [w, h/4],      [w, h],         [w/4, h]],
-          [[w/2, h/2], [w, h/2],      [0, 0],         [w/4, h/2]],
-          [[w/2, h/2], [0, h/4],      [0, h/2],         [w/4, 0]],
-        ].map(function(d){ return 'M' + d.join(' L ') })
-
-
-        path3.transition().duration(1000)
-            .attr('d', dArray[i])
-            .style('fill', colors[i])
-      })
 
 }
 render()
