@@ -686,8 +686,12 @@ function render(){
                               "y_axis_ticks":false,
                               "x_axis_ticks":false,
                               "x_axis_label":false,
-                              "annotations":false}
+                              "annotations":false,
+                              "legend_other_tracks":false,
+                              "legend_artist":false,
+                              "legend_dist":false}
 
+  var revshare_title = "DSP Roylaties revenue share";
   var shares = shares_default;
   var streams = streams_default;
   var dsp_revenue = dsp_revenue_default;  
@@ -712,6 +716,9 @@ function render(){
         artist_share = 1;
         revshare_rendering_options.x_axis_ticks = false;
         revshare_rendering_options.x_axis_label = false;
+        revshare_rendering_options.legend_other_tracks = false;
+        revshare_rendering_options.legend_artist = false;
+        revshare_rendering_options.legend_dist = false;
         break;
       case 1:
         dsp_revenue = 100;
@@ -719,6 +726,9 @@ function render(){
         artist_share = 1;
         revshare_rendering_options.x_axis_ticks = false;
         revshare_rendering_options.x_axis_label = false;
+        revshare_rendering_options.legend_other_tracks = false;
+        revshare_rendering_options.legend_artist = false;
+        revshare_rendering_options.legend_dist = false;
         break;
       case 2:
         dsp_revenue = dsp_revenue_default;
@@ -726,6 +736,9 @@ function render(){
         artist_share = 1;
         revshare_rendering_options.x_axis_ticks = false;
         revshare_rendering_options.x_axis_label = false;
+        revshare_rendering_options.legend_other_tracks = false;
+        revshare_rendering_options.legend_artist = false;
+        revshare_rendering_options.legend_dist = false;
         break;
       case 3:
         dsp_revenue = dsp_revenue_default;
@@ -733,6 +746,10 @@ function render(){
         artist_share = 1;
         revshare_rendering_options.x_axis_ticks = false;
         revshare_rendering_options.x_axis_label = false;
+        revshare_rendering_options.legend_other_tracks = true;
+        revshare_rendering_options.legend_artist = true;
+        data_revshare.artist_share.annotation = "Artist Track";
+        revshare_rendering_options.legend_dist = false;
         break;
       case 4:
         dsp_revenue = dsp_revenue_default;
@@ -760,11 +777,17 @@ function render(){
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = artist_shareOfStreams_default;
         artist_share = 1;
+        revshare_rendering_options.legend_other_tracks = true;
+        revshare_rendering_options.legend_artist = true;
+        data_revshare.artist_share.annotation = "Artist Track";
+        revshare_rendering_options.legend_dist = false;
         break;
       case 9:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = artist_shareOfStreams_default;
         artist_share = artist_share_default;
+        data_revshare.artist_share.annotation = "Artist Share";
+        revshare_rendering_options.legend_dist = true;
         break;
       case 10:
         dsp_revenue = dsp_revenue_default;
@@ -967,6 +990,61 @@ function render(){
     }
   }
 
+  function revshare_draw_title(){
+    // Set scales
+    var x = d3.scaleLinear()
+              .domain([revshare_scale_ends.x_min, revshare_scale_ends.x_max])
+              .range([0, width_revshare - margin_revshare.right - margin_revshare.left]);
+    var y = d3.scaleLinear()
+              .domain([revshare_scale_ends.y_min, revshare_scale_ends.y_max])
+              .range([height_revshare - margin_revshare.top - margin_revshare.bottom, 0]);
+    // Set dimensions of legend
+    // var legendRectSize = Math.floor(x(revshare_scale_ends.x_max/N)); 
+    // var legendSpacing = 4;
+    // var legendPadLeft = 20;
+    // var legend_x = x(50);
+    var horz = x(50);
+    var vert = margin_revshare.top/2;
+    // var legend_y = margin_revshare.top - 35;
+    // var legend_y = height_revshare - margin_revshare.bottom/2;
+    // var width_legend = x(revshare_scale_ends.x_max) - x(revshare_scale_ends.x_min);
+    // Set Legend
+    var title = d3.select(".container-2 #graph").select("svg")                                                                   
+              .append('g')                                            
+              .attr('class', 'title')                                
+              .attr('transform', 'translate(' + horz + ',' + vert + ')');                                                                               
+              
+            title.append('text')
+                  .attr("text-anchor","middle")                                     
+              // .attr('x', legendRectSize + legendSpacing)            
+              // .attr('y', legendRectSize - legendSpacing)
+              // .style('fill', function(d) {return d.color})           
+              .text(revshare_title);
+  }
+
+  function revshare_legend_display(d){
+    if (d.label=="other_tracks"){
+      if (revshare_rendering_options.legend_other_tracks==false){
+        return 0
+      }
+      else {return d.opacity}
+    }
+
+    if (d.label=="artist_share"){
+      if (revshare_rendering_options.legend_artist==false){
+        return 0
+      }
+      else {return d.opacity}
+    }
+
+    if (d.label=="distributor_share"){
+      if (revshare_rendering_options.legend_dist==false){
+        return 0
+      }
+      else {return d.opacity}
+    }
+  }
+
   function revshare_draw_legend(data, N){
     var data_rect_values = Object.keys(data).map(function(key){  
           return data[key];
@@ -983,7 +1061,8 @@ function render(){
     var legendSpacing = 4;
     var legendPadLeft = 20;
     var legend_x = x(50);
-    var legend_y = margin_revshare.top - 35;
+    // var legend_y = margin_revshare.top - 35;
+    var legend_y = height_revshare - margin_revshare.bottom/2;
     var width_legend = x(revshare_scale_ends.x_max) - x(revshare_scale_ends.x_min);
     // Set Legend
     var legend = d3.select(".container-2 #graph").select('svg')
@@ -1002,11 +1081,11 @@ function render(){
               .attr('width', legendRectSize)                        
               .attr('height', legendRectSize)                         
               .style('fill', function(d){return d.color;})
-              .style('opacity',function(d){return d.opacity;});                
+              .style('opacity',function(d){return revshare_legend_display(d);});                
               // .style('stroke', color);   
 
             legend.append("image")  
-                  .attr('xlink:href', './images/round_dollar_negative_with_edges_white.png')
+                  .attr('xlink:href', './images/round_dollar_fill_negative_with_edges.png')
                   .attr("width", legendRectSize )
                   .attr("height", legendRectSize );                       
               
@@ -1014,7 +1093,39 @@ function render(){
               .attr('x', legendRectSize + legendSpacing)            
               .attr('y', legendRectSize - legendSpacing)
               .style('fill', function(d) {return d.color})
-              .style('opacity', function(d) {return d.opacity})             
+              .style('opacity', function(d) {return revshare_legend_display(d)})             
+              .text(function(d) { return d.annotation; });
+  }
+
+  function revshare_update_legend(data, N){
+    var data_rect_values = Object.keys(data).map(function(key){  
+          return data[key];
+          });
+    // Set scales
+    var x = d3.scaleLinear()
+              .domain([revshare_scale_ends.x_min, revshare_scale_ends.x_max])
+              .range([0, width_revshare - margin_revshare.right - margin_revshare.left]);
+    var y = d3.scaleLinear()
+              .domain([revshare_scale_ends.y_min, revshare_scale_ends.y_max])
+              .range([height_revshare - margin_revshare.top - margin_revshare.bottom, 0]);
+    // Set dimensions of legend
+    var legendRectSize = Math.floor(x(revshare_scale_ends.x_max/N)); 
+    var legendSpacing = 4;
+    var legendPadLeft = 20;
+    var legend_x = x(50);
+    // var legend_y = margin_revshare.top - 35;
+    var legend_y = height_revshare - margin_revshare.bottom/2;
+    var width_legend = x(revshare_scale_ends.x_max) - x(revshare_scale_ends.x_min);
+    // Set Legend
+    var legend = d3.select(".container-2 #graph").select('svg')
+              .selectAll('.legend')                     
+              .data(data_rect_values);                                                   
+
+            legend.select('rect')                                  
+              .style('opacity',function(d){return revshare_legend_display(d);});                                     
+              
+            legend.select('text')                                     
+              .style('opacity', function(d) {return revshare_legend_display(d)})             
               .text(function(d) { return d.annotation; });
   }
 
@@ -1198,17 +1309,20 @@ function render(){
             revshare_data_update();
             drawChart(data_revshare,revshare_rendering_options);
             revshare_draw_dollars(N=20);
+            revshare_draw_title()
             revshare_draw_legend(data_revshare, N=20);
             revshare_drawn = true;
           }
           else {
             revshare_data_update();
             updateChart(data_revshare,revshare_rendering_options);
+            revshare_update_legend(data_revshare, N=20);
           }
         }
         else {
           revshare_data_update();
           updateChart(data_revshare,revshare_rendering_options);
+          revshare_update_legend(data_revshare, N=20);
         }
       })
 
