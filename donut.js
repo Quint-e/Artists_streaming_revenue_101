@@ -22,13 +22,31 @@ function render(){
 
   var margin_diag = {top: 20, right: 20, bottom: 40, left: 60}; // Overall diagram area margins
 
-    var svg_diag = d3.select(".container-0 #graph")
-      // .html('')
-      .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-      .append("g")
-        .attr("transform", "translate(" + margin_diag.left + "," + margin_diag.top + ")");
+  var data_music_notes = [
+                          {label:"singer", x:singer_params.x+singer_params.width, y:singer_params.y,
+                            x_end:distributor_params.x +distributor_params.width/2, y_end:distributor_params.y,
+                            delay1:0, delay2:1000 },
+                          {label:"spotify",x:distributor_params.x+distributor_params.width/2, y:distributor_params.y,
+                            x_end:spotify_params.x, y_end:spotify_params.y,
+                            delay1:1000, delay2:0 },
+                          {label:"apple",x:distributor_params.x+distributor_params.width/2, y:distributor_params.y,
+                            x_end:apple_params.x, y_end:apple_params.y,
+                            delay1:1000, delay2:0 },
+                          {label:"deezer",x:distributor_params.x+distributor_params.width/2, y:distributor_params.y,
+                            x_end:deezer_params.x, y_end:deezer_params.y,
+                            delay1:1000, delay2:0 },
+                          ];
+
+
+
+  var svg_diag = d3.select(".container-0 #graph")
+    // .html('')
+    .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+    .append("g")
+      .attr("id", "dist_diag")
+      .attr("transform", "translate(" + margin_diag.left + "," + margin_diag.top + ")");
 
   var draw_diagram = function(){
 
@@ -211,87 +229,133 @@ function render(){
       };
     };
 
-    function animate_music(line_ends,gap,duration){
+  //   function animate_music(line_ends,gap,duration){
 
-      var line = d3.line()
-        .x(function(d) { return d.x; })
-        .y(function(d) { return d.y; });
+  //     var line = d3.line()
+  //       .x(function(d) { return d.x; })
+  //       .y(function(d) { return d.y; });
 
-      var line_len = Math.sqrt((line_ends[1].x - line_ends[0].x)**2 + (line_ends[1].y - line_ends[0].y)**2 );
-      var line_slope = (line_ends[0].y - line_ends[1].y)/(line_ends[0].x - line_ends[1].x)
+  //     var line_len = Math.sqrt((line_ends[1].x - line_ends[0].x)**2 + (line_ends[1].y - line_ends[0].y)**2 );
+  //     var line_slope = (line_ends[0].y - line_ends[1].y)/(line_ends[0].x - line_ends[1].x)
 
-      var myPath = svg_diag.append("g")
-        .append("path")
-        .attr("d", line(line_ends))
-        .attr("id", "dots");
+  //     var myPath = svg_diag.append("g")
+  //       .append("path")
+  //       .attr("d", line(line_ends))
+  //       .attr("id", "dots");
       
-      var numberOfDots = Math.floor(line_len/ gap);
-      var gap_x = Math.sqrt(gap**2/(1+line_slope**2));
+  //     var numberOfDots = Math.floor(line_len/ gap);
+  //     var gap_x = Math.sqrt(gap**2/(1+line_slope**2));
       
-      var data = d3.range(numberOfDots).map(function(d, i) {
-          // let length =line_len * (i/numberOfDots);
-          let point = {x:line_ends[0].x + i*gap_x, y:line_ends[0].y + i*gap_x*line_slope};
-          //return point.x; 
-          return {x: point.x, y: point.y}; 
-      });
+  //     var data = d3.range(numberOfDots).map(function(d, i) {
+  //         // let length =line_len * (i/numberOfDots);
+  //         let point = {x:line_ends[0].x + i*gap_x, y:line_ends[0].y + i*gap_x*line_slope};
+  //         //return point.x; 
+  //         return {x: point.x, y: point.y}; 
+  //     });
       
-      var dots = svg_diag.select("g").selectAll(".dot")
-        .data(data)
-        .enter()
-        .append('image')
-        .attr('xlink:href', './images/music.png')
-        .attr('width', 20)
-        .attr('height',20)
-        .attr("x",function(d, i){ return d.x; })
-        .attr("y", function(d, i){ return d.y; })
-        .attr("id", "dots")
-        .attr("opacity",0);
+  //     var dots = svg_diag.select("g").selectAll(".dot")
+  //       .data(data)
+  //       .enter()
+  //       .append('image')
+  //       .attr('xlink:href', './images/music.png')
+  //       .attr('width', 20)
+  //       .attr('height',20)
+  //       .attr("x",function(d, i){ return d.x; })
+  //       .attr("y", function(d, i){ return d.y; })
+  //       .attr("id", "dots")
+  //       .attr("opacity",0);
 
-      var count = 0;
-      var tid = setInterval(updateDots, duration);
+  //     var count = 0;
+  //     var tid = setInterval(updateDots, duration);
 
-      function updateDots() {
-        dots.transition()
-          .duration(200)
-          .style("opacity", function(d,i){
+  //     function updateDots() {
+  //       dots.transition()
+  //         .duration(200)
+  //         .style("opacity", function(d,i){
           
-            var opacity = 1
+  //           var opacity = 1
 
-            ///////////////// Version with 3 dot trains /////////
-              // if (i == count || i == (count + 1) || i == (count + 2)) {
-              //   opacity = 1;
-              // } else {
-              //   opacity = 0;
-              // };
-            ///////////////////////////////////////////////////////
+  //           ///////////////// Version with 3 dot trains /////////
+  //             // if (i == count || i == (count + 1) || i == (count + 2)) {
+  //             //   opacity = 1;
+  //             // } else {
+  //             //   opacity = 0;
+  //             // };
+  //           ///////////////////////////////////////////////////////
 
-            ///////////////// Version with 2 dot trains /////////
-              if (i == count || i == (count + 1) ) {
-                opacity = 1;
-              } else {
-                opacity = 0;
-              };
-            ///////////////////////////////////////////////////////
+  //           ///////////////// Version with 2 dot trains /////////
+  //             if (i == count || i == (count + 1) ) {
+  //               opacity = 1;
+  //             } else {
+  //               opacity = 0;
+  //             };
+  //           ///////////////////////////////////////////////////////
 
-            ///////////////// Version with 1 dot trains /////////
-              // if (i == count ) {
-              //   opacity = 1;
-              // } else {
-              //   opacity = 0;
-              // };
-            ///////////////////////////////////////////////////////
+  //           ///////////////// Version with 1 dot trains /////////
+  //             // if (i == count ) {
+  //             //   opacity = 1;
+  //             // } else {
+  //             //   opacity = 0;
+  //             // };
+  //           ///////////////////////////////////////////////////////
 
-            return opacity
-          });
+  //           return opacity
+  //         });
         
-        count = count == numberOfDots ? 0 : count + 1;
-      };
-    };
+  //       count = count == numberOfDots ? 0 : count + 1;
+  //     };
+  //   };
   }
 
   var diag_delete_dots = function(){
     svg_diag.selectAll("#dots").remove()
   };
+
+
+  var animate_music = function(){
+    // var g_diag = d3.selectAll("container-0 #graph").selectAll("#dist_diag");
+    // console.log("g_diag",g_diag)
+
+    var music_notes = svg_diag.append("g")
+                              .attr("id","music_notes")
+
+    // console.log("data_music_notes",data_music_notes)
+    // console.log("music_notes",music_notes)
+    music_notes.selectAll("#music_notes")
+              .data(data_music_notes)
+              .enter()
+              .append("image")
+              .attr('xlink:href', './images/music.png')
+              .attr('width', 20)
+              .attr('height',20)
+              .attr("x",function(d){ console.log("d",d); return d.x; })
+              .attr("y", function(d){ return d.y; })
+              .transition()
+              .duration(1000)
+              .delay(function(d){ return d.delay1; })
+              .on("start",function repeat() {
+                d3.active(this)
+                    .attr("x",function(d){ return d.x_end; })
+                    .attr("y",function(d){ return d.y_end; })
+                  .transition()
+                    .duration(0)
+                    .delay(function(d){ return d.delay2; })
+                    .attr("x",function(d){ return d.x; })
+                    .attr("y",function(d){ return d.y; })
+
+
+                  .transition()
+                    .duration(1000)
+                    .delay(function(d){ return d.delay1; })
+                    .on("start", repeat)
+              })
+
+    // music_notes.transition()
+    //             .data(data_music_notes_end)
+    //             .attr("x",function(d){ console.log("d",d); return d.x; })
+    //             .attr("y", function(d){ return d.y; })
+
+  }
 
   var gs1 = d3.graphScroll()
       .container(d3.select('.container-0'))
@@ -301,8 +365,9 @@ function render(){
       // .offset(innerWidth < 900 ? innerHeight - 30 : 200)
       .on('active', function(i){
         console.log('graph 0 change', i)
-        diag_delete_dots();
-        toggle_diag_animations(i);
+        animate_music()
+        // diag_delete_dots();
+        // toggle_diag_animations(i);
       });
 
 
@@ -1014,12 +1079,12 @@ function render(){
               .attr('class', 'title')                                
               .attr('transform', 'translate(' + horz + ',' + vert + ')');                                                                               
               
-            title.append('text')
-                  .attr("text-anchor","middle")                                     
-              // .attr('x', legendRectSize + legendSpacing)            
-              // .attr('y', legendRectSize - legendSpacing)
-              // .style('fill', function(d) {return d.color})           
-              .text(revshare_title);
+        title.append('text')
+              .attr("text-anchor","middle")                                     
+          // .attr('x', legendRectSize + legendSpacing)            
+          // .attr('y', legendRectSize - legendSpacing)
+          // .style('fill', function(d) {return d.color})           
+          .text(revshare_title);
   }
 
   function revshare_legend_display(d){
