@@ -23,39 +23,44 @@ function render(){
   var margin_diag = {top: 20, right: 20, bottom: 40, left: 60}; // Overall diagram area margins
 
   var data_music_notes = [
-                          {label:"singer", x:singer_params.x+singer_params.width, y:singer_params.y,
-                            x_end:distributor_params.x +distributor_params.width/2, y_end:distributor_params.y,
-                            delay1:0, delay2:1000 },
-                          {label:"spotify",x:distributor_params.x+distributor_params.width/2, y:distributor_params.y,
+                          // {label:"singer", x:singer_params.x+singer_params.width, y:singer_params.y,
+                          //   x_end:distributor_params.x +distributor_params.width/2, y_end:distributor_params.y,
+                          //   delay1:0, delay2:1000 },
+                          {label:"spotify",
+                            x_start:singer_params.x+singer_params.width, y_start:singer_params.y,
+                            x_mid:distributor_params.x+distributor_params.width/2, y_mid:distributor_params.y,
                             x_end:spotify_params.x, y_end:spotify_params.y,
-                            delay1:1000, delay2:0 },
-                          {label:"apple",x:distributor_params.x+distributor_params.width/2, y:distributor_params.y,
+                            delay1:1000, delay2:500 },
+                          {label:"apple",x_start:singer_params.x+singer_params.width, y_start:singer_params.y,
+                            x_mid:distributor_params.x+distributor_params.width/2, y_mid:distributor_params.y,
                             x_end:apple_params.x, y_end:apple_params.y,
-                            delay1:1000, delay2:0 },
-                          {label:"deezer",x:distributor_params.x+distributor_params.width/2, y:distributor_params.y,
+                            delay1:1000, delay2:500 },
+                          {label:"deezer",x_start:singer_params.x+singer_params.width, y_start:singer_params.y,
+                            x_mid:distributor_params.x+distributor_params.width/2, y_mid:distributor_params.y,
                             x_end:deezer_params.x, y_end:deezer_params.y,
-                            delay1:1000, delay2:0 },
+                            delay1:1000, delay2:500 },
                           ];
 
   var data_diag_dollars = [
-                          {label:"singer", x_end:singer_params.x+singer_params.width, y_end:singer_params.y,
-                            x:distributor_params.x +distributor_params.width/2, y:distributor_params.y,
-                            delay1:1000, delay2:0 },
-                          {label:"spotify",x_end:distributor_params.x+distributor_params.width/2, y_end:distributor_params.y,
-                            x:spotify_params.x, y:spotify_params.y,
-                            delay1:0, delay2:1000 },
-                          {label:"apple",x_end:distributor_params.x+distributor_params.width/2, y_end:distributor_params.y,
-                            x:apple_params.x, y:apple_params.y,
-                            delay1:0, delay2:1000 },
-                          {label:"deezer",x_end:distributor_params.x+distributor_params.width/2, y_end:distributor_params.y,
-                            x:deezer_params.x, y:deezer_params.y,
-                            delay1:0, delay2:1000 },
+                          {label:"spotify",
+                            x_end:singer_params.x+singer_params.width, y_end:singer_params.y,
+                            x_mid:distributor_params.x+distributor_params.width/2, y_mid:distributor_params.y,
+                            x_start:spotify_params.x, y_start:spotify_params.y,
+                            delay1:500, delay2:500 },
+                          {label:"apple",
+                            x_end:singer_params.x+singer_params.width, y_end:singer_params.y,
+                            x_mid:distributor_params.x+distributor_params.width/2, y_mid:distributor_params.y,
+                            x_start:apple_params.x, y_start:apple_params.y,
+                            delay1:500, delay2:500 },
+                          {label:"deezer",
+                            x_end:singer_params.x+singer_params.width, y_end:singer_params.y,
+                            x_mid:distributor_params.x+distributor_params.width/2, y_mid:distributor_params.y,
+                            x_start:deezer_params.x, y_start:deezer_params.y,
+                            delay1:500, delay2:500 },
                           ];
 
 
-
   var svg_diag = d3.select(".container-0 #graph")
-    // .html('')
     .append("svg")
       .attr("width", width)
       .attr("height", height)
@@ -134,8 +139,6 @@ function render(){
     var music_notes = svg_diag.append("g")
                               .attr("id","music_notes")
 
-    // console.log("data_music_notes",data_music_notes)
-    // console.log("music_notes",music_notes)
     music_notes.selectAll("#music_notes")
               .data(data_music_notes)
               .enter()
@@ -143,20 +146,24 @@ function render(){
               .attr('xlink:href', './images/music.png')
               .attr('width', 20)
               .attr('height',20)
-              .attr("x", function(d){ return d.x; })
-              .attr("y", function(d){ return d.y; })
+              .attr("x", function(d){ return d.x_start; })
+              .attr("y", function(d){ return d.y_start; })
               .transition()
               .duration(1000)
-              .delay(function(d){ return d.delay1; })
               .on("start",function repeat() {
                 d3.active(this)
+                    .attr("x",function(d){ return d.x_mid; })
+                    .attr("y",function(d){ return d.y_mid; })
+                  .transition()
+                    .duration(1000)
+                    .delay(function(d){ return d.delay1; })
                     .attr("x",function(d){ return d.x_end; })
                     .attr("y",function(d){ return d.y_end; })
                   .transition()
                     .duration(0)
                     .delay(function(d){ return d.delay2; })
-                    .attr("x",function(d){ return d.x; })
-                    .attr("y",function(d){ return d.y; })
+                    .attr("x",function(d){ return d.x_start; })
+                    .attr("y",function(d){ return d.y_start; })
                   .transition()
                     .duration(1000)
                     .delay(function(d){ return d.delay1; })
@@ -168,30 +175,32 @@ function render(){
     var dollars = svg_diag.append("g")
                           .attr("id","diag_dist_dollars")
 
-    // console.log("data_music_notes",data_music_notes)
-    // console.log("music_notes",music_notes)
     dollars.selectAll("#diag_dist_dollars")
               .data(data_diag_dollars)
               .enter()
               .append("image")
-              // .attr('xlink:href', './images/music.png')
               .attr('xlink:href', './images/round_dollar_fill_negative_with_edges_grey_bckgnd.png')
               .attr('width', 20)
               .attr('height',20)
-              .attr("x",function(d){ console.log("d",d); return d.x; })
-              .attr("y", function(d){ return d.y; })
+              .attr("x", function(d){ return d.x_start; })
+              .attr("y", function(d){ return d.y_start; })
               .transition()
               .duration(1000)
               .delay(function(d){ return d.delay1; })
               .on("start",function repeat() {
                 d3.active(this)
+                    .attr("x",function(d){ return d.x_mid; })
+                    .attr("y",function(d){ return d.y_mid; })
+                  .transition()
+                    .duration(1000)
+                    .delay(function(d){ return d.delay1; })
                     .attr("x",function(d){ return d.x_end; })
                     .attr("y",function(d){ return d.y_end; })
                   .transition()
                     .duration(0)
                     .delay(function(d){ return d.delay2; })
-                    .attr("x",function(d){ return d.x; })
-                    .attr("y",function(d){ return d.y; })
+                    .attr("x",function(d){ return d.x_start; })
+                    .attr("y",function(d){ return d.y_start; })
                   .transition()
                     .duration(1000)
                     .delay(function(d){ return d.delay1; })
