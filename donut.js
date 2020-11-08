@@ -37,6 +37,21 @@ function render(){
                             delay1:1000, delay2:0 },
                           ];
 
+  var data_diag_dollars = [
+                          {label:"singer", x_end:singer_params.x+singer_params.width, y_end:singer_params.y,
+                            x:distributor_params.x +distributor_params.width/2, y:distributor_params.y,
+                            delay1:1000, delay2:0 },
+                          {label:"spotify",x_end:distributor_params.x+distributor_params.width/2, y_end:distributor_params.y,
+                            x:spotify_params.x, y:spotify_params.y,
+                            delay1:0, delay2:1000 },
+                          {label:"apple",x_end:distributor_params.x+distributor_params.width/2, y_end:distributor_params.y,
+                            x:apple_params.x, y:apple_params.y,
+                            delay1:0, delay2:1000 },
+                          {label:"deezer",x_end:distributor_params.x+distributor_params.width/2, y_end:distributor_params.y,
+                            x:deezer_params.x, y:deezer_params.y,
+                            delay1:0, delay2:1000 },
+                          ];
+
 
 
   var svg_diag = d3.select(".container-0 #graph")
@@ -89,233 +104,33 @@ function render(){
   draw_diagram();
 
   var toggle_diag_animations = function(i){
-    var pad = 7;
-    var gap = 20;
-    var duration = 300;
-    var line_ends_distSinger = [{x: distributor_params.x, y: distributor_params.y}, 
-                                {x: singer_params.x + singer_params.width, y: singer_params.y}];
-    var line_ends_spotifyDist = [{x: spotify_params.x-pad, y: spotify_params.y},
-                                {x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y}];
-    var line_ends_appleDist = [{x: apple_params.x-pad, y: apple_params.y},
-                                {x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y}];
-    var line_ends_deezerDist = [{x: deezer_params.x-pad, y: deezer_params.y},
-                                {x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y}];
-
-
-    var line_ends_singerDist = [{x: singer_params.x + singer_params.width + pad, y: singer_params.y},
-                                      {x: distributor_params.x, y: distributor_params.y}];
-    var line_ends_distSpotify = [{x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y},
-                                 {x: spotify_params.x-pad, y: spotify_params.y}];
-    var line_ends_distApple = [{x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y},
-                                {x: apple_params.x-pad, y: apple_params.y}];
-    var line_ends_distDeezer = [{x: distributor_params.x + distributor_params.width/2 + pad, y: distributor_params.y},
-                                {x: deezer_params.x-pad, y: deezer_params.y}];
-
-    // animate_dollars(line_ends,gap,duration);
     switch(i){
+      case 0:
+        console.log("case 0")
+        diag_delete_music();
+        break;
       case 1:
-        animate_music(line_ends_singerDist,gap,duration);
-        animate_music(line_ends_distSpotify,gap,duration);
-        animate_music(line_ends_distApple,gap,duration);
-        animate_music(line_ends_distDeezer,gap,duration);
+        console.log("case 1")
+        diag_delete_dollars();
+        animate_music();
         break;
       case 2:
-        animate_dollars(line_ends_distSinger,gap,duration);
-        animate_dollars(line_ends_spotifyDist,gap,duration);
-        animate_dollars(line_ends_appleDist,gap,duration);
-        animate_dollars(line_ends_deezerDist,gap,duration);
+        console.log("case 2")
+        diag_delete_music();
+        animate_dollars();
         break;
     }
-
-    function animate_dollars(line_ends,gap,duration){
-
-      var line = d3.line()
-        .x(function(d) { return d.x; })
-        .y(function(d) { return d.y; });
-
-      var line_len = Math.sqrt((line_ends[1].x - line_ends[0].x)**2 + (line_ends[1].y - line_ends[0].y)**2 );
-      var line_slope = (line_ends[0].y - line_ends[1].y)/(line_ends[0].x - line_ends[1].x)
-
-      var myPath = svg_diag.append("g")
-        .append("path")
-        .attr("d", line(line_ends))
-        .attr("id", "dots");
-      
-      var numberOfDots = Math.floor(line_len/ gap);
-      var gap_x = Math.sqrt(gap**2/(1+line_slope**2));
-      
-      var data = d3.range(numberOfDots).map(function(d, i) {
-          // let length =line_len * (i/numberOfDots);
-          let point = {x:line_ends[0].x - i*gap_x, y:line_ends[0].y - i*gap_x*line_slope};
-          //return point.x; 
-          return {x: point.x, y: point.y}; 
-      });
-      
-      var dots = svg_diag.select("g").selectAll(".dot")
-        .data(data)
-        .enter()
-        .append('text')
-        .text('$')
-        .attr("x",function(d, i){ return d.x; })
-        .attr("y", function(d, i){ return d.y; })
-        .attr("id","dots")
-        .attr("opacity",0);
-
-      var count = 0;
-      
-      var tid = setInterval(updateDots, duration);
-
-      function updateDots() {
-        dots.transition()
-          .duration(200)
-          .style("opacity", function(d,i){
-          
-            var opacity = 1
-            
-            ///////////////// Version with 3 dots active at all times /////////
-
-            //if at the end or near the end of the path, start from the beginning
-            // if (count == numberOfDots ) {
-            //   if ( i == numberOfDots || i == 0 || i == 1 ) {
-            //     opacity = 1;
-            //   } else {
-            //     opacity = 0;
-            //   };
-            // } else if (count == (numberOfDots - 1) ) {
-            //   if ( i == numberOfDots || i == (numberOfDots - 1) || i == 0 ) {
-            //     opacity = 1;
-            //   } else {
-            //     opacity = 0;
-            //   };
-            // //else shade the 3 dots from the count onwards
-            // } else {
-            //   if (i == count || i == (count + 1) || i == (count + 2) ) {
-            //     opacity = 1;
-            //   } else {
-            //     opacity = 0;
-            //   };
-            // };   
-            ///////////////////////////////////////////////////////
-
-            ///////////////// Version with 3 dot trains /////////
-              // if (i == count || i == (count + 1) || i == (count + 2)) {
-              //   opacity = 1;
-              // } else {
-              //   opacity = 0;
-              // };
-            ///////////////////////////////////////////////////////
-
-            ///////////////// Version with 2 dot trains /////////
-              if (i == count || i == (count + 1) ) {
-                opacity = 1;
-              } else {
-                opacity = 0;
-              };
-            ///////////////////////////////////////////////////////
-
-            ///////////////// Version with 1 dot trains /////////
-              // if (i == count ) {
-              //   opacity = 1;
-              // } else {
-              //   opacity = 0;
-              // };
-            ///////////////////////////////////////////////////////
-
-            return opacity
-            
-          });
-        
-        count = count == numberOfDots ? 0 : count + 1;
-      };
-    };
-
-  //   function animate_music(line_ends,gap,duration){
-
-  //     var line = d3.line()
-  //       .x(function(d) { return d.x; })
-  //       .y(function(d) { return d.y; });
-
-  //     var line_len = Math.sqrt((line_ends[1].x - line_ends[0].x)**2 + (line_ends[1].y - line_ends[0].y)**2 );
-  //     var line_slope = (line_ends[0].y - line_ends[1].y)/(line_ends[0].x - line_ends[1].x)
-
-  //     var myPath = svg_diag.append("g")
-  //       .append("path")
-  //       .attr("d", line(line_ends))
-  //       .attr("id", "dots");
-      
-  //     var numberOfDots = Math.floor(line_len/ gap);
-  //     var gap_x = Math.sqrt(gap**2/(1+line_slope**2));
-      
-  //     var data = d3.range(numberOfDots).map(function(d, i) {
-  //         // let length =line_len * (i/numberOfDots);
-  //         let point = {x:line_ends[0].x + i*gap_x, y:line_ends[0].y + i*gap_x*line_slope};
-  //         //return point.x; 
-  //         return {x: point.x, y: point.y}; 
-  //     });
-      
-  //     var dots = svg_diag.select("g").selectAll(".dot")
-  //       .data(data)
-  //       .enter()
-  //       .append('image')
-  //       .attr('xlink:href', './images/music.png')
-  //       .attr('width', 20)
-  //       .attr('height',20)
-  //       .attr("x",function(d, i){ return d.x; })
-  //       .attr("y", function(d, i){ return d.y; })
-  //       .attr("id", "dots")
-  //       .attr("opacity",0);
-
-  //     var count = 0;
-  //     var tid = setInterval(updateDots, duration);
-
-  //     function updateDots() {
-  //       dots.transition()
-  //         .duration(200)
-  //         .style("opacity", function(d,i){
-          
-  //           var opacity = 1
-
-  //           ///////////////// Version with 3 dot trains /////////
-  //             // if (i == count || i == (count + 1) || i == (count + 2)) {
-  //             //   opacity = 1;
-  //             // } else {
-  //             //   opacity = 0;
-  //             // };
-  //           ///////////////////////////////////////////////////////
-
-  //           ///////////////// Version with 2 dot trains /////////
-  //             if (i == count || i == (count + 1) ) {
-  //               opacity = 1;
-  //             } else {
-  //               opacity = 0;
-  //             };
-  //           ///////////////////////////////////////////////////////
-
-  //           ///////////////// Version with 1 dot trains /////////
-  //             // if (i == count ) {
-  //             //   opacity = 1;
-  //             // } else {
-  //             //   opacity = 0;
-  //             // };
-  //           ///////////////////////////////////////////////////////
-
-  //           return opacity
-  //         });
-        
-  //       count = count == numberOfDots ? 0 : count + 1;
-  //     };
-  //   };
   }
 
-  var diag_delete_dots = function(){
-    svg_diag.selectAll("#dots").remove()
+  var diag_delete_music = function(){
+    svg_diag.selectAll("#music_notes").remove()
   };
 
+  var diag_delete_dollars = function(){
+    svg_diag.selectAll("#diag_dist_dollars").remove()
+  };
 
   var animate_music = function(){
-    // var g_diag = d3.selectAll("container-0 #graph").selectAll("#dist_diag");
-    // console.log("g_diag",g_diag)
-
     var music_notes = svg_diag.append("g")
                               .attr("id","music_notes")
 
@@ -326,6 +141,41 @@ function render(){
               .enter()
               .append("image")
               .attr('xlink:href', './images/music.png')
+              .attr('width', 20)
+              .attr('height',20)
+              .attr("x", function(d){ return d.x; })
+              .attr("y", function(d){ return d.y; })
+              .transition()
+              .duration(1000)
+              .delay(function(d){ return d.delay1; })
+              .on("start",function repeat() {
+                d3.active(this)
+                    .attr("x",function(d){ return d.x_end; })
+                    .attr("y",function(d){ return d.y_end; })
+                  .transition()
+                    .duration(0)
+                    .delay(function(d){ return d.delay2; })
+                    .attr("x",function(d){ return d.x; })
+                    .attr("y",function(d){ return d.y; })
+                  .transition()
+                    .duration(1000)
+                    .delay(function(d){ return d.delay1; })
+                    .on("start", repeat)
+              })
+  }
+
+  var animate_dollars = function(){
+    var dollars = svg_diag.append("g")
+                          .attr("id","diag_dist_dollars")
+
+    // console.log("data_music_notes",data_music_notes)
+    // console.log("music_notes",music_notes)
+    dollars.selectAll("#diag_dist_dollars")
+              .data(data_diag_dollars)
+              .enter()
+              .append("image")
+              // .attr('xlink:href', './images/music.png')
+              .attr('xlink:href', './images/round_dollar_fill_negative_with_edges_grey_bckgnd.png')
               .attr('width', 20)
               .attr('height',20)
               .attr("x",function(d){ console.log("d",d); return d.x; })
@@ -342,22 +192,14 @@ function render(){
                     .delay(function(d){ return d.delay2; })
                     .attr("x",function(d){ return d.x; })
                     .attr("y",function(d){ return d.y; })
-
-
                   .transition()
                     .duration(1000)
                     .delay(function(d){ return d.delay1; })
                     .on("start", repeat)
               })
-
-    // music_notes.transition()
-    //             .data(data_music_notes_end)
-    //             .attr("x",function(d){ console.log("d",d); return d.x; })
-    //             .attr("y", function(d){ return d.y; })
-
   }
 
-  var gs1 = d3.graphScroll()
+  var gs0 = d3.graphScroll()
       .container(d3.select('.container-0'))
       .graph(d3.selectAll('container-0 #graph'))
       .eventId('uniqueId0')  // namespace for scroll and resize events
@@ -365,9 +207,8 @@ function render(){
       // .offset(innerWidth < 900 ? innerHeight - 30 : 200)
       .on('active', function(i){
         console.log('graph 0 change', i)
-        animate_music()
-        // diag_delete_dots();
-        // toggle_diag_animations(i);
+        console.log("gs1 i", i)
+        toggle_diag_animations(i);
       });
 
 
@@ -679,7 +520,7 @@ function render(){
       // .offset(innerWidth < 900 ? innerHeight - 30 : 200)
       .on('active', function(i){
 
-        console.log('graph 1 change')
+        console.log('graph 1 change', i)
         switch (i){
         case 0:
           if (rect_drawn==false){ 
@@ -1362,8 +1203,7 @@ function render(){
       // .offset(innerWidth < 900 ? innerHeight - 30 : 200)
       .on('active', function(i){
 
-        console.log('graph change')
-        console.log("i",i)
+        console.log('graph 2 change', i)
         // var pos = [ data, data2, data3, data4 ][i]        
         // update(pos)
         revshare_data_modifier(i)

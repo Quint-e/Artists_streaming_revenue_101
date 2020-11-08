@@ -344,7 +344,7 @@ function draw_legend(data, N){
               // .style('stroke', color);   
 
             legend.append("image")  
-                  .attr('xlink:href', './images/round_dollar_negative_with_edges_white.png')
+                  .attr('xlink:href', './images/round_dollar_fill_negative_with_edges.png')
                   .attr("width", legendRectSize )
                   .attr("height", legendRectSize );                       
               
