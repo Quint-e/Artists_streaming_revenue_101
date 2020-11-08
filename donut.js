@@ -77,12 +77,12 @@ function render(){
       .attr('x',singer_params.x)
       .attr('y',singer_params.y - singer_params.height/2);
 
-    var image_distributor = svg_diag.append('image')
-      .attr('xlink:href', './images/home.png')
-      .attr('width', distributor_params.width)
-      .attr('height',distributor_params.height)
-      .attr('x',distributor_params.x)
-      .attr('y',distributor_params.y - distributor_params.height/2);
+    // var image_distributor = svg_diag.append('image')
+    //   .attr('xlink:href', './images/home.png')
+    //   .attr('width', distributor_params.width)
+    //   .attr('height',distributor_params.height)
+    //   .attr('x',distributor_params.x)
+    //   .attr('y',distributor_params.y - distributor_params.height/2);
 
     var logo_spotify = svg_diag.append('image')
       .attr('xlink:href', './images/spotify-logo.png')
@@ -106,21 +106,37 @@ function render(){
       .attr('y',deezer_params.y  - deezer_params.height/2);
   }
 
+  var update_diagram = function(i){
+    switch (i){
+      case 0:
+        svg_diag.selectAll("#dist_image").remove()
+        break;
+      case 1:
+        var image_distributor = svg_diag.append('image')
+          .attr('xlink:href', './images/home.png')
+          .attr('width', distributor_params.width)
+          .attr('height',distributor_params.height)
+          .attr('x',distributor_params.x)
+          .attr('y',distributor_params.y - distributor_params.height/2)
+          .attr('id',"dist_image")
+        break;
+    }
+  }
+
   draw_diagram();
 
   var toggle_diag_animations = function(i){
     switch(i){
-      case 0:
-        console.log("case 0")
+      // case 0:
+      //   break;
+      case 1:
         diag_delete_music();
         break;
-      case 1:
-        console.log("case 1")
+      case 2:
         diag_delete_dollars();
         animate_music();
         break;
-      case 2:
-        console.log("case 2")
+      case 3:
         diag_delete_music();
         animate_dollars();
         break;
@@ -217,6 +233,7 @@ function render(){
       .on('active', function(i){
         console.log('graph 0 change', i)
         console.log("gs1 i", i)
+        update_diagram(i);
         toggle_diag_animations(i);
       });
 
@@ -657,13 +674,13 @@ function render(){
         break;
       case 3:
         dsp_revenue = dsp_revenue_default;
-        artist_shareOfStreams = artist_shareOfStreams_default;
+        artist_shareOfStreams = 5;
         artist_share = 1;
         revshare_rendering_options.x_axis_ticks = false;
         revshare_rendering_options.x_axis_label = false;
         revshare_rendering_options.legend_other_tracks = true;
         revshare_rendering_options.legend_artist = true;
-        data_revshare.artist_share.annotation = "Artist Track";
+        data_revshare.artist_share.annotation = "Track Share";
         revshare_rendering_options.legend_dist = false;
         break;
       case 4:
@@ -694,25 +711,34 @@ function render(){
         artist_share = 1;
         revshare_rendering_options.legend_other_tracks = true;
         revshare_rendering_options.legend_artist = true;
-        data_revshare.artist_share.annotation = "Artist Track";
+        data_revshare.artist_share.annotation = "Track Share";
         revshare_rendering_options.legend_dist = false;
         break;
       case 9:
+        dsp_revenue = dsp_revenue_default;
+        artist_shareOfStreams = artist_shareOfStreams_default;
+        artist_share = 1;
+        revshare_rendering_options.legend_other_tracks = true;
+        revshare_rendering_options.legend_artist = true;
+        data_revshare.artist_share.annotation = "Track Share";
+        revshare_rendering_options.legend_dist = false;
+        break;
+      case 10:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = artist_shareOfStreams_default;
         artist_share = artist_share_default;
         data_revshare.artist_share.annotation = "Artist Share";
         revshare_rendering_options.legend_dist = true;
         break;
-      case 10:
-        dsp_revenue = dsp_revenue_default;
-        artist_shareOfStreams = artist_shareOfStreams_default;
-        artist_share = 0.15;
-        break;
       case 11:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = artist_shareOfStreams_default;
-        artist_share = 0.85;
+        artist_share = 0.50;
+        break;
+      case 12:
+        dsp_revenue = dsp_revenue_default;
+        artist_shareOfStreams = artist_shareOfStreams_default;
+        artist_share = 0.925;
         break;
     }
   }

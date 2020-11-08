@@ -24,11 +24,21 @@ h1{
 h1{
   text-align: center;
 }
+
+h3{
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
 /*
 .legend{
 	font-family: "Courier New", Courier, monospace;
 }*/
-
+p.normal {
+  font-weight: normal;
+}
+p.highlight {
+  font-weight: bold;
+}
 
 .title{
 	font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -150,39 +160,68 @@ circle{
 
 </style>
 
-<h1><a href='https://github.com/1wheel/graph-scroll'>graph-scroll.js</a></h1>
-<h1> Global Article Header</h1>
+<div id="Intro">
+	<h1> How do artists get paid from music streaming?</h1>
+	<p>
+		It is commonly understood that artists make money when their music is being listened to on Digital Streaming Platforms (DSPs) such as: Spotify, Apple Music, Deezer, Pandora, Tidal, YouTube Music, Amazon Music etc... but how does that work exactly? 
+	</p>
+	<p>
+		In the following we propose a breakdown of the fundamental principles that dictate how and how much artists get paid from music streaming. 
+	</p>
+	<p>
+		The music industry is wonderfully complex when it comes to the distribution of revenue along the value chain, from the fans to the artists, songwriters producers etc. via the streaming platforms and other stakeholders. 
+		Thoroughly describing all the processes at play would make this article extremely complex. 
+		<!-- It is very easy to get lost and confused in this intricate landscape.  -->
+	</p>
+	
+	<p>
+		In order to keep things concise and accessible we will narrow our focus in the following ways:
+			- We will only focus on the performing artist recording royalties and therefore do not address other types of royalties (e.g. for songwriters). 
+	</p>
+	<p>
+		Let’s dive in… 
+	</p>
+</div>
 
 
-<h1>The middlemen section</h1>
 
-blah blah blah
-blah blah blah
-blah blah blah
-blah blah blah
-blah blah blah
+<div>
+<h1>Artist & Intermediaries</h1>
 
+Let's first examine who are the players involved in getting the artist's music online and making sure they receive the money they are due. 
+</div>
 
 <div id='container' class='container-0'>
   <div id='graph'></div>
   <div id='sections'>
     <div>
-      <h3>Middle men</h3>
-        lalalalalala
-        Photo by Oleg Magni from Pexels
+      <h3>Getting Music Online</h3>
+      	<p>
+        	First things first: before any music can be played on a DSP by consumers it has to get there. 
+			Say artist X just recorded their great new EP and wants to make it available on DSPs. How do they achieve this? Do they log into Spotify or Apple Music etc. and upload their tracks there? No. 
+		</p>
+		<p class="highlight">
+			Artists do not deal with DSPs directly.
+		</p>
+        
     </div>
     <div>
-      <h3>Musician sends music</h3>
-        Via the distributor
+      <!-- <h3>Musician sends music</h3> -->
+        Artists have to use a distributor who will then take care of distributing their music to DSPs
     </div>
     <div>
-      <h3>DSPs sent back royalties</h3>
-        via distributor
+        In practice, Artists enter an agreement with a distributor, upload their music to the distributor who will then distribute it to the DSPs. 
+        <p>
+        	In the case that the artist is signed to a record label, the record label may take care of the distribution on behalf of the artist.
+        </p>
     </div>
     <div>
-      <h3>Middle men</h3>
-        lalalalalala
-        Photo by Oleg Magni from Pexels
+      <h3>Collecting Royalites</h3>
+        When their music is being listened to on the DSPs, the artists are entitled to be paid royalties. The distributor and/or label will then collect the corresponding royalties from the DSPs on behalf of the artist.
+    </div>
+    <div style="padding-bottom:500px">
+        You may be wondering: Where does the royalties money come from in the first place? 
+        Essentially, the DSPs devote a share of their revenu to the payment of royalties. This implies that DSPs need to make money in order to then be able to share some of it with the artists. 
     </div>
   </div>
 </div>
@@ -191,14 +230,16 @@ blah blah blah
 
 Commercial offering may vary from one DSP to the next but there exists two main mechanisms for DSPs to generate revenue: 
 <ul>
-  <li>Subscriptions. Users of the platform pay a monthly subscription to gain unlimited access to the music on the platform. This is also known as a “Premium” model. </li>
-  <li>Ads. In this scenario the users do not pay any money but instead accept to listen to and/or see ads while they use the platform. The advertisers pay the DSPs for the exposure to their customers. This is also known as a “Freemium” model.</li>
+  <li>Subscriptions. Users of the platform pay a monthly subscription to gain unlimited access to the music on the platform. This is also known as a <em>“Premium”</em> model. </li>
+  <li>Ads. In this scenario the users do not pay any money but instead accept to listen to and/or see ads while they use the platform. The advertisers pay the DSPs for the exposure to their customers. This is also known as a <em>“Freemium”</em> model.</li>
 </ul>
 
 
-Note that some DSPs like Spotify or Deezer offer both Freemium and Premium plans while some other like Apple Music or Tidal only offer Premium plans.
+Some DSPs like Spotify or Deezer offer both Freemium and Premium plans while some other like Apple Music or Tidal only offer Premium plans.
 
-On legitimate question to ask at this point is: How do these sources of revenu compare to each other? Let's have a closer look on a case study using Spotify's financials.  
+<!-- On legitimate question to ask at this point is: How do these sources of revenu compare to each other? Let's have a closer look on a case study using Spotify's financials for the third quarter (Q3) of 2020.   -->
+
+Let's have a look at how these two types of revenue streams compare, with Spotify's financials for the third quarter (Q3) of 2020 as a case study.
 
 
 <div id='container' class='container-1'>
@@ -207,21 +248,24 @@ On legitimate question to ask at this point is: How do these sources of revenu c
   <div id='sections'>
     <div style="padding-top:200px">
       <h3>User base</h3>
-        First, let's look at the user base for Spotify. There are 113 million premium subscribers and 141 million freemium (ad-supported) monthly active users, which makes a total of 254 million users that potentially generate revenue (inactive freemium users do not generate revenue because they are of no interest to advertisers, but inactive premium users still pay their subscription).
-        In other words, premium and freemium users represent about 45% and 55% of total users, respectively. 
+        First, Spotify reports that premium and (active) freemium users represent about 45% and 55% of total users, respectively. 
 
     </div>
 
     <div>
       <h3>Revenue per user</h3>
-      Spotify reported subscription and advertising revenue of €1.6bn and €170m respectively. Factoring in the user counts, the average revenue per user in Q3 2019 is €14.2 for premium and €1.2 for freemium. 
-      This means that premium subscribers generate nearly 12 times more revenue than freemium users.
+      Spotify reports that the monthly Average Revenue Per User (ARPU) €4.19 for premium users and €0.33 for freemium users. The ARPU tells us how much money Spotify makes per user each month. 
+      <p>
+      	The numbers reported mean that premium subscribers generate over 12 times more revenue than freemium users.
+      </p>
     </div>
 
     <div style="padding-bottom:500px">
-      <h3> Total revenue </h3>
+      <h3> Contribution to total revenue </h3>
       To put the same numbers in a different perspective: premium subscribers represent around 45% of Spotify users and generate about 90% of the total revenue, which also means that the 55% of ad-supported users only generate about 10% of the revenue.
-      The revenue is represented by the area of the rectangles on the graph.
+      <p>
+      	The revenue is represented by the area of the rectangles on the graph.
+      </p>
     </div>
 
   </div>
@@ -229,98 +273,129 @@ On legitimate question to ask at this point is: How do these sources of revenu c
 
 </div>
 
+<div>
+	<h1>Artist Royalties Calculations</h1>
+	<p>
+		At this point we know that DSPs redistribute some of their revenue to the artists in the form of royalties and we know how DSPs make money. The question is now: how is the artists' royalties payments calculated? 
+	</p>
 
-<h1>The Donut section</h1>
+	<p>
+		Every month the DSPs add up the revenue they generated and split it two ways: they keep one part for themselves to cover their operational costs (paying employees, bills etc) and redistribute the rest of it as royalties. 
+		Although the exact numbers are confidentials, the figures often quoted in the press suggest that DSPs distribute around 70% of their revenue to music right owners as royalties.
+	</p>
+	<p>
+		A direct consequence is that the money pot to be distributed as royalties is proportional to the DSP revenue. 
+	</p>
+
+</div>
+
+
 <div id='container' class='container-2'>
   <div id='graph'></div>
   <div id='sections'>
     <div style="padding-top:200px">
-      <h3>DSP Revenue (pie size)</h3>
-      <span class='mono'>graph-scroll</span> 
-      takes a selection of explanatory text sections and dispatches <span class='mono'>active</span> events as different sections are scrolled into to view. These active events are used to update a graph's state.
-      <pre>
-d3.graphScroll()
-  .sections(d3.selectAll('#sections > div'))
-  .on('active', function(i){
-    console.log(i + 'th section active') })
-      </pre>
+      <h3>Royalties proportional to DSP revenue</h3>
+      The dollars stack on the right represents the royalties money pot of a DSP that is to be distributed to right holders. In other words, this is the money pie that will be distributed as royalties.
 
     </div>
 
     <div>
-      More revenue = Bigger pie. 
+      Because the royalties money pot is proportional to the DSP revenues, more revenue = bigger royalties pie to share. 
     </div>
 
     <div>
-      Less revenue = Smaller pie. 
+      The converse is also true... Less revenue = smaller royalties pot. 
     </div>
 
     <div>
       <h3>Revenue Pro-rata of streams</h3>
+      The royalties pot is then to be split between all tracks on the platform, pro-rata of their proportion of streams. 
+
+      <p>
+    	For example, let's take a track of a given artist. If the track represents 0.1% of the total streams of the platform, it will get 0.1% of the royalties.
+  	  </p>
     </div>
 
     <div>
-      More Streams = Bigger share. 
+      If the proportion of total streams is larger, this track will be allocated more royalties accordingly. For example if the track was to get 50% of the total streams, it would get 50% of the royalties pot.  
     </div>
     <div>
-      Less Streams = Smaller share. 
+      Similarly, if the track was to get 30% of the total streams it would get 30% of the royalties pot. You get the idea. 
     </div>
 
     <div>
       <h3>Total other streams influence</h3>
-      If other tracks have a lot more stream, revenue share goes down
+      Note that the share of royalties allocated to a track depends on the <em>proportion of total streams</em>, not just on the raw number of streams that the track got.
+
+      <p> The proportion of streams is simply the ratio of the track streams over the total number of streams:
+       \[Proportion  = {Track Streams \over TotalStreams}\]
+   	  </p>
+
     </div>
 
     <div>
-      More other Streams = smaller share. 
+    	If the track streams remain constant and the total number of streams on the platform increases (i.e. the other tracks get more streams), the track's share of stream would be smaller. 
     </div>
     <div>
-      Less other Streams = Bigger share. 
-    </div>
-
-    <div>
-      <h3>Middlemen take their cut</h3>
+      Conversly, if the track streams remain constant and the total number of streams on the platform decreases, the track's share of stream would be larger. 
     </div>
 
     <div>
-      Small Artist Share. 
-    </div>
-    <div>
-      Big Artist Share. 
+      In summary, and to nail the point home, every track on the DSP is entitled a share of the royalties pot that is proportional to the share of total streams, which depends on the track streams <em>and</em> the total number of streams.
     </div>
 
     <div>
-      <h3>Sticky graph</h3>
-      When the graph starts to scroll out of view, <span class='mono'>postiion: sticky</span> keeps the graph element stuck to the top of the page while the text scrolls by.
-<pre>
-#container{
-  position: relative;
-}
+      <h3>Track royalties split</h3>
+      Once attributed, the track's share of royalties may then be split between all parties who are entitled a share. 
 
-#sections{
-  width: 340px;
-}
+      <p>This is typically when the distributor and/or label may take their cut.</p>
 
-#graph{
-  margin-left: 40px;
-  width: 500px;
-  position: sticky;
-  top: 0px;
-  float: right;
-}
-</pre>
+      <p>
+      	The distributor/label share is normally defined in the contract between the artist and the distributor/label. The numbers will vary wildly from on case to the next, depending of what agreement has been found between the parties.  
+      </p>
+
+      <p>
+      	The general principle is that the distributor/label provide services to the artist and that granting them a share of royalties are one of the ways the artist can pay for these services.
+      </p>
+    </div>
+
+    <div>
+      In some cases the distrubutor/label may take a relatively large share. 
+      <p>This could for example be justified by the fact that the distributor provides a set of services that the artist does not pay for otherwise, or that the label has made a significant financial investment to produce the recording and is looking to recoupe its expenses from the roylalties revenue. 
+      </p>
+    </div>
+    <div>
+      In some other cases the agreement would be different and the distributor/label share will be very small. 
+      <p>
+    	  This could for example be the case if the artist has already payed an upfront fee to the distributor or if the label only made a small financial investment in the track. 
+  	  </p>
+    </div>
+
+    <div style="padding-bottom:500px">
+      <!-- <h3>Sticky graph</h3> -->
+      The artist gets the remaining share of royalties. 
+
+      <p>Note that for simplicity we are only considering the case where there is a single artist/musician entitled royalties on the track. In the general case there could be several and each of them would be entitled a split of the Artist Share, with the split ratios defined in a contract between all musicians. </p>
     </div>
 
   </div>
 
 </div>
 
-<h1>
-  Penultimate section
-</h1>
+
 
 <div>
-	Some more text at the bottom
+	<h1>On the per-stream rate.</h1>
+	Per-stream royalty rates are regularly quoted in the press when discussing artists streaming revenue. Although this metric has its merits it often leads to the misconception that artist are payed based on a fixed per-stream rate, which is not true. 
+
+	<p>
+		Hopefully this article would have made it clear that there are a number of parameters that influence the royalty payment that an artist may receive from Digital Streaming Platforms, and that a number of these parameters will vary greatly from one track and artist to the next. It is likely that these parameters will also vary over time (e.g. the DSP revenue varies over time). 
+	</p>
+
+	<p>
+		Given a royalty payment and the corresponding track streams, one may indeed calculate an equivalent per-stream rate by dividing the former by the latter. But in no circumstances is the royalty payment calculated based on a fixed per-stream rate. 
+	</p>
+
 </div>
 
 <div>
@@ -386,12 +461,20 @@ In order to get a feel for how this all behaves, have a play with our little sim
 
 </div>
 
+<div id="photo_credit">
+Artist Photo by Oleg Magni from Pexels
+</div>
+
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <!-- <script src="d3v4+jetpack.js"></script> -->
 <script src="graph-scroll.js"></script>
 <!-- <script src="./D3_graphs/d3_v4_sunburst/sunburst.js"></script> -->
 <script src="interactive_simulator.js"></script>
 <script src="donut.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
 
 
 
