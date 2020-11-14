@@ -240,10 +240,10 @@ function render(){
         update_diagram(i);
         toggle_diag_animations(i);
       });
+//////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-  ///////////// Rectangle chart section ////////////////
+///////////////////////////// Rectangle chart section ///////////////////////////////////
   var data_rect = {"freemium":{"label":"Freemium",
                           "n_users":55,
                           "rev_per_user":0.33,
@@ -295,7 +295,8 @@ function render(){
       .append("g")
         .attr("transform", "translate(" + margin_rect.left + "," + margin_rect.top + ")");
 
-    // Function to draw/update rectangle chart
+
+  // Function to drawrectangle chart
   function draw_rect(data, rect_rendering_options){
     // List of dictionaries version of data dict, used for iterating through data in plotting routines.
     var data_rect_values = Object.keys(data).map(function(key){  
@@ -542,6 +543,37 @@ function render(){
   }
 
 
+  function rect_data_modifier(i){
+    switch(i){
+      case 0:
+        data_rect = {"freemium":{"label":"Freemium",
+                          "n_users":55,
+                          "rev_per_user":0.33,
+                          "rev":"$10%",
+                          "color":"#000000",
+                          "color_highlight":'#363636',
+                          "opacity":0.5},
+              "premium":{"label":"Premium",
+                          "n_users":45,
+                          "rev_per_user":0.33,
+                          "rev":"$90%",
+                          "color":"#1dc500",
+                          "color_highlight":'#6bff53',
+                          "opacity":0.5}
+              };
+        rect_rendering_options = {"y_axis":false,
+                                "rev_text":false};
+        break;
+      case 1:
+        data_rect.premium.rev_per_user = 4.19;
+        rect_rendering_options.y_axis = true;
+        rect_rendering_options.rev_text = false;
+        break;
+      case 2:
+        rect_rendering_options.rev_text = true;
+    }
+  }
+
   var gs1 = d3.graphScroll()
       .container(d3.select('.container-1'))
       .graph(d3.selectAll('container-1 #graph'))
@@ -551,20 +583,19 @@ function render(){
       .on('active', function(i){
 
         console.log('graph 1 change', i)
-        switch (i){
-        case 0:
+
+        if (i==0){
           if (rect_drawn==false){ 
             draw_rect(data_rect,rect_rendering_options)
             rect_drawn = true
           }
-          else {update_rect(data_rect,rect_rendering_options)}
-          break;
-        case 1:
-          update_rect(data_rect_2, rect_rendering_options_2)
-          break;
-        case 2:
-          update_rect(data_rect_2, rect_rendering_options_3)
-          break;
+          else {
+            rect_data_modifier(i);
+            update_rect(data_rect,rect_rendering_options)}
+        }
+        else{
+          rect_data_modifier(i);
+          update_rect(data_rect,rect_rendering_options);
         }
 
       })
@@ -1253,7 +1284,7 @@ function render(){
             revshare_data_update();
             drawChart(data_revshare,revshare_rendering_options);
             revshare_draw_dollars(N=20);
-            revshare_draw_title()
+            // revshare_draw_title()
             revshare_draw_legend(data_revshare, N=20);
             revshare_drawn = true;
           }
