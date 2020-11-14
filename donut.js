@@ -479,6 +479,17 @@ function render(){
         .style('fill', data.premium.color);
     })
 
+    // Modify size of freemium rectangle
+    var freemium_rect = svg_rect.selectAll("#Freemium")
+
+    freemium_rect
+                .transition()
+                .duration(1000)
+                .attr("x", x(data.premium.n_users) )
+                .attr("y",y(data.freemium.rev_per_user))
+                .attr("height", y(5-data.freemium.rev_per_user)) //Needs to be y_axis_range - coordinate because vertical coordinates go from top to bottom
+                .attr("width", x(data.freemium.n_users) )
+
     // Add/Remove Y axis
     if (rect_rendering_options.y_axis==true){
       // Remove if already exist in order to avoid stacking many
@@ -571,6 +582,22 @@ function render(){
         break;
       case 2:
         rect_rendering_options.rev_text = true;
+        data_rect.premium.rev_per_user = 4.19;
+        break;
+      case 4:
+        data_rect.premium.rev_per_user = 4.6;
+        break;
+      case 5:
+        data_rect.premium.rev_per_user = 4.19;
+        break;
+      case 6:
+        data_rect.premium.n_users = 45;
+        data_rect.freemium.n_users = 55;
+        break;
+      case 7:
+        data_rect.premium.n_users = 65;
+        data_rect.freemium.n_users = 35;
+        break;
     }
   }
 
