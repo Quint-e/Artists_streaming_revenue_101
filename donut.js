@@ -155,13 +155,15 @@ function render(){
     var music_notes = svg_diag.append("g")
                               .attr("id","music_notes")
 
+    var size_music_notes = 30;
+
     music_notes.selectAll("#music_notes")
               .data(data_music_notes)
               .enter()
               .append("image")
               .attr('xlink:href', './images/music.png')
-              .attr('width', 20)
-              .attr('height',20)
+              .attr('width', size_music_notes)
+              .attr('height',size_music_notes)
               .attr("x", function(d){ return d.x_start; })
               .attr("y", function(d){ return d.y_start; })
               .transition()
@@ -191,13 +193,15 @@ function render(){
     var dollars = svg_diag.append("g")
                           .attr("id","diag_dist_dollars")
 
+    var size_dollars = 30;
+
     dollars.selectAll("#diag_dist_dollars")
               .data(data_diag_dollars)
               .enter()
               .append("image")
               .attr('xlink:href', './images/round_dollar_fill_negative_with_edges_grey_bckgnd.png')
-              .attr('width', 20)
-              .attr('height',20)
+              .attr('width', size_dollars)
+              .attr('height',size_dollars)
               .attr("x", function(d){ return d.x_start; })
               .attr("y", function(d){ return d.y_start; })
               .transition()
