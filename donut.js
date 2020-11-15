@@ -247,34 +247,34 @@ function render(){
   var data_rect = {"freemium":{"label":"Freemium",
                           "n_users":55,
                           "rev_per_user":0.33,
-                          "rev":"$10%",
+                          "rev":"$",
                           "color":"#000000",
                           "color_highlight":'#363636',
                           "opacity":0.5},
               "premium":{"label":"Premium",
                           "n_users":45,
                           "rev_per_user":0.33,
-                          "rev":"$90%",
+                          "rev":"$",
                           "color":"#1dc500",
                           "color_highlight":'#6bff53',
                           "opacity":0.5}
               }
 
-  var data_rect_2 = {"freemium":{"label":"Freemium",
-                          "n_users":55,
-                          "rev_per_user":0.33,
-                          "rev":"$10%",
-                          "color":"#131313",
-                          "color_highlight":'#363636',
-                          "opacity":0.5},
-              "premium":{"label":"Premium",
-                          "n_users":45,
-                          "rev_per_user":4.19,
-                          "rev":"$90%",
-                          "color":"#1dc500",
-                          "color_highlight":'#6bff53',
-                          "opacity":0.5}
-              }
+  // var data_rect_2 = {"freemium":{"label":"Freemium",
+  //                         "n_users":55,
+  //                         "rev_per_user":0.33,
+  //                         "rev":"$10%",
+  //                         "color":"#131313",
+  //                         "color_highlight":'#363636',
+  //                         "opacity":0.5},
+  //             "premium":{"label":"Premium",
+  //                         "n_users":45,
+  //                         "rev_per_user":4.19,
+  //                         "rev":"$90%",
+  //                         "color":"#1dc500",
+  //                         "color_highlight":'#6bff53',
+  //                         "opacity":0.5}
+  //             }
 
   var rect_rendering_options = {"y_axis":false,
                                 "rev_text":false}
@@ -283,7 +283,8 @@ function render(){
   var rect_rendering_options_3 = {"y_axis":true,
                                 "rev_text":true}
 
-  var rect_drawn = false
+  var rect_drawn = false;
+  var rect_text_drawn = false;
 
   var margin_rect = {top: 20, right: 20, bottom: 40, left: 60};
 
@@ -520,37 +521,60 @@ function render(){
 
     // Add text to the rectangles 
     if (rect_rendering_options.rev_text==true){
-      //Remove the text if it already exists (so that it does not get added twice)
-      svg_rect.selectAll(".rev_text").remove()
-      //Add text
-      var rev_text = svg_rect.selectAll('.rev_text')
-          .data(data_rect_values)
-          .enter()
-          .append('g')
-          .attr('class','rev_text')
-          .attr('transform', function(d){
-            if (d.label=="Freemium"){
-              horz = x((100-(100-d.n_users))/2+ data.premium.n_users)
-            }
-            else if (d.label=="Premium"){
-              horz = x((100-(100-d.n_users))/2)
-            }
-            vert = y( (d.rev_per_user)/2);
-            // vert = (y(16 -d.rev_per_user) - y(d.rev_per_user))/2;
-            return 'translate(' + horz + ',' + vert + ')';
-          });
+      if (rect_text_drawn==false){
+        //Add text
+        var rev_text = svg_rect.selectAll('.rev_text')
+            .data(data_rect_values)
+            .enter()
+            .append('g')
+            .attr('class','rev_text')
+            .attr('transform', function(d){
+              if (d.label=="Freemium"){
+                horz = x((100-(100-d.n_users))/2+ data.premium.n_users)
+              }
+              else if (d.label=="Premium"){
+                horz = x((100-(100-d.n_users))/2)
+              }
+              vert = y( (d.rev_per_user)/2);
+              // vert = (y(16 -d.rev_per_user) - y(d.rev_per_user))/2;
+              return 'translate(' + horz + ',' + vert + ')';
+            });
 
-      rev_text.append('text')
-              .text(function(d){return d.rev})
-              .style('fill',"#ffffff")
-              .attr('text-anchor','middle')
-              .attr('dominant-baseline','central')
-              // .attr('x',)
-    }   
-
-    if (rect_rendering_options.rev_text==false){
-      svg_rect.selectAll(".rev_text").remove()
+        rev_text.append('text')
+                .text(function(d){return d.rev})
+                .style('fill',"#ffffff")
+                .attr('text-anchor','middle')
+                .attr('dominant-baseline','central')
+                .attr("id",function(d){return "text_"+ d.label})
+                .attr("font-size", function(d){return Math.round(d.n_users * d.rev_per_user)});
+                // .attr('x',)
+        rect_text_drawn = true;
+      }
+      else{
+        var g_rev_text = svg_rect.selectAll('.rev_text')
+                .data(data_rect_values)
+                .transition()
+                .duration(1000)
+                .attr('transform', function(d){
+                        if (d.label=="Freemium"){
+                          horz = x((100-(100-d.n_users))/2+ data.premium.n_users)
+                        }
+                        else if (d.label=="Premium"){
+                          horz = x((100-(100-d.n_users))/2)
+                        }
+                        vert = y( (d.rev_per_user)/2);
+                        // vert = (y(16 -d.rev_per_user) - y(d.rev_per_user))/2;
+                        return 'translate(' + horz + ',' + vert + ')';
+                      })
+                .selectAll("text")
+                .attr("font-size", function(d){return Math.round(d.n_users * d.rev_per_user)}); 
+      }
     }
+    else{
+      //Remove the text if it already exists (so that it does not get added twice)
+      svg_rect.selectAll(".rev_text").remove();
+      rect_text_drawn=false;
+    }   
   }
 
 
@@ -560,14 +584,14 @@ function render(){
         data_rect = {"freemium":{"label":"Freemium",
                           "n_users":55,
                           "rev_per_user":0.33,
-                          "rev":"$10%",
+                          "rev":"$",
                           "color":"#000000",
                           "color_highlight":'#363636',
                           "opacity":0.5},
               "premium":{"label":"Premium",
                           "n_users":45,
                           "rev_per_user":0.33,
-                          "rev":"$90%",
+                          "rev":"$",
                           "color":"#1dc500",
                           "color_highlight":'#6bff53',
                           "opacity":0.5}
@@ -581,7 +605,9 @@ function render(){
         rect_rendering_options.rev_text = false;
         break;
       case 2:
-        rect_rendering_options.rev_text = true;
+        rect_rendering_options.rev_text = true;        
+        break;
+      case 3:
         data_rect.premium.rev_per_user = 4.19;
         break;
       case 4:
@@ -610,11 +636,10 @@ function render(){
       .on('active', function(i){
 
         console.log('graph 1 change', i)
-
         if (i==0){
           if (rect_drawn==false){ 
             draw_rect(data_rect,rect_rendering_options)
-            rect_drawn = true
+            rect_drawn = true;
           }
           else {
             rect_data_modifier(i);
