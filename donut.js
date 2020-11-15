@@ -19,6 +19,7 @@ function render(){
   var spotify_params = {width:50, height:50,x:350,y:125}
   var apple_params = {width:50, height:50,x:350,y:250}
   var deezer_params = {width:50, height:50,x:350,y:375}
+  var dist_text_params = {x:distributor_params.x + distributor_params.width/2, y:distributor_params.y+distributor_params.height/2 + 20}
 
   var margin_diag = {top: 20, right: 20, bottom: 40, left: 60}; // Overall diagram area margins
 
@@ -110,6 +111,7 @@ function render(){
     switch (i){
       case 0:
         svg_diag.selectAll("#dist_image").remove()
+        svg_diag.selectAll("#dist_text").remove()
         break;
       case 1:
         var image_distributor = svg_diag.append('image')
@@ -119,6 +121,14 @@ function render(){
           .attr('x',distributor_params.x)
           .attr('y',distributor_params.y - distributor_params.height/2)
           .attr('id',"dist_image")
+
+        var text_distributor = svg_diag.append('text')
+          .text("Dist / Label")
+          .attr('x',dist_text_params.x)
+          .attr('y',dist_text_params.y)
+          .attr('text-anchor','middle')
+          .attr('dominant-baseline','central')
+          .attr('id',"dist_text")
         break;
     }
   }
