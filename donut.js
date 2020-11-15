@@ -675,6 +675,7 @@ function render(){
               };
 
   var dsp_revenue_default = 70;
+  var dsp_share_default = 100;
   var artist_shareOfStreams_default = 30;
   var artist_share_default = 0.7;
 
@@ -708,7 +709,16 @@ function render(){
                           "color":"#3683ff",
                           "color_highlight":'#6bff53',
                           "opacity":0.8,
+                          "opacity_highlight":0.4},
+                "dsp_share":{"label":"dsp_share",
+                          "share_of_streams":100,
+                          "dsp_revenue":dsp_revenue_default,
+                          "annotation":"DSP",
+                          "color":"#d70000",
+                          "color_highlight":'#d70000',
+                          "opacity":0.8,
                           "opacity_highlight":0.4}
+
               }
 
   var revshare_rendering_options = {"y_axis":false,
@@ -724,6 +734,7 @@ function render(){
   var shares = shares_default;
   var streams = streams_default;
   var dsp_revenue = dsp_revenue_default;  
+  var dsp_share = dsp_share_default;
   var revshare_drawn = false;
   var revshare_x_ticks_drawn = false;
   var revshare_x_label_drawn = false;
@@ -740,7 +751,8 @@ function render(){
   var revshare_data_modifier = function(i){
     switch(i){
       case 0:
-        dsp_revenue = 30;
+        dsp_revenue = 100;
+        dsp_share = dsp_share_default;
         artist_shareOfStreams = 0;
         artist_share = 1;
         revshare_rendering_options.x_axis_ticks = false;
@@ -750,6 +762,24 @@ function render(){
         revshare_rendering_options.legend_dist = false;
         break;
       case 1:
+        dsp_revenue = 70;
+        dsp_share = 70;
+        break;
+      case 2:
+        dsp_revenue = 70;
+        dsp_share = dsp_share_default;
+        break;
+      case 3:
+        dsp_revenue = 70;
+        artist_shareOfStreams = 0;
+        artist_share = 1;
+        revshare_rendering_options.x_axis_ticks = false;
+        revshare_rendering_options.x_axis_label = false;
+        revshare_rendering_options.legend_other_tracks = false;
+        revshare_rendering_options.legend_artist = false;
+        revshare_rendering_options.legend_dist = false;
+        break;
+      case 4:
         dsp_revenue = 100;
         artist_shareOfStreams = 0;
         artist_share = 1;
@@ -759,7 +789,7 @@ function render(){
         revshare_rendering_options.legend_artist = false;
         revshare_rendering_options.legend_dist = false;
         break;
-      case 2:
+      case 5:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = 0;
         artist_share = 1;
@@ -769,7 +799,7 @@ function render(){
         revshare_rendering_options.legend_artist = false;
         revshare_rendering_options.legend_dist = false;
         break;
-      case 3:
+      case 6:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = 5;
         artist_share = 1;
@@ -780,59 +810,59 @@ function render(){
         data_revshare.artist_share.annotation = "Track Share";
         revshare_rendering_options.legend_dist = false;
         break;
-      case 4:
+      case 7:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = 50;
         artist_share = 1;
         revshare_rendering_options.x_axis_ticks = false;
         revshare_rendering_options.x_axis_label = false;
         break;
-      case 5:
-        dsp_revenue = dsp_revenue_default;
-        artist_shareOfStreams = artist_shareOfStreams_default;
-        artist_share = 1;
-        break;
-      case 6:
-        dsp_revenue = dsp_revenue_default;
-        artist_shareOfStreams = artist_shareOfStreams_default;
-        artist_share = 1;
-        break;
-      case 7:
-        dsp_revenue = dsp_revenue_default;
-        artist_shareOfStreams = 5;
-        artist_share = 1;
-        break;
       case 8:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = artist_shareOfStreams_default;
         artist_share = 1;
-        revshare_rendering_options.legend_other_tracks = true;
-        revshare_rendering_options.legend_artist = true;
-        data_revshare.artist_share.annotation = "Track Share";
-        revshare_rendering_options.legend_dist = false;
         break;
       case 9:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = artist_shareOfStreams_default;
         artist_share = 1;
+        break;
+      case 10:
+        dsp_revenue = dsp_revenue_default;
+        artist_shareOfStreams = 5;
+        artist_share = 1;
+        break;
+      case 11:
+        dsp_revenue = dsp_revenue_default;
+        artist_shareOfStreams = artist_shareOfStreams_default;
+        artist_share = 1;
         revshare_rendering_options.legend_other_tracks = true;
         revshare_rendering_options.legend_artist = true;
         data_revshare.artist_share.annotation = "Track Share";
         revshare_rendering_options.legend_dist = false;
         break;
-      case 10:
+      case 12:
+        dsp_revenue = dsp_revenue_default;
+        artist_shareOfStreams = artist_shareOfStreams_default;
+        artist_share = 1;
+        revshare_rendering_options.legend_other_tracks = true;
+        revshare_rendering_options.legend_artist = true;
+        data_revshare.artist_share.annotation = "Track Share";
+        revshare_rendering_options.legend_dist = false;
+        break;
+      case 13:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = artist_shareOfStreams_default;
         artist_share = artist_share_default;
         data_revshare.artist_share.annotation = "Artist Share";
         revshare_rendering_options.legend_dist = true;
         break;
-      case 11:
+      case 14:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = artist_shareOfStreams_default;
         artist_share = 0.50;
         break;
-      case 12:
+      case 15:
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = artist_shareOfStreams_default;
         artist_share = 0.925;
@@ -841,6 +871,8 @@ function render(){
   }
 
   function revshare_data_update(){
+    data_revshare.dsp_share.dsp_revenue = dsp_share;
+
     data_revshare.other_tracks.dsp_revenue = dsp_revenue;
     data_revshare.other_tracks.share_of_streams = 100 - artist_shareOfStreams;
 
@@ -909,6 +941,34 @@ function render(){
           .text("DSP Revenue")
     }
 
+
+    // Draw DSP share rectangle
+    svg_revshare
+      .append("rect")
+        .attr("x", x(revshare_scale_ends.x_min) )
+        .attr("y",y(revshare_scale_ends.y_max))
+        .attr("width", x(data.dsp_share.share_of_streams) )
+        .attr("height", y(data.dsp_share.dsp_revenue)) //Needs to be y_axis_range - coordinate because vertical coordinates go from top to bottom
+        .attr("id",data.dsp_share.label)
+        .style("fill", data.dsp_share.color)
+        .style("fill-opacity", data.dsp_share.opacity)
+        // .style("stroke", "#5c5b5b")
+        .on('mouseover', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.dsp_share.opacity_highlight);
+        })
+        .on('mouseout', function(d, i) {
+          // console.log("mouseover on", this);
+          // transition the mouseover'd element
+          // to having a red fill
+          d3.select(this)
+            .transition()
+            .style('fill-opacity', data.dsp_share.opacity);
+        })
 
     // Draw other tracks rectangle
     svg_revshare
@@ -1084,6 +1144,9 @@ function render(){
   }
 
   function revshare_draw_legend(data, N){
+    // Remove DSP share data from the local data variable as we do not want to draw a legend for it. 
+    var data = (({ other_tracks, artist_share, dist_share }) => ({ other_tracks, artist_share, dist_share }))(data);
+    // Turn data into array
     var data_rect_values = Object.keys(data).map(function(key){  
           return data[key];
           });
@@ -1136,6 +1199,9 @@ function render(){
   }
 
   function revshare_update_legend(data, N){
+    // Remove DSP share data from the local data variable as we do not want to draw a legend for it. 
+    var data = (({ other_tracks, artist_share, dist_share }) => ({ other_tracks, artist_share, dist_share }))(data);
+    // Turn data into array
     var data_rect_values = Object.keys(data).map(function(key){  
           return data[key];
           });
@@ -1181,6 +1247,19 @@ function render(){
               .domain([revshare_scale_ends.y_min, revshare_scale_ends.y_max])
               .range([height_revshare - margin_revshare.top - margin_revshare.bottom, 0]);
 
+    
+    // Update dsp share rectangle
+    var dsp_rect = svg_revshare.selectAll("#dsp_share");
+    dsp_rect
+        .transition()
+        .duration(transition_duration)
+        .attr("x", x(revshare_scale_ends.x_min) )
+        .attr("y",y(revshare_scale_ends.y_max))
+        .attr("width", x(data.dsp_share.share_of_streams) )
+        .attr("height", y(data.dsp_share.dsp_revenue)) //Needs to be y_axis_range - coordinate because vertical coordinates go from top to bottom
+        // .style("stroke", "#5c5b5b")
+
+
     // Update other tracks rectangle
     var other_rect = svg_revshare.selectAll("#other_tracks");
     other_rect
@@ -1196,17 +1275,11 @@ function render(){
 
     other_rect
         .on('mouseover', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity', data.other_tracks.opacity_highlight);
         })
         .on('mouseout', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity', data.other_tracks.opacity);
@@ -1227,17 +1300,11 @@ function render(){
 
     dist_rect
         .on('mouseover', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity',data.dist_share.opacity_highlight);
         })
         .on('mouseout', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity', data.dist_share.opacity);
@@ -1259,17 +1326,11 @@ function render(){
 
     artist_rect
         .on('mouseover', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity',data.artist_share.opacity_highlight);
         })
         .on('mouseout', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity', data.artist_share.opacity);
@@ -1334,13 +1395,8 @@ function render(){
       .sections(d3.selectAll('.container-2 #sections > div'))
       // .offset(innerWidth < 900 ? innerHeight - 30 : 200)
       .on('active', function(i){
-
         console.log('graph 2 change', i)
-        // var pos = [ data, data2, data3, data4 ][i]        
-        // update(pos)
         revshare_data_modifier(i)
-        // data_sunburst = generate_data_dict()
-        console.log('data_revshare',data_revshare)
         if (i==0){
           if (revshare_drawn==false){
             revshare_data_update();
@@ -1364,186 +1420,6 @@ function render(){
       })
 
 
-  // var color_sunburst = d3.scaleOrdinal(["#848484","#7c95bd","#848484","#848484","#848484","#ffd92f","#e5c494","#b3b3b3"]);
-
-  // var generate_data_dict = function(){
-  //   // Generate a hierarchical data dict from user inputs, to be used to plot pie chart.
-  //   var data = {"name":"Royalties",
-  //               "children":[]}
-  //   //Calculate total streams
-  //   var total_streams = Object.values(streams).reduce((a, b) => a + b, 0)
-  //   // Construct data object
-  //   for (const property in streams){
-  //       var track_popupation = 100*streams[property]/total_streams
-  //       if (property=="track1"){
-  //         var track_data = {"name":property,
-  //                           "children":[{"name":"Artist",
-  //                                         "value":shares[property]["artist"]*track_popupation},
-  //                                         {"name":"Distr/Label",
-  //                                         "value":shares[property]["distr_label"]*track_popupation}
-  //                                     ]
-  //                         }
-  //       }
-  //       else {
-  //         track_data = {"name":property,
-  //                       "value":track_popupation}
-  //       }
-  //       data["children"].push(track_data)
-  //   }
-  //   return data
-  // }
-
-  // var data_sunburst = generate_data_dict()
-
-  // var drawChart = function(data) {
-  //   var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
-  //   // Create primary <g> element
-  //   var g = d3.select(".container-2 #graph")
-  //       .html('')
-  //       .append('svg')
-  //       .attr('width', width)
-  //       .attr('height', height)
-  //       .append('g')
-  //       .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
-
-  //   // Data strucure
-  //   var partition = d3.partition()
-  //       .size([2 * Math.PI, radius]);
-  //   // Find data root
-  //   var root = d3.hierarchy(data)
-  //       .sum(function (d) { return d.value});
-
-  //   // Size arcs
-  //   partition(root);
-  //   var arc = d3.arc()
-  //       .startAngle(function (d) { return d.x0 })
-  //       .endAngle(function (d) { return d.x1 })
-  //       .innerRadius(function (d) { return d.y0 })
-  //       .outerRadius(function (d) { return d.y1 });
-
-  //   // Add a <g> element for each node; create the slice variable since we'll refer to this selection many times
-  //   var slice = g.selectAll('g')
-  //       .data(root.descendants())
-  //       .enter()
-  //       .append('g')
-  //       .attr("class", "node")
-  //       .attr("id","slice");
-
-  //   // Put it all together
-  //   slice.append('path')
-  //       .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
-  //       .attr("d", arc)
-  //       .style('stroke', '#fff')
-  //       .style("fill",  function (d) { 
-  //           if (d.children){
-  //             return color_sunburst(d.data.name)
-  //           }
-  //           else {
-  //             // console.log("ELSE",d)
-  //             var parent_color = d3.hsl(color_sunburst(d.parent.data.name))
-  //             if (d.data.name=="Artist") {
-  //               // console.log("Artist parent color", parent_color)
-  //               var artist_colour = parent_color
-  //               // artist_colour['h'] = artist_colour['h'] + 10;
-  //               // artist_colour['s'] += 0.2
-  //               // artist_colour['l'] += 0.1
-  //               return artist_colour;
-  //             }
-  //             else { 
-  //               // console.log("Not Artist")
-  //               var distrib_colour = parent_color
-  //               // dsp_colour['h'] = dsp_colour['h'] + 5;
-  //               // dsp_colour['s'] += 0.3
-  //               distrib_colour['l'] += 0.15
-  //               return distrib_colour;
-  //             }
-  //           }
-  //         });
-
-  //   slice.append("text")
-  //           .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
-  //           // .attr("transform", function(d) {
-  //           //     return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
-  //           .attr("transform", function(d) {
-  //               return "translate(" + arc.centroid(d) + ")"; })
-  //           .attr("dx", "-20")
-  //           .attr("dy", ".5em")
-  //           .text(function(d) { return d.parent ? d.data.name : "" });
-
-
-  //   console.log("DRAW")
-  // }
-
-  // var updateChart = function(data) {
-
-  //   var radius = (dsp_revenue/100) * Math.min(width, height) / 2 ;
-    
-  //   // Data strucure
-  //   var partition = d3.partition()
-  //       .size([2 * Math.PI, radius]);
-
-  //   // Find data root
-  //   var root = d3.hierarchy(data)
-  //       .sum(function (d) { return d.value});
-
-  //   // Size arcs
-  //   partition(root);
-  //   arc = d3.arc()
-  //       .startAngle(function (d) {d.x0s = d.x0; return d.x0 })
-  //       .endAngle(function (d) { d.x1s = d.x1; return d.x1 })
-  //       .innerRadius(function (d) { return d.y0 })
-  //       .outerRadius(function (d) { return d.y1 });
-
-  //   // Put it all together
-  //   var slice = d3.selectAll(".container-2 #graph").selectAll("#slice").data(root.descendants());
-
-  //   var path = slice.select('path');
-  //   // path.transition().attrTween("d", arcTweenPath);
-  //   // path.transition().duration(500);
-  //   // console.log("transition",path)
-
-
-  //   path.transition().duration(500)
-  //       .attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
-  //       // .attrTween("d", arcTween)
-  //       .attr("d", arc)
-  //       .style('stroke', '#fff')
-  //       .style("fill", function (d) { 
-  //         if (d.children){
-  //           return color_sunburst(d.data.name)
-  //         }
-  //         else {
-  //           // console.log("ELSE",d)
-  //           var parent_color = d3.hsl(color_sunburst(d.parent.data.name))
-  //           if (d.data.name=="Artist") {
-  //             // console.log("Artist parent color", parent_color)
-  //             var artist_colour = parent_color
-  //             // artist_colour['h'] = artist_colour['h'] + 10;
-  //             // artist_colour['s'] += 0.2
-  //             // artist_colour['l'] += 0.1
-  //             return artist_colour;
-  //           }
-  //           else { 
-  //             // console.log("Not Artist")
-  //             var distrib_colour = parent_color
-  //             // dsp_colour['h'] = dsp_colour['h'] + 5;
-  //             // dsp_colour['s'] += 0.3
-  //             distrib_colour['l'] += 0.15
-  //             return distrib_colour;
-  //           }
-  //         }
-  //       });
-
-  //   text = slice.select("text");
-  //   text.attr("display", function (d) { if (hidden_levels.includes(d.depth)) return "none";  })
-  //       .attr("transform", function(d) {
-  //           return "translate(" + arc.centroid(d) + ")"; })
-  //       .attr("dx", "-20")
-  //       .attr("dy", ".5em")
-  //       .text(function(d) { return d.parent ? d.data.name : "" });
-
-  //   // console.log('Pie Widht',pieWidth)
-  // }
   
   
   
