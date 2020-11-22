@@ -901,21 +901,21 @@ function render(){
 
 
     // Add X axis
-    if (revshare_rendering_options.x_axis_ticks==true){
-      if (revshare_x_ticks_drawn==false){
-        svg_revshare
-          .append("g")
-          .attr("transform", "translate(0," + (height_revshare - margin_revshare.top - margin_revshare.bottom) + ")")
-          .call(d3.axisBottom(x));
-      }
-    }
-    else {
-      svg_revshare
-        .append("g")
-        .attr("transform", "translate(0," + (height_revshare - margin_revshare.top - margin_revshare.bottom) + ")")
-        .attr("id","xticks")
-        .call(d3.axisBottom(x).tickValues([]));
-    }
+    // if (revshare_rendering_options.x_axis_ticks==true){
+    //   if (revshare_x_ticks_drawn==false){
+    //     svg_revshare
+    //       .append("g")
+    //       .attr("transform", "translate(0," + (height_revshare - margin_revshare.top - margin_revshare.bottom) + ")")
+    //       .call(d3.axisBottom(x));
+    //   }
+    // }
+    // else {
+    //   svg_revshare
+    //     .append("g")
+    //     .attr("transform", "translate(0," + (height_revshare - margin_revshare.top - margin_revshare.bottom) + ")")
+    //     .attr("id","xticks")
+    //     .call(d3.axisBottom(x).tickValues([]));
+    // }
 
     // Add X axis label:
     if (revshare_rendering_options.x_axis_label==true){
@@ -952,19 +952,12 @@ function render(){
         .attr("id",data.dsp_share.label)
         .style("fill", data.dsp_share.color)
         .style("fill-opacity", data.dsp_share.opacity)
-        // .style("stroke", "#5c5b5b")
         .on('mouseover', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity', data.dsp_share.opacity_highlight);
         })
         .on('mouseout', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity', data.dsp_share.opacity);
@@ -980,19 +973,12 @@ function render(){
         .attr("id",data.other_tracks.label)
         .style("fill", data.other_tracks.color)
         .style("fill-opacity", data.other_tracks.opacity)
-        // .style("stroke", "#5c5b5b")
         .on('mouseover', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity', data.other_tracks.opacity_highlight);
         })
         .on('mouseout', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity', data.other_tracks.opacity);
@@ -1008,19 +994,12 @@ function render(){
         .attr("id","distributor_share")
         .style("fill", data.dist_share.color)
         .style("fill-opacity", data.dist_share.opacity)
-        // .style("stroke", "#b8211c")
         .on('mouseover', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity',data.dist_share.opacity_highlight);
         })
         .on('mouseout', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity', data.dist_share.opacity);
@@ -1036,19 +1015,12 @@ function render(){
         .attr("id","artist_share")
         .style("fill", data.artist_share.color)
         .style("fill-opacity", data.artist_share.opacity)
-        // .style("stroke", "#b8211c")
         .on('mouseover', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity',data.artist_share.opacity_highlight);
         })
         .on('mouseout', function(d, i) {
-          // console.log("mouseover on", this);
-          // transition the mouseover'd element
-          // to having a red fill
           d3.select(this)
             .transition()
             .style('fill-opacity', data.artist_share.opacity);
@@ -1081,8 +1053,8 @@ function render(){
           .attr('xlink:href', './images/round_dollar_fill_negative_with_edges.png')
           .attr("x", x(i*revshare_scale_ends.x_max/N))
           .attr("y",y(j*revshare_scale_ends.x_max/N))
-          .attr("width", x(revshare_scale_ends.x_max/N) )
-          .attr("height", x(revshare_scale_ends.x_max/N)) 
+          .attr("width", x(revshare_scale_ends.x_max/N) + 1)
+          .attr("height", x(revshare_scale_ends.x_max/N) + 1) 
           .attr("id","dollar_"+idx)
       }
     }
@@ -1163,7 +1135,7 @@ function render(){
     var legendPadLeft = 20;
     var legend_x = x(50);
     // var legend_y = margin_revshare.top - 35;
-    var legend_y = height_revshare - margin_revshare.bottom/2;
+    var legend_y = height_revshare - margin_revshare.bottom/2 - 1;
     var width_legend = x(revshare_scale_ends.x_max) - x(revshare_scale_ends.x_min);
     // Set Legend
     var legend = d3.select(".container-2 #graph").select('svg')
@@ -1187,8 +1159,8 @@ function render(){
 
             legend.append("image")  
                   .attr('xlink:href', './images/round_dollar_fill_negative_with_edges.png')
-                  .attr("width", legendRectSize )
-                  .attr("height", legendRectSize );                       
+                  .attr("width", legendRectSize + 1)
+                  .attr("height", legendRectSize + 1);                       
               
             legend.append('text')                                     
               .attr('x', legendRectSize + legendSpacing)            

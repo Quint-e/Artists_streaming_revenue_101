@@ -1,7 +1,7 @@
 ///////////////////// Initial Data ////////////////////////
 var width_sim = 700;
 var height_sim = 600;
-var margin_rect = {top: 120, right: 200, bottom: 40, left: 60};
+var margin_rect = {top: 40, right: 200, bottom: 120, left: 60};
 var rect_scale_ends = {x_min:0, x_max:100, y_min:0, y_max:100};
 
 var margin_pile = {top: 120, right: 20, bottom: 40, left: 600};
@@ -43,9 +43,14 @@ var data_pile = {"label":"cash_pile",
                 "opacity":0.5,
                 "opacity_highlight":0.3}
 
-var rect_rendering_options = {"y_axis":true,
+var rect_rendering_options = {"y_axis":false,
                               "y_axis_ticks":false,
+                              "x_axis":false,
                               "annotations":false}
+
+const
+	total_streams_maxv = 10000000000
+	track_streams_maxv = 10000000000;
 //////////////////////////////////////////////////////////
 
 
@@ -68,21 +73,28 @@ var log_slider = function(position,minv=1000,maxv=100000000){
 
 // Get Initial values from the HTML slider. 
 var dsp_revenue = d3.select("#DSPrevenue").property("value"); 
-    total_other_streams = log_slider(d3.select("#TotalOtherStreams").property("value"), minv=1000,maxv=10000000000);
-    track_streams = log_slider(d3.select("#Trackstreams").property("value"), minv=1000,maxv=10000000000);
+    total_other_streams = log_slider(d3.select("#TotalOtherStreams").property("value"), minv=1000,maxv=total_streams_maxv);
+    track_streams = log_slider(d3.select("#Trackstreams").property("value"), minv=1000,maxv=track_streams_maxv);
     artist_share = d3.select("#Artistshare").property("value")/100;
-    // Set pie Width (and therefore diameter) based on DSP revenue
-    // pieWidth = dsp_revenue/100 * maxRadius/3;
 
 var init_html_values = function() {
     //Initialise the values to be displayed next to the HTML sliders. 
     d3.select("#DSPrevenue-value").text(dsp_revenue);
-    d3.select("#TotalOtherStreams-value").text(total_other_streams);
-    d3.select("#Trackstreams-value").text(track_streams);
-    d3.select("#Artistshare-value").text(artist_share);
+    d3.select("#TotalOtherStreams-value").text(total_other_streams.toLocaleString());
+    d3.select("#Trackstreams-value").text(track_streams.toLocaleString());
+    d3.select("#Artistshare-value").text(artist_share*100);
 }
 
 init_html_values()
+
+// Update data_rect dict accordingly
+var total_streams = total_other_streams + track_streams;
+var track_share_of_streams = 100*track_streams/total_streams;
+var other_share_of_streams = 100*total_other_streams/total_streams;
+
+data_rect.other_tracks.share_of_streams = other_share_of_streams;
+data_rect.dist_share.share_of_streams = track_share_of_streams;
+data_rect.artist_share.share_of_streams = track_share_of_streams;
 
 
 // total_streams_to_streams(total_other_streams)
@@ -143,18 +155,20 @@ function draw_rect(data, rect_rendering_options){
               .domain([rect_scale_ends.y_min, rect_scale_ends.y_max])
               .range([height_sim - margin_rect.top - margin_rect.bottom, 0]);
 
-    // Add X axis
-    svg_rect
-      .append("g")
-      .attr("transform", "translate(0," + (height_sim - margin_rect.top - margin_rect.bottom) + ")")
-      .call(d3.axisBottom(x));
+    // Add X 
+    if (rect_rendering_options.x_axis==true){
+	    svg_rect
+	      .append("g")
+	      .attr("transform", "translate(0," + (height_sim - margin_rect.top - margin_rect.bottom) + ")")
+	      .call(d3.axisBottom(x));
 
-    // Add X axis label:
-    svg_rect.append("text")
-        .attr("text-anchor", "middle")
-        .attr("x", (width_sim - margin_rect.left - margin_rect.right)/2 )
-        .attr("y", height_sim - margin_rect.top - 0.1*margin_rect.bottom)
-        .text("Share of streams (%)");
+	    // Add X axis label:
+	    svg_rect.append("text")
+	        .attr("text-anchor", "middle")
+	        .attr("x", (width_sim - margin_rect.left - margin_rect.right)/2 )
+	        .attr("y", height_sim - margin_rect.top - 0.1*margin_rect.bottom)
+	        .text("Share of streams (%)");
+	}
 
     // Add Y axis
     if (rect_rendering_options.y_axis==true){
@@ -321,7 +335,7 @@ function draw_legend(data, N){
   var legendSpacing = 4;
   var legendPadLeft = 20;
   var legend_x = x(50);
-  var legend_y = margin_rect.top - 35;
+  var legend_y = y(rect_scale_ends.y_min) + margin_rect.top + 20;
   var width_legend = x(rect_scale_ends.x_max) - x(rect_scale_ends.x_min);
   // Set Legend
     var legend = d3.select("#interactive_sunburst").select('svg')
@@ -337,16 +351,16 @@ function draw_legend(data, N){
               });                                                    
 
             legend.append('rect')                                  
-              .attr('width', legendRectSize)                        
-              .attr('height', legendRectSize)                         
+              .attr('width', legendRectSize )                        
+              .attr('height', legendRectSize )                         
               .style('fill', function(d){return d.color;})
               .style('opacity',function(d){return d.opacity;});                
               // .style('stroke', color);   
 
             legend.append("image")  
                   .attr('xlink:href', './images/round_dollar_fill_negative_with_edges.png')
-                  .attr("width", legendRectSize )
-                  .attr("height", legendRectSize );                       
+                  .attr("width", legendRectSize + 1)
+                  .attr("height", legendRectSize + 1);                       
               
             legend.append('text')                                     
               .attr('x', legendRectSize + legendSpacing)            
@@ -494,10 +508,10 @@ function draw_dollars(N=20){
       g_dollars
         .append("image")
         .attr('xlink:href', './images/round_dollar_fill_negative_with_edges.png')
-        .attr("x", x(i*rect_scale_ends.x_max/N)+1 )
+        .attr("x", x(i*rect_scale_ends.x_max/N))
         .attr("y",y(j*rect_scale_ends.x_max/N))
-        .attr("width", x(rect_scale_ends.x_max/N) )
-        .attr("height", x(rect_scale_ends.x_max/N)) 
+        .attr("width", x(rect_scale_ends.x_max/N) +1) //Add one pixel to make sure there is no gap between dollars (otherwise we'd see the rect in the background)
+        .attr("height", x(rect_scale_ends.x_max/N) +1) 
         .attr("id","dollar_"+idx)
     }
   }
@@ -634,7 +648,7 @@ function update_pile(data){
         })
   }
 
-draw_pile(data_pile);
+// draw_pile(data_pile);
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -652,15 +666,15 @@ d3.select("#DSPrevenue").on("input", function() {
   data_rect.dist_share.dsp_revenue = dsp_revenue;
   data_rect.artist_share.dsp_revenue = dsp_revenue;
   update_rect(data_rect);
-  update_pile(data_pile);
+  // update_pile(data_pile);
 });
 
 
 // Total other streams update
 d3.select("#TotalOtherStreams").on("input", function() {
     // adjust the text on the range slider
-    total_other_streams = log_slider(+this.value, minv=1000,maxv=100000000);
-  d3.select("#TotalOtherStreams-value").text(total_other_streams);
+    total_other_streams = log_slider(+this.value, minv=1000,maxv=total_streams_maxv);
+  d3.select("#TotalOtherStreams-value").text(total_other_streams.toLocaleString());
   d3.select("#TotalOtherStreams").property("value", +this.value);
 
   var total_streams = total_other_streams + track_streams;
@@ -672,15 +686,15 @@ d3.select("#TotalOtherStreams").on("input", function() {
   data_rect.artist_share.share_of_streams = track_share_of_streams;
   
   update_rect(data_rect);
-  update_pile(data_pile);
+  // update_pile(data_pile);
 });
 
 
 // Track streams update
 d3.select("#Trackstreams").on("input", function() {
     // adjust the text on the range slider
-    track_streams = log_slider(+this.value, minv=1000,maxv=100000000);
-  d3.select("#Trackstreams-value").text(track_streams);
+    track_streams = log_slider(+this.value, minv=1000,maxv=track_streams_maxv);
+  d3.select("#Trackstreams-value").text(track_streams.toLocaleString());
   d3.select("#Trackstreams").property("value", +this.value);
   
   var total_streams = total_other_streams + track_streams;
@@ -692,7 +706,7 @@ d3.select("#Trackstreams").on("input", function() {
   data_rect.artist_share.share_of_streams = track_share_of_streams;
 
   update_rect(data_rect);
-  update_pile(data_pile);
+  // update_pile(data_pile);
 });
 
 // Artist share update
@@ -706,7 +720,7 @@ d3.select("#Artistshare").on("input", function() {
   data_rect.dist_share.share = 1 - artist_share;
   
   update_rect(data_rect);
-  update_pile(data_pile);
+  // update_pile(data_pile);
 });
 
 
