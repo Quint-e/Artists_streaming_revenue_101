@@ -863,7 +863,7 @@ function render(){
         dsp_revenue = dsp_revenue_default;
         artist_shareOfStreams = artist_shareOfStreams_default;
         artist_share = artist_share_default;
-        data_revshare.artist_share.annotation = "Artist Share";
+        data_revshare.artist_share.annotation = "Artists Share";
         revshare_rendering_options.legend_dist = true;
         break;
       case 19:
@@ -1214,7 +1214,7 @@ function render(){
               .text(function(d) { return d.annotation; });
   }
 
-  function updateChart(data, revshare_rendering_options, transition_duration=500){
+  function updateChart(data, revshare_rendering_options, transition_duration=1000){
     // List of dictionaries version of data dict, used for iterating through data in plotting routines.
     var data_rect_values = Object.keys(data).map(function(key){  
         return data[key];

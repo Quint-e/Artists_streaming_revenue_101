@@ -14,7 +14,7 @@ var data_rect = {"other_tracks":{"label":"other_tracks",
                           "annotation":"Other Tracks",
                           "color":"#000000",
                           "color_highlight":'#363636',
-                          "opacity":0.6,
+                          "opacity":0.4,
                           "opacity_highlight":0.3},
                 "artist_share":{"label":"artist_share",
                           "share_of_streams":45,
@@ -23,7 +23,7 @@ var data_rect = {"other_tracks":{"label":"other_tracks",
                           "annotation":"Artist",
                           "color":"#00ba0e",
                           "color_highlight":'#6bff53',
-                          "opacity":1.0,
+                          "opacity":0.8,
                           "opacity_highlight":0.4},
                 "dist_share":{"label":"distributor_share",
                           "share_of_streams":45,
@@ -32,7 +32,7 @@ var data_rect = {"other_tracks":{"label":"other_tracks",
                           "annotation":"Dist/Label",
                           "color":"#3683ff",
                           "color_highlight":'#6bff53',
-                          "opacity":1.0,
+                          "opacity":0.8,
                           "opacity_highlight":0.4}
               }
 
@@ -50,7 +50,7 @@ var rect_rendering_options = {"y_axis":false,
 
 const
 	total_streams_maxv = 10000000000
-	track_streams_maxv = 10000000000;
+	track_streams_maxv = 5000000000;
 //////////////////////////////////////////////////////////
 
 
