@@ -661,7 +661,6 @@ d3.select("#DSPrevenue").on("input", function() {
     dsp_revenue = +this.value;
   d3.select("#DSPrevenue-value").text(dsp_revenue);
   d3.select("#DSPrevenue").property("value", dsp_revenue);
-  // console.log("radius", radius)
   data_rect.other_tracks.dsp_revenue = dsp_revenue;
   data_rect.dist_share.dsp_revenue = dsp_revenue;
   data_rect.artist_share.dsp_revenue = dsp_revenue;

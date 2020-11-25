@@ -255,44 +255,28 @@ function render(){
 
 
 ///////////////////////////// Rectangle chart section ///////////////////////////////////
+
   var data_rect = {"freemium":{"label":"Freemium",
-                          "n_users":55,
+                          "n_users":185,
                           "rev_per_user":0.33,
                           "rev":"$",
                           "color":"#000000",
                           "color_highlight":'#363636',
                           "opacity":0.5},
               "premium":{"label":"Premium",
-                          "n_users":45,
+                          "n_users":144,
                           "rev_per_user":0.33,
                           "rev":"$",
                           "color":"#1dc500",
                           "color_highlight":'#6bff53',
                           "opacity":0.5}
-              }
-
-  // var data_rect_2 = {"freemium":{"label":"Freemium",
-  //                         "n_users":55,
-  //                         "rev_per_user":0.33,
-  //                         "rev":"$10%",
-  //                         "color":"#131313",
-  //                         "color_highlight":'#363636',
-  //                         "opacity":0.5},
-  //             "premium":{"label":"Premium",
-  //                         "n_users":45,
-  //                         "rev_per_user":4.19,
-  //                         "rev":"$90%",
-  //                         "color":"#1dc500",
-  //                         "color_highlight":'#6bff53',
-  //                         "opacity":0.5}
-  //             }
+              };
 
   var rect_rendering_options = {"y_axis":false,
-                                "rev_text":false}
-  var rect_rendering_options_2 = {"y_axis":true,
-                                "rev_text":false}
-  var rect_rendering_options_3 = {"y_axis":true,
-                                "rev_text":true}
+                                "rev_text":false};
+
+  var rect_total_users_max = 400;
+  var rect_arpu_max = 5;
 
   var rect_drawn = false;
   var rect_text_drawn = false;
@@ -318,17 +302,17 @@ function render(){
     // console.log("data_rect_values",data_rect_values)
     // Set scales
     var x = d3.scaleLinear()
-              .domain([0, 100])
+              .domain([0, rect_total_users_max])
               .range([0, width - margin_rect.right - margin_rect.left]);
 
     var y = d3.scaleLinear()
-              .domain([0, 5])
+              .domain([0, rect_arpu_max])
               .range([height - margin_rect.top - margin_rect.bottom, 0]);
 
     // Set dimensions of legend
     var legendRectSize = 18; 
     var legendSpacing = 4;
-    var legend_x = x(75);
+    var legend_x = x(300);
     var legend_y = y(4.5);
 
     // Add X axis
@@ -342,7 +326,7 @@ function render(){
         .attr("text-anchor", "middle")
         .attr("x", (width - margin_rect.left - margin_rect.right)/2 )
         .attr("y", height - margin_rect.top - 0.1*margin_rect.bottom)
-        .text("% of users");
+        .text("Number of users (Millions)");
 
     // Add Y axis
     if (rect_rendering_options.y_axis==true){
@@ -453,11 +437,11 @@ function render(){
     // Set scales
     // Set scales
     var x = d3.scaleLinear()
-              .domain([0, 100])
+              .domain([0, rect_total_users_max])
               .range([0, width - margin_rect.right - margin_rect.left]);
 
     var y = d3.scaleLinear()
-              .domain([0, 5])
+              .domain([0, rect_arpu_max])
               .range([height - margin_rect.top - margin_rect.bottom, 0]);
 
     // Modify size of premium rectangle
@@ -468,7 +452,7 @@ function render(){
                 .duration(1000)
                 .attr("x", x(0) )
                 .attr("y",y(data.premium.rev_per_user))
-                .attr("height", y(5-data.premium.rev_per_user))
+                .attr("height", y(rect_arpu_max-data.premium.rev_per_user))
                 .attr("width", x(data.premium.n_users) )
                 .attr("id","premium")
                 .style("fill", data.premium.color)
@@ -499,7 +483,7 @@ function render(){
                 .duration(1000)
                 .attr("x", x(data.premium.n_users) )
                 .attr("y",y(data.freemium.rev_per_user))
-                .attr("height", y(5-data.freemium.rev_per_user)) //Needs to be y_axis_range - coordinate because vertical coordinates go from top to bottom
+                .attr("height", y(rect_arpu_max-data.freemium.rev_per_user)) //Needs to be y_axis_range - coordinate because vertical coordinates go from top to bottom
                 .attr("width", x(data.freemium.n_users) )
 
     // Add/Remove Y axis
@@ -556,8 +540,10 @@ function render(){
                 .style('fill',"#ffffff")
                 .attr('text-anchor','middle')
                 .attr('dominant-baseline','central')
-                .attr("id",function(d){return "text_"+ d.label})
-                .attr("font-size", function(d){return Math.round(d.n_users * d.rev_per_user)});
+                .attr("id",function(d){
+                  console.log(d.n_users * d.rev_per_user/3);
+                  return "text_"+ d.label})
+                .attr("font-size", function(d){return Math.round(d.n_users * d.rev_per_user / 3)});
                 // .attr('x',)
         rect_text_drawn = true;
       }
@@ -578,7 +564,7 @@ function render(){
                         return 'translate(' + horz + ',' + vert + ')';
                       })
                 .selectAll("text")
-                .attr("font-size", function(d){return Math.round(d.n_users * d.rev_per_user)}); 
+                .attr("font-size", function(d){return Math.round(d.n_users * d.rev_per_user / 3)}); 
       }
     }
     else{
@@ -588,19 +574,39 @@ function render(){
     }   
   }
 
+  function delete_rect(){
+    svg_rect.selectAll("*").remove();
+  }
 
   function rect_data_modifier(i){
     switch(i){
-      case 0:
+      case 0 :
         data_rect = {"freemium":{"label":"Freemium",
-                          "n_users":55,
+                          "n_users":185,
                           "rev_per_user":0.33,
                           "rev":"$",
                           "color":"#000000",
                           "color_highlight":'#363636',
                           "opacity":0.5},
               "premium":{"label":"Premium",
-                          "n_users":45,
+                          "n_users":144,
+                          "rev_per_user":0.33,
+                          "rev":"$",
+                          "color":"#1dc500",
+                          "color_highlight":'#6bff53',
+                          "opacity":0.5}
+              };
+        break;
+      case 1:
+        data_rect = {"freemium":{"label":"Freemium",
+                          "n_users":185,
+                          "rev_per_user":0.33,
+                          "rev":"$",
+                          "color":"#000000",
+                          "color_highlight":'#363636',
+                          "opacity":0.5},
+              "premium":{"label":"Premium",
+                          "n_users":144,
                           "rev_per_user":0.33,
                           "rev":"$",
                           "color":"#1dc500",
@@ -610,30 +616,38 @@ function render(){
         rect_rendering_options = {"y_axis":false,
                                 "rev_text":false};
         break;
-      case 1:
+      case 2:
         data_rect.premium.rev_per_user = 4.19;
         rect_rendering_options.y_axis = true;
         rect_rendering_options.rev_text = false;
         break;
-      case 2:
+      case 3:
         rect_rendering_options.rev_text = true;        
         break;
-      case 3:
-        data_rect.premium.rev_per_user = 4.19;
-        break;
       case 4:
-        data_rect.premium.rev_per_user = 4.6;
+        data_rect.premium.rev_per_user = 4.19;
         break;
       case 5:
-        data_rect.premium.rev_per_user = 4.19;
+        data_rect.premium.rev_per_user = 4.6;
         break;
       case 6:
-        data_rect.premium.n_users = 45;
-        data_rect.freemium.n_users = 55;
+        data_rect.premium.rev_per_user = 4.19;
         break;
       case 7:
-        data_rect.premium.n_users = 65;
-        data_rect.freemium.n_users = 35;
+        data_rect.premium.n_users = 144;
+        data_rect.freemium.n_users = 185;
+        break;
+      case 8:
+        data_rect.premium.n_users = 200;
+        data_rect.freemium.n_users = 129;
+        break;
+      case 9:
+        data_rect.premium.n_users = 200;
+        data_rect.freemium.n_users = 129;
+        break;
+      case 10:
+        data_rect.premium.n_users = 240;
+        data_rect.freemium.n_users = 160;
         break;
     }
   }
@@ -647,8 +661,13 @@ function render(){
       .on('active', function(i){
 
         console.log('graph 1 change', i)
-        if (i==0){
+        if (i==0 & rect_drawn==true){
+          delete_rect();
+          rect_drawn = false;
+        }
+        if (i==1){
           if (rect_drawn==false){ 
+            rect_data_modifier(i);
             draw_rect(data_rect,rect_rendering_options)
             rect_drawn = true;
           }
