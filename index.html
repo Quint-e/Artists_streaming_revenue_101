@@ -489,8 +489,52 @@ Let's start by examining who are the players involved in getting the artist's mu
       </p> 
     </div>
 
-    <div style="padding-bottom:500px">
+    <div>
       <p>Note that for simplicity we are only considering the case where there is a single artist/musician entitled royalties on the track. In the general case there could be several (e.g. band members, producer) and each of them would be entitled a split of the Artists Share, with the split ratios defined in a contract between all contributors. </p>
+    </div>
+
+    <div style="padding-bottom: 100px;">
+      <h3>Interactive Simulator</h3>
+      <p>
+        In order to get a feel for how the artist royalties are impacted by some key parameters, have a play with our little simulator below. 
+      </p>
+      Tweak the parameters using the sliders and observe how they impact the artist's royalties. 
+      <p>
+          <input type="range" min="0" max="100" value="80" id="DSPrevenue" class="slider" style="width:200px;">
+          <br>
+          <label for="DSPrevenue" 
+               style="display: inline-block; width: 280px; text-align: left;">
+               <!-- DSP revenue = <span id="DSPrevenue-value">…</span> -->
+               DSP Revenue
+          </label>
+      </p>
+
+      <p>
+          <input type="range" min="60" max="100" value="95" id="TotalOtherStreams" class="slider" style="width:200px;">
+          <br>
+          <label for="TotalOtherStreams" 
+               style="display: inline-block; width: 280px; text-align: left">
+               Total Other Streams = <span id="TotalOtherStreams-value">…</span>
+          </label>
+      </p>
+
+      <p>
+          <input type="range" min="0" max="100" value="75" id="Trackstreams" class="slider" style="width:200px;">
+          <br>
+          <label for="Trackstreams" 
+               style="display: inline-block; width: 280px; text-align: left">
+               Track Streams = <span id="Trackstreams-value">…</span>
+          </label>
+      </p>
+
+      <p>
+          <input type="range" min="0" max="100" value="80" id="Artistshare" class="slider" style="width:200px;">
+          <br>
+          <label for="Artistshare" 
+               style="display: inline-block; width: 280px; text-align: left">
+               Artist share = <span id="Artistshare-value">…</span> %
+          </label>
+      </p>
     </div>
 
   </div>
@@ -510,7 +554,7 @@ Let's start by examining who are the players involved in getting the artist's mu
 	</p>
 </div> -->
 
-<div class="text_div" style="padding-top:200px">
+<div class="text_div" style="padding-top:100px">
   <h1>Closing words</h1>
 <!--   Discussing how much artists get paid from music streaming is good, and we all want the to be compensated fairly. However, in order to this discussion to be productive, one needs to at least understand how the mecanics of royalties payment work. --> 
 Hopefully this article has helped shading a light on some basic principles for calculating recording royalties. 
@@ -550,7 +594,7 @@ Hopefully this article has helped shading a light on some basic principles for c
 
 </div>
 
-<div class="text_div">
+<!-- <div class="text_div">
   <h2>Interactive Simulator</h2>
   <div id="interactive_sunburst" style="padding-bottom:50px">
     <p>
@@ -560,7 +604,6 @@ Hopefully this article has helped shading a light on some basic principles for c
     <p>
         <label for="DSPrevenue" 
              style="display: inline-block; width: 240px; text-align: right">
-             <!-- DSP revenue = <span id="DSPrevenue-value">…</span> -->
              DSP Revenue
         </label>
         <input type="range" min="0" max="100" value="80" id="DSPrevenue" class="slider">
@@ -590,7 +633,7 @@ Hopefully this article has helped shading a light on some basic principles for c
         <input type="range" min="0" max="100" value="80" id="Artistshare" class="slider">
     </p>
   </div>
-</div>
+</div> -->
 
 <div id="references" class="text_div">
   <h2>References</h2>
@@ -610,8 +653,7 @@ Hopefully this article has helped shading a light on some basic principles for c
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <!-- <script src="d3v4+jetpack.js"></script> -->
 <script src="graph-scroll.js"></script>
-<!-- <script src="./D3_graphs/d3_v4_sunburst/sunburst.js"></script> -->
-<script src="interactive_simulator.js"></script>
+<!-- <script src="interactive_simulator.js"></script> -->
 <script src="donut.js"></script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async
