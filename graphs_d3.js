@@ -109,11 +109,11 @@ function render(){
 
   var update_diagram = function(i){
     switch (i){
-      case 0:
+      case 1:
         svg_diag.selectAll("#dist_image").remove()
         svg_diag.selectAll("#dist_text").remove()
         break;
-      case 1:
+      case 2:
         var image_distributor = svg_diag.append('image')
           .attr('xlink:href', './images/home.png')
           .attr('width', distributor_params.width)
@@ -139,14 +139,14 @@ function render(){
     switch(i){
       // case 0:
       //   break;
-      case 1:
+      case 2:
         diag_delete_music();
         break;
-      case 2:
+      case 3:
         diag_delete_dollars();
         animate_music();
         break;
-      case 3:
+      case 4:
         diag_delete_music();
         diag_delete_dollars();
         animate_dollars();
